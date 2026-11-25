@@ -53,7 +53,7 @@ must never do is lose data. This document lists what can go wrong and what stops
 | CLI used by agents | Commands may be run by AI agents | Changes need `--yes` (exit 2 without it); `MAREA_READONLY=1` refuses every change (exit 5); file and model names are untrusted text: control and bidi characters are stripped in text output, escaped in JSON |
 | Telemetry | None | — |
 | Updates | Notification only | The app never downloads or runs an update; it links to the official releases page |
-| Release integrity | Built by GitHub Actions from the tagged commit | Build-provenance attestation (Sigstore): `gh attestation verify <file> --repo indecenti/marea`, plus `.sha256` files |
+| Release integrity | Built by GitHub Actions from the tagged commit; every third-party Action pinned to a commit SHA, updated only through reviewed Dependabot pull requests | Build-provenance attestation (Sigstore): `gh attestation verify <file> --repo indecenti/marea`, plus `.sha256` files |
 
 ## Known limits
 

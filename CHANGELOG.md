@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Security
+- GitHub Actions in every workflow are pinned to the exact commit SHA of their release (version kept
+  as a comment, still updated weekly by Dependabot), so a changed or hijacked tag cannot reach the
+  release builds without a reviewed pull request.
+
 ## [0.4.0] - 2026-11-25
 
 ### Added
