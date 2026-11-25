@@ -21,9 +21,11 @@ Copy-Item (Join-Path $root "README.md"), (Join-Path $root "SECURITY.md") $out
 $zip = Join-Path $dist "Marea-$Version-win-x64-portable.zip"
 if (Test-Path $zip) { Remove-Item $zip }
 Compress-Archive -Path "$out\*" -DestinationPath $zip
-Get-ChildItem $out -File -Filter *.exe | Get-FileHash -Algorithm SHA256 |
-    ForEach-Object { "{0}  {1}" -f $_.Hash.ToLower(), (Split-Path $_.Path -Leaf) } |
-    Set-Content (Join-Path $out "SHA256SUMS.txt") -Encoding ascii
-Get-FileHash $zip -Algorithm SHA256 | ForEach-Object { "{0}  {1}" -f $_.Hash.ToLower(), (Split-Path $zip -Leaf) } |
-    Set-Content "$zip.sha256" -Encoding ascii
+# Checksum files use LF line endings so `sha256sum -c` works on Linux and macOS too.
+function Write-Sums($files, $path) {
+    $lines = $files | Get-FileHash -Algorithm SHA256 | ForEach-Object { "{0}  {1}" -f $_.Hash.ToLower(), (Split-Path $_.Path -Leaf) }
+    [IO.File]::WriteAllText($path, (($lines -join "`n") + "`n"))
+}
+Write-Sums (Get-ChildItem $out -File -Filter *.exe) (Join-Path $out "SHA256SUMS.txt")
+Write-Sums (Get-Item $zip) "$zip.sha256"
 Write-Host "Done: $out and $zip"

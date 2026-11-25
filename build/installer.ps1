@@ -16,8 +16,8 @@ try {
         dotnet wix build Marea.wxs -arch x64 -d Version=$Version -culture $culture -loc "Marea.$culture.wxl" `
             -ext WixToolset.Util.wixext -sice ICE38 -sice ICE64 -sice ICE91 -o $msi
         if ($LASTEXITCODE -ne 0) { throw "wix build failed ($culture)" }
-        Get-FileHash $msi -Algorithm SHA256 | ForEach-Object { "{0}  {1}" -f $_.Hash.ToLower(), (Split-Path $msi -Leaf) } |
-            Set-Content "$msi.sha256" -Encoding ascii
+        $sum = Get-FileHash $msi -Algorithm SHA256 | ForEach-Object { "{0}  {1}`n" -f $_.Hash.ToLower(), (Split-Path $msi -Leaf) }
+        [IO.File]::WriteAllText((Join-Path (Get-Location) "$msi.sha256"), $sum)
         Write-Host "Created $msi"
     }
 }
