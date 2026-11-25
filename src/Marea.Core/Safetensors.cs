@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Runtime.Intrinsics;
 using System.Text.Json;
 
 namespace Marea.Core;
@@ -79,8 +80,47 @@ public sealed class SafetensorsFile
 /// <summary>Bit-exact float32 → bfloat16 conversion with round-to-nearest-even (PyTorch semantics).</summary>
 public static class Bf16
 {
-    /// <summary>Converts little-endian F32 bytes into little-endian BF16 bytes (half the length).</summary>
+    /// <summary>Converts little-endian F32 bytes into little-endian BF16 bytes (half the length).
+    /// Uses 256-bit SIMD when available (x64 is little-endian, so the byte layout matches).</summary>
     public static void FromF32(ReadOnlySpan<byte> f32, Span<byte> bf16)
+    {
+        var n = f32.Length / 4;
+        var done = 0;
+        if (System.Runtime.Intrinsics.Vector256.IsHardwareAccelerated && BitConverter.IsLittleEndian)
+        {
+            done = FromF32Simd(System.Runtime.InteropServices.MemoryMarshal.Cast<byte, uint>(f32[..(n * 4)]),
+                System.Runtime.InteropServices.MemoryMarshal.Cast<byte, ushort>(bf16[..(n * 2)]));
+        }
+        FromF32Scalar(f32[(done * 4)..(n * 4)], bf16[(done * 2)..(n * 2)]);
+    }
+
+    /// <summary>Vector path: 16 elements per step; returns how many elements it converted.</summary>
+    private static int FromF32Simd(ReadOnlySpan<uint> src, Span<ushort> dst)
+    {
+        var bias = System.Runtime.Intrinsics.Vector256.Create(0x7FFFu);
+        var one = System.Runtime.Intrinsics.Vector256.Create(1u);
+        var exp = System.Runtime.Intrinsics.Vector256.Create(0x7F800000u);
+        var man = System.Runtime.Intrinsics.Vector256.Create(0x007FFFFFu);
+        var qnan = System.Runtime.Intrinsics.Vector256.Create(0x7FC0u);
+        System.Runtime.Intrinsics.Vector256<uint> Round(System.Runtime.Intrinsics.Vector256<uint> u)
+        {
+            var r = (u + bias + ((u >> 16) & one)) >> 16;
+            var isNan = System.Runtime.Intrinsics.Vector256.Equals(u & exp, exp)
+                        & ~System.Runtime.Intrinsics.Vector256.Equals(u & man, System.Runtime.Intrinsics.Vector256<uint>.Zero);
+            return System.Runtime.Intrinsics.Vector256.ConditionalSelect(isNan, qnan, r);
+        }
+        var i = 0;
+        for (; i <= src.Length - 16; i += 16)
+        {
+            var a = Round(System.Runtime.Intrinsics.Vector256.Create(src.Slice(i, 8)));
+            var b = Round(System.Runtime.Intrinsics.Vector256.Create(src.Slice(i + 8, 8)));
+            System.Runtime.Intrinsics.Vector256.Narrow(a, b).CopyTo(dst.Slice(i, 16));
+        }
+        return i;
+    }
+
+    /// <summary>Reference scalar path (also used for the tail).</summary>
+    internal static void FromF32Scalar(ReadOnlySpan<byte> f32, Span<byte> bf16)
     {
         var n = f32.Length / 4;
         for (var i = 0; i < n; i++)

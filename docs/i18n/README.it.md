@@ -95,6 +95,19 @@ di amministratore, nessun driver suo, nessun servizio in background.
 
 Dettagli: [SECURITY.md](../../SECURITY.md).
 
+## Novità della 0.2
+
+- **Fonti trovate da sole**: Marea ricava i repository di Hugging Face dagli indizi già sul disco
+  (cache, `base_model` nei README, `_name_or_path` nei config, git, modelli Ollama da `hf.co`) e
+  dagli altri repository dello stesso autore. Non serve scrivere nessuna lista.
+- **Fonte Ollama**: i modelli scaricati con Ollama tornano dal suo registry, verificati per
+  impronta. Se non usi Ollama non cambia nulla.
+- **Avviso aggiornamenti**: una volta al giorno controlla GitHub e avvisa soltanto.
+- **Release costruite da GitHub** con attestazione di provenienza:
+  `gh attestation verify <file> --repo indecenti/marea`.
+- **Prova sul campo**: 63,7 GB di modelli veri analizzati in 65 s; 19,9 GB liberati in 11 s;
+  il modello bf16 ricalcolato dall'fp32 in 35 s e riletto da PyTorch identico bit per bit.
+
 ## Installazione
 
 > **Pre-release.** Le build non sono ancora firmate: al primo avvio SmartScreen può avvisare

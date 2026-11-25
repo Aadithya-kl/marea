@@ -46,6 +46,14 @@ public sealed class TidePlanner(SafetyGate gate, Ledger ledger)
             plan.Add(item with { RebuildSeconds = recheck.RebuildSeconds, Path = recheck.Path });
             leaving.Add(item.File.Path);
             freed += item.File.Size;
+            // A file rebuilt by a recipe needs its source files on disk: they stay for the rest of the plan.
+            if (recheck.Path == ReturnPath.Recipe && ledger.GetRecipe(item.File.Sha256) is { } json)
+            {
+                foreach (var s in Recipe.FromJson(json).Sources)
+                {
+                    pinned.Add(s.Path);
+                }
+            }
         }
         return plan;
     }

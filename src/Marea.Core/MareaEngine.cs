@@ -29,6 +29,7 @@ public sealed class MareaEngine : IDisposable
     public HydrationService Hydration { get; }
 
     private readonly HuggingFaceClient _hub = new();
+    private readonly OllamaRegistry _ollama = new();
     private readonly SafetyGate _gate;
 
     /// <summary>Opens the engine on <paramref name="dataDir"/> (default %LOCALAPPDATA%\Marea).</summary>
@@ -37,7 +38,7 @@ public sealed class MareaEngine : IDisposable
         DataDir = dataDir ?? MareaSettings.DefaultDirectory;
         Settings = MareaSettings.Load(DataDir);
         Ledger = new Ledger(Path.Combine(DataDir, "marea.db"));
-        Hydration = new HydrationService(Ledger, _hub);
+        Hydration = new HydrationService(Ledger, _hub, _ollama);
         _gate = new SafetyGate(Ledger, Settings);
     }
 
@@ -126,7 +127,7 @@ public sealed class MareaEngine : IDisposable
         string? batch = null)
     {
         batch ??= DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
-        var ev = new Evaporator(Ledger, Settings, _hub, _gate);
+        var ev = new Evaporator(Ledger, Settings, _hub, _ollama, _gate);
         var done = 0;
         var kept = new List<(FileRecord, string)>();
         foreach (var f in files)
@@ -394,5 +395,6 @@ public sealed class MareaEngine : IDisposable
         _providerLock?.Dispose();
         IsProvider = false;
         _hub.Dispose();
+        _ollama.Dispose();
     }
 }

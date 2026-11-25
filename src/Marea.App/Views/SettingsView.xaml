@@ -7,6 +7,16 @@
             <TextBlock Text="{l:T set.title}" Style="{StaticResource PageTitle}" />
             <TextBlock Text="{l:T set.subtitle}" Style="{StaticResource PageSubtitle}" />
 
+            <Border x:Name="UpdateCard" Style="{StaticResource Card}" Visibility="Collapsed" BorderBrush="{StaticResource DuplicateBrush}">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Content="{l:T upd.open}" Style="{StaticResource AccentButtonStyle}" Click="OnOpenReleases" VerticalAlignment="Center" />
+                    <StackPanel>
+                        <TextBlock x:Name="UpdateTitle" FontWeight="SemiBold" />
+                        <TextBlock Text="{l:T upd.text}" Style="{StaticResource Caption}" Margin="0,2,12,0" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
             <Border Style="{StaticResource Card}">
                 <StackPanel>
                     <TextBlock Text="{l:T set.language}" FontWeight="SemiBold" />
@@ -42,14 +52,22 @@
                     <TextBlock Text="{l:T set.repos}" />
                     <TextBox x:Name="Repos" AcceptsReturn="True" Height="130" Margin="0,4,0,2"
                              VerticalScrollBarVisibility="Auto" FontFamily="Consolas" />
-                    <TextBlock Text="{l:T set.repos_help}" Style="{StaticResource Caption}" />
+                    <TextBlock Text="{l:T set.repos_help}" Style="{StaticResource Caption}" Margin="0,0,0,12" />
+                    <CheckBox x:Name="Discover" Content="{l:T set.discover}" />
+                    <TextBlock Text="{l:T set.discover_help}" Style="{StaticResource Caption}" Margin="26,2,0,10" />
+                    <CheckBox x:Name="NameSearch" Content="{l:T set.name_search}" />
+                    <TextBlock Text="{l:T set.name_search_help}" Style="{StaticResource Caption}" Margin="26,2,0,10" />
+                    <CheckBox x:Name="Ollama" Content="{l:T set.ollama}" />
+                    <TextBlock Text="{l:T set.ollama_help}" Style="{StaticResource Caption}" Margin="26,2,0,0" />
                 </StackPanel>
             </Border>
 
             <Border Style="{StaticResource Card}">
                 <StackPanel>
                     <CheckBox x:Name="Startup" Content="{l:T set.startup}" />
-                    <TextBlock Text="{l:T set.startup_help}" Style="{StaticResource Caption}" Margin="26,2,0,0" />
+                    <TextBlock Text="{l:T set.startup_help}" Style="{StaticResource Caption}" Margin="26,2,0,10" />
+                    <CheckBox x:Name="Updates" Content="{l:T set.updates}" />
+                    <TextBlock Text="{l:T set.updates_help}" Style="{StaticResource Caption}" Margin="26,2,0,0" />
                 </StackPanel>
             </Border>
 

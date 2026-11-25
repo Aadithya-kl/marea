@@ -46,6 +46,7 @@ public partial class App : Application
         _quitEvent = new EventWaitHandle(false, EventResetMode.AutoReset, @"Local\Marea.App.Quit.v1");
         new Thread(() => { if (_quitEvent.WaitOne()) Dispatcher.Invoke(Shutdown); }) { IsBackground = true }.Start();
         _tideTimer = new System.Threading.Timer(_ => _ = TideTickAsync(), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(10));
+        _ = CheckForUpdateAsync();
         if (!Engine.Settings.OnboardingDone)
         {
             new OnboardingWindow().Show();
@@ -171,6 +172,31 @@ public partial class App : Application
         finally
         {
             Interlocked.Exchange(ref _tideRunning, 0);
+        }
+    }
+
+    /// <summary>Once a day, asks GitHub for a newer release and only notifies (never installs).</summary>
+    private async Task CheckForUpdateAsync()
+    {
+        var s = Engine.Settings;
+        if (!s.CheckForUpdates || DateTime.UtcNow - s.LastUpdateCheckUtc < TimeSpan.FromHours(24))
+        {
+            return;
+        }
+        try
+        {
+            var update = await UpdateChecker.CheckAsync(UpdateChecker.Current);
+            s.LastUpdateCheckUtc = DateTime.UtcNow;
+            s.AvailableUpdate = update?.Version.ToString(3);
+            Engine.SaveSettings();
+            if (update is not null)
+            {
+                await Dispatcher.InvokeAsync(() => Notify(Loc.T("upd.title", s.AvailableUpdate), Loc.T("upd.text")));
+            }
+        }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException)
+        {
+            // Offline or GitHub unreachable: try again on the next start.
         }
     }
 

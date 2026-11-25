@@ -1,0 +1,40 @@
+name: Release
+
+# Builds the portable package on GitHub's runners from the tagged commit, attests its build
+# provenance (Sigstore, verifiable with `gh attestation verify`) and publishes a pre-release.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Tests
+        run: dotnet test tests/Marea.Tests -c Release --filter "Category!=Network"
+      - name: Publish portable build
+        shell: pwsh
+        run: ./build/publish.ps1 -Version ("${{ github.ref_name }}".TrimStart("v"))
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            dist/*.zip
+            dist/Marea/Marea.exe
+            dist/Marea/mareactl.exe
+      - name: Create pre-release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $notes = "Built by GitHub Actions from $env:GITHUB_SHA. Verify: ``gh attestation verify <file> --repo $env:GITHUB_REPOSITORY``. Not code-signed yet: SmartScreen may warn. See CHANGELOG.md."
+          gh release create "${{ github.ref_name }}" dist/*.zip dist/*.sha256 --prerelease --verify-tag --title "Marea ${{ github.ref_name }}" --notes $notes

@@ -10,22 +10,39 @@ public sealed class SourceResolver(Ledger ledger, MareaSettings settings, Huggin
         var files = ledger.Files().Where(f => f.Sha256.Length == 64).ToList();
         var shas = files.Select(f => f.Sha256).ToHashSet();
 
-        foreach (var repo in settings.HuggingFaceRepos)
+        var repos = await CandidateReposAsync(files, progress, ct);
+        using (var gate = new SemaphoreSlim(4))
         {
-            progress?.Report(new ScanProgress(Loc.T("phase.hub"), repo, 0, 0));
-            try
+            await Task.WhenAll(repos.Select(async repo =>
             {
-                foreach (var hf in await hub.ListLfsFilesAsync(repo, ct))
+                await gate.WaitAsync(ct);
+                try
                 {
-                    if (shas.Contains(hf.Sha256))
+                    progress?.Report(new ScanProgress(Loc.T("phase.hub"), repo, 0, 0));
+                    foreach (var hf in await hub.ListLfsFilesAsync(repo, ct))
                     {
-                        ledger.PutSource(new Source(hf.Sha256, SourceKind.HuggingFace, hf.Locator, hf.Size, DateTime.UtcNow));
+                        if (shas.Contains(hf.Sha256))
+                        {
+                            ledger.PutSource(new Source(hf.Sha256, SourceKind.HuggingFace, hf.Locator, hf.Size, DateTime.UtcNow));
+                        }
                     }
                 }
-            }
-            catch (Exception e) when (e is HttpRequestException or ArgumentException or System.Text.Json.JsonException or TaskCanceledException)
+                catch (Exception e) when (e is HttpRequestException or ArgumentException or System.Text.Json.JsonException or TaskCanceledException)
+                {
+                    ledger.Log("j.source_unreachable", repo, 0, false, e.Message);
+                }
+                finally
+                {
+                    gate.Release();
+                }
+            }));
+        }
+
+        if (settings.OllamaSource)
+        {
+            foreach (var blob in OllamaRegistry.ReadManifests(OllamaRegistry.DefaultModelsDir).Where(b => shas.Contains(b.Sha256)))
             {
-                ledger.Log("j.source_unreachable", repo, 0, false, e.Message);
+                ledger.PutSource(new Source(blob.Sha256, SourceKind.Ollama, blob.Locator, blob.Size, DateTime.UtcNow));
             }
         }
 
@@ -45,6 +62,54 @@ public sealed class SourceResolver(Ledger ledger, MareaSettings settings, Huggin
             (f.Class, f.SourceLabel) = Classify(f);
             ledger.Upsert(f);
         }
+    }
+
+    /// <summary>Repositories to check: the user's list, local evidence, the same authors' related repos
+    /// and, only if enabled, a Hub search by local folder names. Capped to keep scans quick.</summary>
+    private async Task<List<string>> CandidateReposAsync(List<FileRecord> files, IProgress<ScanProgress>? progress, CancellationToken ct)
+    {
+        var repos = new HashSet<string>(settings.HuggingFaceRepos.Where(RepoDiscovery.IsRepoId), StringComparer.OrdinalIgnoreCase);
+        if (!settings.DiscoverHubRepos && !settings.HubNameSearch)
+        {
+            return [.. repos];
+        }
+        var localNames = RepoDiscovery.LocalModelNames(files);
+        if (settings.DiscoverHubRepos)
+        {
+            var evidence = RepoDiscovery.LocalEvidence(settings.ManagedRoots, settings.OllamaSource ? OllamaRegistry.DefaultModelsDir : null);
+            repos.UnionWith(evidence);
+            foreach (var author in evidence.Select(r => r[..r.IndexOf('/')]).Distinct(StringComparer.OrdinalIgnoreCase).Take(20))
+            {
+                progress?.Report(new ScanProgress(Loc.T("phase.discover"), author, 0, 0));
+                try
+                {
+                    var all = await hub.ListByAuthorAsync(author, 100, ct);
+                    // Small authors: take everything; large ones: only repos that look like local models.
+                    repos.UnionWith(all.Count <= 50 ? all : all.Where(r => RepoDiscovery.LooksRelated(r, localNames)));
+                }
+                catch (Exception e) when (e is HttpRequestException or System.Text.Json.JsonException or TaskCanceledException)
+                {
+                    ledger.Log("j.source_unreachable", author, 0, false, e.Message);
+                }
+            }
+        }
+        if (settings.HubNameSearch)
+        {
+            var folders = files.Select(f => Path.GetFileName(Path.GetDirectoryName(f.Path)) ?? "")
+                               .Where(n => n.Length >= 4).Distinct(StringComparer.OrdinalIgnoreCase).Take(40);
+            foreach (var folder in folders)
+            {
+                try
+                {
+                    repos.UnionWith(await hub.SearchAsync(folder, 5, ct));
+                }
+                catch (Exception e) when (e is HttpRequestException or System.Text.Json.JsonException or TaskCanceledException)
+                {
+                    ledger.Log("j.source_unreachable", folder, 0, false, e.Message);
+                }
+            }
+        }
+        return repos.Take(200).ToList();
     }
 
     /// <summary>Tries to express unsourced safetensors files with tensors of the other local files.</summary>
@@ -67,17 +132,29 @@ public sealed class SourceResolver(Ledger ledger, MareaSettings settings, Huggin
             {
                 continue;
             }
-            var recipe = RecipeBuilder.TryBuild(target, f.Sha256, parsed);
-            if (recipe is null)
+            // Several local models often share tensor names (sft vs turbo, fp32 vs bf16): try each
+            // candidate model (folder) on its own, cheapest check first, full verification last.
+            var names = target.Tensors.Select(t => t.Name).ToHashSet();
+            var groups = parsed.Where(p => !string.Equals(p.Path, target.Path, StringComparison.OrdinalIgnoreCase))
+                .GroupBy(p => Path.GetDirectoryName(p.Path) ?? "", StringComparer.OrdinalIgnoreCase)
+                .Select(g => (Files: g.ToList(), Covered: g.SelectMany(x => x.Tensors).Select(t => t.Name).Where(names.Contains).Distinct().Count()))
+                .Where(g => g.Covered == names.Count)
+                .OrderByDescending(g => g.Files.Sum(x => x.Tensors.Count(t => t.Dtype == "F32")));
+            foreach (var (candidates, _) in groups)
             {
-                continue;
-            }
-            var p = new Progress<long>(b => progress?.Report(new ScanProgress(Loc.T("phase.recipe"), f.Path, b, f.Size)));
-            if (await RecipeBuilder.VerifyAsync(recipe, p, ct))
-            {
-                ledger.PutRecipe(f.Sha256, recipe.ToJson());
-                ledger.PutSource(new Source(f.Sha256, SourceKind.Recipe, f.Sha256, f.Size, DateTime.UtcNow));
-                ledger.Log("j.recipe_verified", f.Path, f.Size, true, recipe.Describe());
+                var recipe = RecipeBuilder.TryBuild(target, f.Sha256, candidates);
+                if (recipe is null || !await RecipeBuilder.SpotCheckAsync(recipe, target.Path, ct))
+                {
+                    continue;
+                }
+                var p = new Progress<long>(b => progress?.Report(new ScanProgress(Loc.T("phase.recipe"), f.Path, b, f.Size)));
+                if (await RecipeBuilder.VerifyAsync(recipe, p, ct))
+                {
+                    ledger.PutRecipe(f.Sha256, recipe.ToJson());
+                    ledger.PutSource(new Source(f.Sha256, SourceKind.Recipe, f.Sha256, f.Size, DateTime.UtcNow));
+                    ledger.Log("j.recipe_verified", f.Path, f.Size, true, recipe.Describe());
+                    break;
+                }
             }
         }
     }
@@ -100,6 +177,11 @@ public sealed class SourceResolver(Ledger ledger, MareaSettings settings, Huggin
         if (sources.FirstOrDefault(s => s.Kind == SourceKind.Mirror) is { } m)
         {
             return (Recoverability.Reobtainable, Loc.Code("src.mirror", m.Locator));
+        }
+        if (sources.FirstOrDefault(s => s.Kind == SourceKind.Ollama) is { } o)
+        {
+            var blob = OllamaBlob.Parse(o.Locator, o.Size);
+            return (Recoverability.Reobtainable, Loc.Code("src.ollama", $"{blob.Host}/{blob.Repository}"));
         }
         if (sources.FirstOrDefault(s => s.Kind == SourceKind.HuggingFace) is { } h)
         {

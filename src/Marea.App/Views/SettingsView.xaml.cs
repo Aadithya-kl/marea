@@ -34,6 +34,12 @@ public partial class SettingsView : UserControl, IRefreshable
         Mirror.Text = s.MirrorRoot ?? "";
         Repos.Text = string.Join(Environment.NewLine, s.HuggingFaceRepos);
         Startup.IsChecked = StartupRegistration.IsEnabled();
+        Discover.IsChecked = s.DiscoverHubRepos;
+        NameSearch.IsChecked = s.HubNameSearch;
+        Ollama.IsChecked = s.OllamaSource;
+        Updates.IsChecked = s.CheckForUpdates;
+        UpdateCard.Visibility = s.AvailableUpdate is null ? Visibility.Collapsed : Visibility.Visible;
+        UpdateTitle.Text = Loc.T("upd.title", s.AvailableUpdate);
         AboutText.Text = Loc.T("set.about", typeof(App).Assembly.GetName().Version?.ToString(3), App.Engine.DataDir);
     }
 
@@ -75,6 +81,10 @@ public partial class SettingsView : UserControl, IRefreshable
         s.HuggingFaceRepos = repos;
         s.Language = newLang;
         s.StartWithWindows = Startup.IsChecked == true;
+        s.DiscoverHubRepos = Discover.IsChecked == true;
+        s.HubNameSearch = NameSearch.IsChecked == true;
+        s.OllamaSource = Ollama.IsChecked == true;
+        s.CheckForUpdates = Updates.IsChecked == true;
         StartupRegistration.Set(s.StartWithWindows);
         App.Engine.SaveSettings();
         if (langChanged)
@@ -85,6 +95,9 @@ public partial class SettingsView : UserControl, IRefreshable
         }
         SavedText.Text = Loc.T("set.saved");
     }
+
+    private void OnOpenReleases(object sender, RoutedEventArgs e) =>
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(UpdateChecker.ReleasesPage.ToString()) { UseShellExecute = true });
 
     private async void OnRestoreAll(object sender, RoutedEventArgs e)
     {

@@ -6,7 +6,7 @@ namespace Marea.Core;
 /// <summary>Takes one file off the disk, only after re-proving everything at the last moment:
 /// the gate still allows it, a source is alive right now, and the bytes still hash to the ledger
 /// value under an exclusive handle (so nothing can change them between check and evaporation).</summary>
-public sealed class Evaporator(Ledger ledger, MareaSettings settings, HuggingFaceClient hub, SafetyGate gate)
+public sealed class Evaporator(Ledger ledger, MareaSettings settings, HuggingFaceClient hub, OllamaRegistry ollama, SafetyGate gate)
 {
     /// <summary>Provider version written in the sync root registration.</summary>
     public const string Version = "0.1";
@@ -93,6 +93,16 @@ public sealed class Evaporator(Ledger ledger, MareaSettings settings, HuggingFac
             if (s.Kind == SourceKind.Mirror && settings.MirrorRoot is { } m && new MirrorStore(m).Has(s.Sha256, s.Size))
             {
                 return true;
+            }
+            if (s.Kind == SourceKind.Ollama)
+            {
+                if (await ollama.VerifyAsync(OllamaBlob.Parse(s.Locator, s.Size), ct))
+                {
+                    ledger.PutSource(s with { VerifiedUtc = DateTime.UtcNow });
+                    return true;
+                }
+                ledger.DropSource(s);
+                ledger.Log("j.source_gone", s.Locator, s.Size, false, Loc.Code("ev.public_changed"));
             }
             if (s.Kind == SourceKind.HuggingFace)
             {

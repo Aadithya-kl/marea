@@ -84,6 +84,17 @@ Vorgang rückgängig machen** holt genau diese Gruppe zurück. Auf der Kommandoz
 
 Details: [SECURITY.md](../../SECURITY.md).
 
+## Neu in 0.2
+
+- **Quellen werden selbst gefunden**: Hugging-Face-Repositorys werden aus Hinweisen auf der Platte
+  abgeleitet (Cache, `base_model`, `_name_or_path`, git, Ollama-Modelle von `hf.co`).
+- **Ollama als Quelle**: Ollama-Modelle kommen aus dessen Registry zurück, geprüft per
+  Fingerabdruck. Ohne Ollama ändert sich nichts.
+- **Update-Hinweise** (nur Benachrichtigung) und **von GitHub gebaute Releases** mit Attestierung:
+  `gh attestation verify <Datei> --repo indecenti/marea`.
+- **Praxistest**: 63,7 GB in 65 s analysiert, 19,9 GB in 11 s freigegeben, bf16 in 35 s neu
+  berechnet und bitgenau identisch.
+
 ## Installation
 
 > **Vorabversion.** Die Builds sind noch nicht signiert: SmartScreen kann beim ersten Start

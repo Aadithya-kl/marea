@@ -65,6 +65,17 @@ public static class ModelFolderFinder
                 Visit(s, depth + 1);
             }
         }
+        // Ollama keeps weights as content-addressed blobs without extensions: propose its blobs folder.
+        var blobs = Path.Combine(OllamaRegistry.DefaultModelsDir, "blobs");
+        if (Directory.Exists(blobs) && FileSystemFacts.RejectRoot(blobs, []) is null)
+        {
+            var files = new DirectoryInfo(blobs).EnumerateFiles("sha256-*").Where(f => f.Length >= 50L << 20).ToList();
+            var bytes = files.Sum(f => f.Length);
+            if (bytes >= minBytes && !found.Any(f => FileSystemFacts.IsUnder(blobs, f.Path)))
+            {
+                found.Add(new FoundFolder(blobs, bytes, files.Count));
+            }
+        }
         return found.OrderByDescending(f => f.ModelBytes).ToList();
     }
 

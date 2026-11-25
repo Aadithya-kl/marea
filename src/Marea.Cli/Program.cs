@@ -37,6 +37,11 @@ switch (cmd)
     case "evaporate":
         {
             var plan = engine.Plan(GbArg());
+            if (args.Length > 1 && !args[1].StartsWith("--", StringComparison.Ordinal))
+            {
+                var only = Path.GetFullPath(args[1]);
+                plan = plan.Where(p => string.Equals(p.File.Path, only, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
             PrintPlan(plan);
             if (!args.Contains("--yes"))
             {

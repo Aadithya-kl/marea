@@ -22,6 +22,26 @@ public sealed class Bf16Tests
     }
 
     [Fact]
+    public void SimdPathMatchesScalarReferenceBitForBit()
+    {
+        var rnd = new Random(42);
+        var f32 = new byte[4 * 100_003]; // odd length exercises the scalar tail
+        rnd.NextBytes(f32);              // random bit patterns: NaNs, infinities, subnormals, ties
+        uint[] specials = [0x7F800000, 0xFF800000, 0x7FC00000, 0xFFFFFFFF, 0x7F7FFFFF, 0x3F808000, 0x3F818000, 0x00000001, 0x80000000];
+        for (var i = 0; i < specials.Length; i++)
+        {
+            BinaryPrimitives.WriteUInt32LittleEndian(f32.AsSpan(i * 4), specials[i]);
+        }
+        var fast = new byte[f32.Length / 2];
+        var reference = new byte[f32.Length / 2];
+
+        Bf16.FromF32(f32, fast);
+        Bf16.FromF32Scalar(f32, reference);
+
+        Assert.Equal(reference, fast);
+    }
+
+    [Fact]
     public void RoundsHalfwayToEven()
     {
         // 0x3F808000 is exactly halfway between bf16 0x3F80 and 0x3F81: ties go to the even 0x3F80.

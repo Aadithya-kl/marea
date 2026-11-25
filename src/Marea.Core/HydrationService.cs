@@ -14,7 +14,7 @@ public sealed record HydrationEvent(string Path, long Done, long Total, string S
 
 /// <summary>Serves Windows' requests for the data of evaporated files, from the cheapest live
 /// source, and re-verifies the sha256 of every file once it is complete.</summary>
-public sealed class HydrationService(Ledger ledger, HuggingFaceClient hub)
+public sealed class HydrationService(Ledger ledger, HuggingFaceClient hub, OllamaRegistry ollama)
 {
     private const int Chunk = 4 << 20;
     private readonly ConcurrentDictionary<string, byte> _verifying = new(StringComparer.OrdinalIgnoreCase);
@@ -103,11 +103,16 @@ public sealed class HydrationService(Ledger ledger, HuggingFaceClient hub)
         {
             yield return (recipe.Describe(), () => Task.FromResult<IRangeSource>(new RecipeRangeSource(recipe)));
         }
-        foreach (var s in ledger.SourcesOf(sha).OrderBy(s => s.Kind == SourceKind.HuggingFace ? 1 : 0))
+        foreach (var s in ledger.SourcesOf(sha).OrderBy(s => s.Kind is SourceKind.HuggingFace or SourceKind.Ollama ? 1 : 0))
         {
             if (s.Kind == SourceKind.Mirror && File.Exists(s.Locator))
             {
                 yield return (Loc.Code("src.mirror_short"), () => Task.FromResult<IRangeSource>(new FileRangeSource(s.Locator)));
+            }
+            else if (s.Kind == SourceKind.Ollama)
+            {
+                var blob = OllamaBlob.Parse(s.Locator, s.Size);
+                yield return (Loc.Code("src.ollama_short", blob.Repository), () => Task.FromResult(ollama.Open(blob)));
             }
             else if (s.Kind == SourceKind.HuggingFace)
             {

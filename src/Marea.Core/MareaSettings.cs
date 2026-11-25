@@ -20,15 +20,28 @@ public sealed class MareaSettings
     /// <summary>Files smaller than this are ignored.</summary>
     public long MinFileSizeMb { get; set; } = 50;
 
-    /// <summary>Public Hugging Face repositories checked as sources (owner/name).</summary>
-    public List<string> HuggingFaceRepos { get; set; } =
-    [
-        "ACE-Step/Ace-Step1.5", "ACE-Step/acestep-5Hz-lm-0.6B", "ACE-Step/acestep-5Hz-lm-1.7B",
-        "ACE-Step/acestep-5Hz-lm-4B", "ACE-Step/acestep-v15-turbo", "ACE-Step/acestep-v15-sft",
-        "ACE-Step/acestep-v15-base", "ACE-Step/acestep-v15-xl-sft", "ACE-Step/acestep-v15-xl-turbo",
-        "ACE-Step/acestep-v15-xl-base", "Qwen/Qwen3-Embedding-0.6B", "scragnog/Ace-Step-1.5-ScragVAE",
-        "marcorez8/acestep-v15-xl-turbo-bf16",
-    ];
+    /// <summary>Extra public Hugging Face repositories to check (owner/name), on top of the discovered ones.</summary>
+    public List<string> HuggingFaceRepos { get; set; } = [];
+
+    /// <summary>Discover repositories from local evidence (HF cache, README base_model, config
+    /// _name_or_path, git remotes, Ollama hf.co models) and the same authors' other repos.
+    /// Sends only public repository and author names found on disk.</summary>
+    public bool DiscoverHubRepos { get; set; } = true;
+
+    /// <summary>Also search the Hub by the names of local model folders. Sends folder names: off by default.</summary>
+    public bool HubNameSearch { get; set; }
+
+    /// <summary>Use local Ollama manifests as sources (blobs re-obtainable from their registry by digest).</summary>
+    public bool OllamaSource { get; set; } = true;
+
+    /// <summary>Check GitHub once a day for a newer release (notification only, never installs).</summary>
+    public bool CheckForUpdates { get; set; } = true;
+
+    /// <summary>When the last update check ran (UTC).</summary>
+    public DateTime LastUpdateCheckUtc { get; set; }
+
+    /// <summary>Newest version announced by the last check, if newer than the running one.</summary>
+    public string? AvailableUpdate { get; set; }
 
     /// <summary>Optional mirror folder (e.g. a NAS share) for the content-addressed store.</summary>
     public string? MirrorRoot { get; set; }

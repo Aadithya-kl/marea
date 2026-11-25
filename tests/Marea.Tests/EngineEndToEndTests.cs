@@ -70,6 +70,42 @@ public sealed class EngineEndToEndTests : IDisposable
     }
 
     [Fact]
+    public async Task RecipePicksTheRightModelWhenTwoShareTensorNames()
+    {
+        // Regression from a real disk: an fp32 "sft" model and a different bf16 "turbo" model share
+        // every tensor name. The bf16 "sft" copy must be rebuilt from the fp32 sft, not the turbo.
+        var sft = TestFiles.RandomF32(600_000, 11);
+        var sftBf = new byte[1_200_000];
+        Bf16.FromF32(sft, sftBf);
+        var turboBf = new byte[1_200_000];
+        Bf16.FromF32(TestFiles.RandomF32(600_000, 12), turboBf);
+        foreach (var d in new[] { "sft-fp32", "turbo-bf16", "sft-bf16" })
+        {
+            Directory.CreateDirectory(Path.Combine(_root, d));
+        }
+        TestFiles.WriteSafetensors(Path.Combine(_root, "sft-fp32", "model.safetensors"), ("w", "F32", [600_000], sft));
+        // Larger than the right candidate, so a "first match wins" lookup would pick it (the original bug).
+        TestFiles.WriteSafetensors(Path.Combine(_root, "turbo-bf16", "model.safetensors"),
+            ("w", "BF16", [600_000], turboBf), ("extra", "F32", [900_000], TestFiles.RandomF32(900_000, 13)));
+        var target = Path.Combine(_root, "sft-bf16", "model.safetensors");
+        TestFiles.WriteSafetensors(target, ("w", "BF16", [600_000], sftBf));
+
+        await _engine.ScanAsync();
+        await _engine.RefreshSourcesAsync();
+
+        Assert.Equal(Recoverability.Derivable, _engine.Ledger.Get(target)!.Class);
+        Assert.Contains("sft-fp32", Loc.Render(_engine.Ledger.Get(target)!.SourceLabel));
+
+        // Even if the fp32 source had a public copy, a plan must never take both the recipe target
+        // and the files the recipe reads from.
+        var fp32 = _engine.Ledger.Get(Path.Combine(_root, "sft-fp32", "model.safetensors"))!;
+        _engine.Ledger.PutSource(new Source(fp32.Sha256, SourceKind.Mirror, "x", fp32.Size, DateTime.UtcNow));
+        var plan = _engine.Plan(0);
+        Assert.Contains(plan, p => p.File.Path == target);
+        Assert.DoesNotContain(plan, p => p.File.Path == fp32.Path);
+    }
+
+    [Fact]
     public async Task EmergencyRestoreLeavesOnlyOrdinaryFiles()
     {
         var data = RandomNumberGenerator.GetBytes(2 * 1024 * 1024);

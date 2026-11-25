@@ -83,6 +83,17 @@ exactamente ese grupo. En la línea de comandos: `mareactl free --all --instant 
 
 Detalles: [SECURITY.md](../../SECURITY.md).
 
+## Novedades de la 0.2
+
+- **Fuentes encontradas solas**: los repositorios de Hugging Face se deducen de indicios que ya
+  están en el disco (caché, `base_model`, `_name_or_path`, git, modelos de Ollama desde `hf.co`).
+- **Fuente Ollama**: los modelos de Ollama vuelven desde su registro, verificados por huella.
+  Si no usas Ollama, no cambia nada.
+- **Aviso de actualizaciones** (solo aviso) y **versiones compiladas por GitHub** con atestación:
+  `gh attestation verify <archivo> --repo indecenti/marea`.
+- **Prueba real**: 63,7 GB analizados en 65 s, 19,9 GB liberados en 11 s, bf16 recalculado en 35 s
+  e idéntico bit a bit.
+
 ## Instalación
 
 > **Versión preliminar.** Las compilaciones aún no están firmadas: SmartScreen puede avisar en

@@ -1,7 +1,7 @@
 # Publishes Marea for Windows x64: self-contained app + mareactl (no .NET install needed),
 # then creates the portable ZIP and SHA-256 checksums of the files to distribute.
 # Usage: powershell -File build\publish.ps1 [-Version 0.1.0]
-param([string]$Version = "0.1.0")
+param([string]$Version = "0.2.0")
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $out = Join-Path $root "dist\Marea"

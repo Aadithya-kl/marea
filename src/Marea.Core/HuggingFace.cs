@@ -82,6 +82,26 @@ public sealed partial class HuggingFaceClient : IDisposable
         return files;
     }
 
+    /// <summary>Public model repositories of an author (user or organisation), up to <paramref name="limit"/>.</summary>
+    public Task<List<string>> ListByAuthorAsync(string author, int limit = 100, CancellationToken ct = default) =>
+        ModelIdsAsync($"https://huggingface.co/api/models?author={Uri.EscapeDataString(author)}&limit={limit}", ct);
+
+    /// <summary>Public model repositories matching a search text (only used when the user enables it).</summary>
+    public Task<List<string>> SearchAsync(string text, int limit = 5, CancellationToken ct = default) =>
+        ModelIdsAsync($"https://huggingface.co/api/models?search={Uri.EscapeDataString(text)}&limit={limit}", ct);
+
+    private async Task<List<string>> ModelIdsAsync(string url, CancellationToken ct)
+    {
+        using var resp = await SendAsync(HttpMethod.Get, new Uri(url), null, ct);
+        resp.EnsureSuccessStatusCode();
+        using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync(ct));
+        return doc.RootElement.EnumerateArray()
+            .Select(e => e.TryGetProperty("id", out var id) ? id.GetString() : null)
+            .Where(id => id is not null && RepoName().IsMatch(id))
+            .Cast<string>()
+            .ToList();
+    }
+
     /// <summary>Confirms the pinned file still exists with the expected hash and size.</summary>
     public async Task<bool> VerifyAsync(HubFile f, CancellationToken ct = default)
     {

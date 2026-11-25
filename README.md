@@ -94,7 +94,7 @@ Every file gets a **recoverability class**:
 |---|---|---|---|
 | **Duplicate** | same SHA-256 as another file on disk | that local copy | seconds |
 | **Derivable** | rebuilt from other local files (e.g. bf16 from fp32, round-to-nearest-even), proven by hashing the full rebuild | a recomputation | seconds to a minute |
-| **Re-obtainable** | same SHA-256 as a public Hugging Face file pinned to a commit, or a verified copy on your mirror/NAS | download / LAN | depends on your connection |
+| **Re-obtainable** | same SHA-256 as a public Hugging Face file pinned to a commit, an Ollama registry blob (by digest), or a verified copy on your mirror/NAS | download / LAN | depends on your connection |
 | **Unique** | no known source | **never evaporated**. Replicate it to your mirror first and it becomes re-obtainable | — |
 
 **The tide** keeps a target of free space (100 GB by default). It ranks candidates by
@@ -102,6 +102,12 @@ Every file gets a **recoverability class**:
 freed. A duplicate you haven't touched in a month goes first; a model you used yesterday
 stays. Automatic mode is **off by default**: you can also free space by hand from a plan
 you review.
+
+**Sources are found automatically.** Marea reads evidence already on your disk: the Hugging Face
+cache, `base_model` in model cards, `_name_or_path` in configs, git remotes and Ollama models
+pulled from `hf.co`. It then checks those authors' related repositories. On the test workstation
+this alone proved 65% of the re-obtainable bytes with no configuration. The optional *search by
+folder name* (off by default, because it sends folder names) found the rest in 5 seconds.
 
 Under the hood Marea uses the **Windows Cloud Files API**, the same mechanism as OneDrive
 "online-only" files. Each file's own provenance plays the part of the cloud. No admin rights,
@@ -129,6 +135,19 @@ Marea moves people's files, so the rule is **never lose a byte**:
 
 Full threat model: [SECURITY.md](SECURITY.md).
 
+## Field test
+
+On a real workstation (ACE-Step and Side-Step checkpoints, Windows 11, NVMe):
+
+| Step | Result |
+|---|---|
+| Scan + fingerprint 63.7 GB of models | 65 s |
+| Safely freeable (instant return only) | 19.9 GB: 5 duplicates and 1 bf16 model recomputable from fp32 |
+| Evaporate those 19.9 GB (with last-moment bit-by-bit re-hash) | 11 s |
+| Open the evaporated bf16 model with `safetensors` + PyTorch | data rebuilt from fp32 in 35 s, **SHA-256 identical** |
+| Open an evaporated 4.5 GB duplicate | back in ~5 s, **SHA-256 identical** |
+| Undo the cleanup | every file ordinary again, folders detached |
+
 ## Install
 
 > **Pre-release.** Builds are not code-signed yet, so Windows SmartScreen may warn on first run
@@ -136,6 +155,8 @@ Full threat model: [SECURITY.md](SECURITY.md).
 
 1. Download `Marea-<version>-win-x64-portable.zip` from [Releases](https://github.com/indecenti/marea/releases).
 2. Unzip it anywhere and run **`Marea.exe`**. .NET is included; nothing else to install.
+   Releases are built by GitHub Actions; check that yours came from this repository's CI with
+   `gh attestation verify Marea-<version>-win-x64-portable.zip --repo indecenti/marea`.
 3. Before deleting the folder, open *Settings → Bring everything back and detach*.
 
 A per-user MSI installer (no admin) is ready in [`installer/`](installer) and will ship
@@ -208,8 +229,9 @@ Only the first open of an evaporated file waits for the data (seconds for a loca
 Files you used recently are never evaporated.
 
 **What about Ollama, LM Studio, pip caches?**
-Ollama blobs are content-addressed and are next on the roadmap. Package caches are better
-cleaned by their own tools.
+Ollama is supported: add `.ollama\models\blobs` (the first-run guide proposes it) and its blobs
+come back from the Ollama registry, verified by digest. If you don't use Ollama, nothing changes.
+Package caches are better cleaned by their own tools.
 
 **macOS / Linux?**
 The engine is portable .NET. Only the placeholder layer is Windows-specific: macOS has File
@@ -225,8 +247,9 @@ the folder (portable). Either way every file comes back first.
 - [x] Transparent evaporation and verified return (Windows Cloud Files)
 - [x] Tide planner, desktop app, `mareactl`, 5 languages, portable build
 - [x] "Free up space in 3 clicks" wizard with instant-only mode and one-click undo
+- [x] Automatic source discovery, Ollama source, update notifications, attested CI releases
 - [ ] Signed releases, MSI installer, winget
-- [ ] Ollama (by digest) and Civitai (by hash) sources
+- [ ] Civitai source (by hash)
 - [ ] Predictive high tide: bring models back *before* you need them
 - [ ] Tensor-level store: share layers across fine-tunes and merges
 - [ ] File Explorer navigation-pane entry

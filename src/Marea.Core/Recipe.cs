@@ -122,6 +122,28 @@ public static class RecipeBuilder
         };
     }
 
+    /// <summary>Cheap pre-check: compares up to 1 MiB at the start of up to 12 evenly spaced segments
+    /// with the target file. A wrong candidate is rejected in milliseconds instead of a full rebuild.</summary>
+    public static async Task<bool> SpotCheckAsync(Recipe r, string targetPath, CancellationToken ct = default)
+    {
+        await using var produced = new RecipeRangeSource(r);
+        await using var actual = new FileRangeSource(targetPath);
+        var step = Math.Max(1, r.Segments.Count / 12);
+        var a = new byte[1 << 20];
+        var b = new byte[1 << 20];
+        foreach (var seg in r.Segments.Where((_, i) => i % step == 0).Take(12))
+        {
+            var len = (int)Math.Min(a.Length, seg.Length);
+            var n1 = await produced.ReadFullyAsync(seg.Offset, a.AsMemory(0, len), ct);
+            var n2 = await actual.ReadFullyAsync(seg.Offset, b.AsMemory(0, len), ct);
+            if (n1 != n2 || !a.AsSpan(0, n1).SequenceEqual(b.AsSpan(0, n2)))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /// <summary>Rebuilds the whole content and checks it hashes to the target sha (the only proof that counts).</summary>
     public static async Task<bool> VerifyAsync(Recipe r, IProgress<long>? progress = null, CancellationToken ct = default)
     {
@@ -187,16 +209,24 @@ public sealed class RecipeRangeSource : IRangeSource
         var firstElem = within / 2;
         var lastElem = (within + want - 1) / 2;
         var count = (int)(lastElem - firstElem + 1);
-        var f32 = new byte[count * 4];
-        var got = await file.ReadFullyAsync(seg.SourceOffset + firstElem * 4, f32, ct);
-        if (got != f32.Length)
+        var f32 = System.Buffers.ArrayPool<byte>.Shared.Rent(count * 4);
+        var bf = System.Buffers.ArrayPool<byte>.Shared.Rent(count * 2);
+        try
         {
-            throw new IOException(Loc.T("recipe.short_source"));
+            var got = await file.ReadFullyAsync(seg.SourceOffset + firstElem * 4, f32.AsMemory(0, count * 4), ct);
+            if (got != count * 4)
+            {
+                throw new IOException(Loc.T("recipe.short_source"));
+            }
+            Bf16.FromF32(f32.AsSpan(0, count * 4), bf.AsSpan(0, count * 2));
+            bf.AsSpan((int)(within - firstElem * 2), want).CopyTo(buffer.Span);
+            return want;
         }
-        var bf = new byte[count * 2];
-        Bf16.FromF32(f32, bf);
-        bf.AsSpan((int)(within - firstElem * 2), want).CopyTo(buffer.Span);
-        return want;
+        finally
+        {
+            System.Buffers.ArrayPool<byte>.Shared.Return(f32);
+            System.Buffers.ArrayPool<byte>.Shared.Return(bf);
+        }
     }
 
     private RecipeSegment FindSegment(long offset)

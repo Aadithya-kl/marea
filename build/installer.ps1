@@ -4,7 +4,7 @@
 #   dotnet wix eula accept wix7        <- accepts the WiX v7 OSMF EULA: done by whoever builds
 #   dotnet wix extension add WixToolset.Util.wixext/7.0.1
 # Usage: powershell -File build\installer.ps1 [-Version 0.1.0]
-param([string]$Version = "0.1.0")
+param([string]$Version = "0.2.0")
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 Push-Location (Join-Path $root "installer")

@@ -84,6 +84,17 @@ ligne) ou aussi depuis le NAS ou internet. Appuyez sur **Libérer maintenant** ;
 
 Détails : [SECURITY.md](../../SECURITY.md).
 
+## Nouveautés de la 0.2
+
+- **Sources trouvées seules** : les dépôts Hugging Face sont déduits d'indices déjà présents sur le
+  disque (cache, `base_model`, `_name_or_path`, git, modèles Ollama depuis `hf.co`).
+- **Source Ollama** : les modèles Ollama reviennent depuis son registre, vérifiés par empreinte.
+  Sans Ollama, rien ne change.
+- **Avis de mise à jour** (notification seulement) et **versions compilées par GitHub** avec
+  attestation : `gh attestation verify <fichier> --repo indecenti/marea`.
+- **Test réel** : 63,7 Go analysés en 65 s, 19,9 Go libérés en 11 s, bf16 recalculé en 35 s et
+  identique bit à bit.
+
 ## Installation
 
 > **Préversion.** Les builds ne sont pas encore signées : SmartScreen peut avertir au premier

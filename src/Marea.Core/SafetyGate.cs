@@ -118,14 +118,14 @@ public sealed class SafetyGate(Ledger ledger, MareaSettings settings)
                 && all.Any(o => string.Equals(o.Path, s.Path, StringComparison.OrdinalIgnoreCase) && o.Residency == Residency.Local));
             if (r.SourcesUnchanged() && sourcesHere)
             {
-                return (gb / 0.4, ReturnPath.Recipe);
+                return (gb / 0.27, ReturnPath.Recipe); // measured: 9.3 GB bf16 from fp32 in ~35 s
             }
         }
         if (sources.Any(s => s.Kind == SourceKind.Mirror))
         {
             return (gb / 0.1, ReturnPath.Mirror);
         }
-        if (sources.Any(s => s.Kind == SourceKind.HuggingFace))
+        if (sources.Any(s => s.Kind is SourceKind.HuggingFace or SourceKind.Ollama))
         {
             return (gb * 1000 / Math.Max(1, settings.BandwidthMBps), ReturnPath.Download);
         }
@@ -141,7 +141,7 @@ public sealed class SafetyGate(Ledger ledger, MareaSettings settings)
         var pinned = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var gone in all.Where(f => f.Residency == Residency.Evaporated))
         {
-            var external = ledger.SourcesOf(gone.Sha256).Any(s => s.Kind is SourceKind.HuggingFace or SourceKind.Mirror);
+            var external = ledger.SourcesOf(gone.Sha256).Any(s => s.Kind is SourceKind.HuggingFace or SourceKind.Mirror or SourceKind.Ollama);
             if (external)
             {
                 continue;

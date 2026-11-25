@@ -35,6 +35,8 @@ public enum SourceKind
     Mirror = 2,
     /// <summary>Verified recipe that rebuilds the bytes from local files.</summary>
     Recipe = 3,
+    /// <summary>Blob of a local Ollama manifest, re-obtainable from its registry by digest.</summary>
+    Ollama = 4,
 }
 
 /// <summary>A verified place the bytes of a content hash can be obtained from.</summary>
