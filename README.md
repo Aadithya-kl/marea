@@ -46,11 +46,29 @@ Your apps never notice.
   <br><sub>A 29-second tour. Every screen also comes in light and dark, following Windows or your choice.</sub>
 </p>
 
+## Is this for you?
+
+Marea is for you if you have searched for any of these:
+
+| Your problem | What Marea does |
+|---|---|
+| **"C: drive full" because of AI models**, Stable Diffusion checkpoints, LLMs | Frees the space of every model it can prove is re-obtainable, without deleting anything |
+| **Hugging Face cache too big** (`.cache/huggingface/hub`, `hf cache` shows hundreds of GB) | Matches cached files to their pinned Hub commit; they come back on demand, verified |
+| **Ollama models take too much space** (`.ollama/models/blobs`) | Names every blob by its tag, frees the ones the registry still serves by digest |
+| **ComfyUI models folder is huge**, same checkpoint in A1111, Forge and ComfyUI | Finds byte-identical duplicates across apps and drives; files stay where each app expects them |
+| **fp32 and fp16/bf16 copies of the same model** | Recomputes bf16 from fp32 bit for bit when needed, so only one copy uses space |
+| **"Is this .ckpt / .pt / .bin safe to load?"**, pickle malware, unsafe models | Reads the pickle opcodes and GGUF chat templates without loading anything and gives a calm verdict |
+| **A model disappeared from Hugging Face or Civitai** | Watches public sources daily and keeps or brings back the files that are about to vanish |
+| **A disk-cleanup tool an AI agent can use safely** | `mareactl`: versioned JSON, exit codes, read-only mode, nothing changes without `--yes` |
+
+Free and open source (MIT) for Windows 10 and 11. Website: <https://indecenti.github.io/marea/>
+
 > 📖 **New here?** Read the [user manual](docs/MANUAL.md). **Testing it for us?** Follow the
 > [tester guide](docs/TESTING.md): 15 minutes, safe, every step undoable.
 
 ## Table of contents
 
+- [Is this for you?](#is-this-for-you)
 - [What's new about it](#whats-new-about-it)
 - [Models and safety](#models-and-safety)
 - [Endangered models](#endangered-models)

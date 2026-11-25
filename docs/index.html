@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marea – Free disk space from AI models without deleting them | Hugging Face, Ollama, ComfyUI</title>
+<meta name="description" content="Free, open-source Windows app that frees disk space used by local AI models (Hugging Face cache, Ollama, ComfyUI, GGUF, safetensors) without deleting a byte, checks pickle files for code before you load them, and rescues models that are disappearing.">
+<meta name="keywords" content="free disk space AI models, Hugging Face cache too big, Ollama models disk space, ComfyUI models folder, duplicate checkpoints, safetensors, GGUF, pickle malware scanner, model manager Windows">
+<link rel="canonical" href="https://indecenti.github.io/marea/">
+<meta name="theme-color" content="#1F8C8A">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Marea">
+<meta property="og:title" content="Marea – Free disk space from AI models without deleting a byte">
+<meta property="og:description" content="Files with a verified source become 0-byte placeholders and come back, SHA-256 verified, when a program opens them. Models inventory, load-safety check, endangered-model watch. Windows, MIT.">
+<meta property="og:url" content="https://indecenti.github.io/marea/">
+<meta property="og:image" content="https://indecenti.github.io/marea/images/social-preview.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Marea – Free disk space from AI models without deleting a byte">
+<meta name="twitter:description" content="Open-source Windows app for Hugging Face, Ollama and ComfyUI users: verified 0-byte placeholders, model inventory, pickle safety check.">
+<meta name="twitter:image" content="https://indecenti.github.io/marea/images/social-preview.png">
+<link rel="icon" href="images/favicon.png" type="image/png">
+<link rel="alternate" type="text/plain" title="LLM-friendly summary" href="llms.txt">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Marea",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Windows 10, Windows 11",
+      "softwareVersion": "0.4.0",
+      "license": "https://opensource.org/licenses/MIT",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+      "url": "https://indecenti.github.io/marea/",
+      "downloadUrl": "https://github.com/indecenti/marea/releases",
+      "codeRepository": "https://github.com/indecenti/marea",
+      "image": "https://indecenti.github.io/marea/images/overview.png",
+      "screenshot": "https://indecenti.github.io/marea/images/models.png",
+      "inLanguage": ["en", "it", "es", "fr", "de"],
+      "description": "Frees disk space used by local AI models without deleting them: files with a verified source (duplicate on disk, bit-exact recipe, pinned Hugging Face commit, Ollama registry blob, NAS mirror) become 0-byte placeholders that come back, SHA-256 verified, when a program opens them. Includes a models inventory, a static load-safety check for pickle and GGUF files, an endangered-model watch and an agent-ready command line.",
+      "featureList": [
+        "Frees space without deleting: Windows Cloud Files placeholders",
+        "Byte-identical duplicate detection across apps and drives",
+        "Bit-exact bf16 recomputation from fp32",
+        "Hugging Face sources pinned to a commit, Ollama registry blobs by digest",
+        "One-click undo of every cleanup",
+        "Models inventory: format, quantization, parameters",
+        "Pickle and GGUF load-safety check without loading anything",
+        "Daily endangered-model watch with automatic rescue",
+        "Command line with versioned JSON for scripts and AI agents",
+        "English, Italian, Spanish, French, German; light and dark theme"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I free disk space used by Hugging Face, Ollama and ComfyUI models without deleting them?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Marea proves where each model file could be obtained again (identical copy on disk, bit-exact recomputation, pinned Hugging Face commit, Ollama registry blob, NAS copy) and turns only those files into 0-byte placeholders. They stay in their folders and come back automatically, SHA-256 verified, when a program opens them. Every cleanup can be undone with one click." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is a .ckpt, .pt or .bin model file safe to load?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Pickle-based files can run code when loaded. Marea reads their pickle opcodes without unpickling them and rates the imports: safe format, no code found, check before loading, or dangerous. It also flags GGUF chat templates with Jinja sandbox-escape patterns. Run mareactl check <file> before loading a model you downloaded." }
+        },
+        {
+          "@type": "Question",
+          "name": "What happens if a model is removed from Hugging Face or Ollama?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Marea checks public sources every day and looks for early signs: a file removed from the latest revision, a repository that became gated or disabled, an Ollama tag withdrawn. Evaporated files that depend on a disappearing source are brought back while it still answers, and possible last copies are never freed and are copied to your NAS mirror." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I lose a file?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Marea is designed so that you can't: it only evaporates files with a verified source that survives the operation, re-hashes every byte that comes back, never detaches a folder holding placeholders, and never touches unique files." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Marea free? Does it work on macOS or Linux?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Marea is free and open source under the MIT license. It runs on Windows 10 (1809 or later) and Windows 11. The engine is portable .NET; macOS and Linux backends are on the roadmap." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+:root {
+  --bg: #f3f6f9; --surface: #ffffff; --text: #16232b; --muted: #55656f; --line: #dde5ea;
+  --sea: #1f8c8a; --sea-strong: #14706e; --tint: #e3f3f2; --warn: #b9770e;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1a20; --surface: #172630; --text: #e6eef2; --muted: #9fb2bc; --line: #26394a;
+    --sea: #3fb3ad; --sea-strong: #5cc8c2; --tint: #17383a; --warn: #e0a030;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 "Segoe UI", system-ui, -apple-system, sans-serif; }
+a { color: var(--sea-strong); }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+header.hero { padding: 56px 0 32px; text-align: center; }
+.logo { width: 88px; height: 88px; border-radius: 20px; }
+h1 { font-size: clamp(2rem, 4.5vw, 3.1rem); line-height: 1.15; margin: 16px 0 12px; letter-spacing: -0.01em; }
+.lead { font-size: 1.2rem; color: var(--muted); max-width: 760px; margin: 0 auto 24px; }
+.cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 8px 0 12px; }
+.btn { display: inline-block; padding: 12px 22px; border-radius: 10px; font-weight: 600; text-decoration: none; border: 1px solid var(--line); background: var(--surface); color: var(--text); }
+.btn.primary { background: var(--sea); border-color: var(--sea); color: #fff; }
+.meta { font-size: .9rem; color: var(--muted); }
+.shot { margin: 32px auto 0; max-width: 960px; }
+.shot img { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 10px 40px rgba(0,0,0,.12); }
+section { padding: 40px 0; }
+h2 { font-size: 1.7rem; margin: 0 0 16px; }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+.card h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.card p { margin: 0; color: var(--muted); }
+table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: var(--tint); }
+tr:last-child td { border-bottom: 0; }
+.scroll { overflow-x: auto; }
+code { background: var(--tint); padding: 1px 6px; border-radius: 6px; font-size: .92em; }
+pre { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; overflow-x: auto; }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; }
+summary { font-weight: 600; cursor: pointer; }
+footer { padding: 32px 0 48px; color: var(--muted); font-size: .9rem; text-align: center; }
+.langs a { margin: 0 6px; }
+</style>
+</head>
+<body>
+<header class="hero wrap">
+  <img class="logo" src="images/favicon.png" alt="Marea logo" width="88" height="88">
+  <h1>Free disk space from AI models<br>without deleting a byte</h1>
+  <p class="lead">Marea is a free, open-source Windows app for people who run AI locally. It frees the space taken by
+    Hugging Face, Ollama, ComfyUI, GGUF and safetensors models, tells you which models could run code when loaded,
+    and rescues the ones that are disappearing from their hub.</p>
+  <div class="cta">
+    <a class="btn primary" href="https://github.com/indecenti/marea/releases">Download for Windows</a>
+    <a class="btn" href="https://github.com/indecenti/marea">Source code on GitHub</a>
+    <a class="btn" href="https://github.com/indecenti/marea/blob/main/docs/MANUAL.md">User manual</a>
+  </div>
+  <p class="meta">MIT license · Windows 10 1809+ and 11 · English, Italiano, Español, Français, Deutsch · pre-release</p>
+  <div class="shot">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="images/tour-dark.gif">
+      <img src="images/tour.gif" width="1200" height="800" alt="A tour of Marea: overview, models inventory, a model at risk, free up space in 3 clicks, undo, files, plan, activity and settings">
+    </picture>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="problems" aria-labelledby="problems-h">
+    <h2 id="problems-h">Is this for you?</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Your problem</th><th>What Marea does</th></tr></thead>
+        <tbody>
+          <tr><td><strong>C: drive full</strong> because of AI models, Stable Diffusion checkpoints, LLMs</td><td>Frees the space of every model it can prove is re-obtainable, without deleting anything</td></tr>
+          <tr><td><strong>Hugging Face cache too big</strong> (<code>.cache/huggingface/hub</code>)</td><td>Matches cached files to their pinned Hub commit; they come back on demand, verified</td></tr>
+          <tr><td><strong>Ollama models take too much space</strong> (<code>.ollama/models/blobs</code>)</td><td>Names every blob by its tag and frees the ones the registry still serves by digest</td></tr>
+          <tr><td><strong>ComfyUI models folder is huge</strong>, the same checkpoint in A1111, Forge and ComfyUI</td><td>Finds byte-identical duplicates across apps and drives; files stay where each app expects them</td></tr>
+          <tr><td><strong>fp32 and fp16/bf16 copies</strong> of the same model</td><td>Recomputes bf16 from fp32 bit for bit when needed, so only one copy uses space</td></tr>
+          <tr><td><strong>Is this .ckpt / .pt / .bin safe to load?</strong></td><td>Reads pickle opcodes and GGUF chat templates without loading anything and gives a calm verdict</td></tr>
+          <tr><td><strong>A model disappeared</strong> from Hugging Face or Civitai</td><td>Watches public sources daily; keeps or brings back the files that are about to vanish</td></tr>
+          <tr><td><strong>A cleanup tool an AI agent can use safely</strong></td><td><code>mareactl</code> with versioned JSON, exit codes, read-only mode; nothing changes without <code>--yes</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="how" aria-labelledby="how-h">
+    <h2 id="how-h">How it works</h2>
+    <div class="grid">
+      <div class="card"><h3>1. Proof, not guesses</h3><p>Every file is fingerprinted (SHA-256 and tensor headers). A file can leave the disk only if Marea can prove a way to get the exact bytes back: a duplicate, a bit-exact recipe, a pinned Hugging Face commit, an Ollama blob or your NAS.</p></div>
+      <div class="card"><h3>2. Evaporate, don't delete</h3><p>The file stays in its folder with its name and size but takes 0 bytes, using the same Windows mechanism as OneDrive “online-only” files. No admin rights, no driver of its own.</p></div>
+      <div class="card"><h3>3. Back on open, verified</h3><p>When ComfyUI, Python, llama.cpp or any program opens it, Marea brings it back on the fly and re-checks its SHA-256. One click undoes any cleanup.</p></div>
+    </div>
+  </section>
+
+  <section id="models" aria-labelledby="models-h">
+    <h2 id="models-h">Every model, and whether it is safe to load</h2>
+    <p>The Models page reads each file's own header: format (GGUF, safetensors, PyTorch, ONNX), quantization or precision, parameters, where it would come back from, and a calm safety verdict. Pickle files are rated by what they would import, without unpickling them; GGUF chat templates that try to escape their Jinja sandbox are flagged.</p>
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="images/dark/models-risk.png">
+      <img src="images/models-risk.png" width="1400" height="933" style="width:100%;height:auto;border-radius:12px;border:1px solid var(--line)" alt="Marea models inventory: format and quantization, parameters, source, safety verdict, and a model whose public source removed it upstream">
+    </picture>
+  </section>
+
+  <section id="cli" aria-labelledby="cli-h">
+    <h2 id="cli-h">Built for scripts and AI agents</h2>
+    <pre><code>mareactl check .\downloads\new-model.ckpt --json   # exit 4 = don't load it
+mareactl watch --json                              # exit 3 = models at risk
+$env:MAREA_READONLY = "1"; mareactl models --json  # inventory, no changes possible</code></pre>
+    <p>Versioned JSON schemas, documented exit codes, read-only mode, untrusted names sanitised. See <a href="https://github.com/indecenti/marea/blob/main/docs/AGENTS.md">AGENTS.md</a>.</p>
+  </section>
+
+  <section id="faq" aria-labelledby="faq-h">
+    <h2 id="faq-h">Questions</h2>
+    <details><summary>How do I free disk space used by Hugging Face, Ollama and ComfyUI models without deleting them?</summary><p>Install Marea, let it find your model folders, run a scan, then use “Free up space in 3 clicks”. Only files with a verified way back are evaporated; they come back automatically when opened, and every cleanup can be undone.</p></details>
+    <details><summary>Is a .ckpt, .pt or .bin file safe to load?</summary><p>Pickle-based files can run code when loaded. Marea's Models page, or <code>mareactl check &lt;file&gt;</code>, reads the file without running it and tells you: safe format, no code found, check before loading, or dangerous.</p></details>
+    <details><summary>What if a model is removed from Hugging Face or Ollama?</summary><p>Marea checks its sources every day and catches early signs. Files at risk are brought back while the source still answers; possible last copies are kept and copied to your NAS.</p></details>
+    <details><summary>Can I lose a file?</summary><p>No by design: only files with a verified source that survives the operation are evaporated, every byte that comes back is re-hashed, and unique files are never touched. Read the <a href="https://github.com/indecenti/marea/blob/main/SECURITY.md">security model</a>.</p></details>
+    <details><summary>What does Marea send over the network?</summary><p>No telemetry and never your paths or file contents. Only public repository names, public digests and an update check, each of which can be turned off. Details in the <a href="https://github.com/indecenti/marea/blob/main/CODE_SIGNING_POLICY.md#privacy-policy">privacy policy</a>.</p></details>
+    <details><summary>Does it work on macOS or Linux?</summary><p>Not yet: Marea uses the Windows Cloud Files API. The engine is portable .NET, and macOS (File Provider) and Linux (FUSE) backends are on the roadmap. Contributions welcome.</p></details>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p class="langs">README:
+    <a href="https://github.com/indecenti/marea#readme" hreflang="en">English</a>
+    <a href="https://github.com/indecenti/marea/blob/main/docs/i18n/README.it.md" hreflang="it">Italiano</a>
+    <a href="https://github.com/indecenti/marea/blob/main/docs/i18n/README.es.md" hreflang="es">Español</a>
+    <a href="https://github.com/indecenti/marea/blob/main/docs/i18n/README.fr.md" hreflang="fr">Français</a>
+    <a href="https://github.com/indecenti/marea/blob/main/docs/i18n/README.de.md" hreflang="de">Deutsch</a>
+  </p>
+  <p>Marea is free software under the MIT license · <a href="https://github.com/indecenti/marea">GitHub</a> · <a href="https://github.com/indecenti/marea/blob/main/CHANGELOG.md">Changelog</a> · <a href="llms.txt">llms.txt</a></p>
+</footer>
+</body>
+</html>
