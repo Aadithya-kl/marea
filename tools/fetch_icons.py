@@ -54,6 +54,12 @@ ICONS = {
     "Power": ("Power", "power", "regular"),
     "DataPie": ("Data Pie", "data_pie", "regular"),
     "Library": ("Library", "library", "regular"),
+    "Cube": ("Cube", "cube", "regular"),
+    "ShieldError": ("Shield Error", "shield_error", "filled"),
+    "ShieldQuestion": ("Shield Question", "shield_question", "regular"),
+    "ShieldOk": ("Shield Checkmark", "shield_checkmark", "filled"),
+    "Bot": ("Bot", "bot", "regular"),
+    "Code": ("Code", "code", "regular"),
 }
 
 here = os.path.dirname(os.path.abspath(__file__))

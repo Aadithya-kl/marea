@@ -346,74 +346,158 @@ T = {
 "cli.volume": ("{0}  liberi {1} su {2}  (soglia {3})", "{0}  {1} free of {2}  (target {3})", "{0}  {1} libres de {2}  (umbral {3})", "{0}  {1} libres sur {2}  (seuil {3})", "{0}  {1} frei von {2}  (Ziel {3})"),
 "cli.ledger": ("{0} file nel registro, {1}", "{0} files in the ledger, {1}", "{0} archivos en el registro, {1}", "{0} fichiers dans le registre, {1}", "{0} Dateien im Register, {1}"),
 "cli.freeable": ("Puoi liberare in sicurezza adesso: {0}", "You can safely free now: {0}", "Puedes liberar con seguridad ahora: {0}", "Vous pouvez libérer en sécurité maintenant : {0}", "Jetzt sicher freigebbar: {0}"),
+# --- 0.3: models inventory and safety
+"nav.models": ("Modelli", "Models", "Modelos", "Modèles", "Modelle"),
+"models.title": ("Modelli", "Models", "Modelos", "Modèles", "Modelle"),
+"models.subtitle": ("Ogni modello sul disco, letto dalla sua intestazione: formato, precisione, dimensione, dove si trova e se caricarlo potrebbe eseguire codice.", "Every model on your disk, read from its own header: format, precision, size, where it is, and whether loading it could run code.", "Cada modelo del disco, leído de su propia cabecera: formato, precisión, tamaño, dónde está y si cargarlo podría ejecutar código.", "Chaque modèle du disque, lu dans son propre en-tête : format, précision, taille, emplacement, et si le charger pourrait exécuter du code.", "Jedes Modell auf der Platte, aus seinem eigenen Header gelesen: Format, Genauigkeit, Größe, Ort und ob das Laden Code ausführen könnte."),
+"models.search": ("Cerca per nome, architettura o quantizzazione…", "Search by name, architecture or quantization…", "Buscar por nombre, arquitectura o cuantización…", "Rechercher par nom, architecture ou quantification…", "Nach Name, Architektur oder Quantisierung suchen…"),
+"models.filter": ("Filtro", "Filter", "Filtro", "Filtre", "Filter"),
+"models.filter_all": ("Tutti i modelli", "All models", "Todos los modelos", "Tous les modèles", "Alle Modelle"),
+"models.filter_attention": ("Da controllare", "Need attention", "Para revisar", "À vérifier", "Zu prüfen"),
+"models.filter_gguf": ("GGUF", "GGUF", "GGUF", "GGUF", "GGUF"),
+"models.filter_safetensors": ("safetensors", "safetensors", "safetensors", "safetensors", "safetensors"),
+"models.filter_pickle": ("PyTorch e pickle", "PyTorch and pickle", "PyTorch y pickle", "PyTorch et pickle", "PyTorch und Pickle"),
+"models.filter_evaporated": ("Evaporati", "Evaporated", "Evaporados", "Évaporés", "Verdunstet"),
+"models.total": ("{0} modelli · {1}", "{0} models · {1}", "{0} modelos · {1}", "{0} modèles · {1}", "{0} Modelle · {1}"),
+"models.attention": ("{0} da controllare", "{0} need attention", "{0} para revisar", "{0} à vérifier", "{0} zu prüfen"),
+"models.empty": ("Nessun modello ancora. Aggiungi una cartella e avvia una scansione: Marea legge solo le intestazioni, non carica mai i modelli.", "No models yet. Add a folder and run a scan: Marea reads headers only, it never loads a model.", "Aún no hay modelos. Añade una carpeta y escanea: Marea solo lee cabeceras, nunca carga un modelo.", "Aucun modèle pour l'instant. Ajoutez un dossier et lancez une analyse : Marea ne lit que les en-têtes, il ne charge jamais un modèle.", "Noch keine Modelle. Ordner hinzufügen und scannen: Marea liest nur Header und lädt nie ein Modell."),
+"models.select_title": ("Seleziona un modello", "Select a model", "Selecciona un modelo", "Sélectionnez un modèle", "Modell auswählen"),
+"models.select_hint": ("Vedrai cosa dice la sua intestazione, il verdetto di sicurezza in parole semplici e i suoi file.", "You'll see what its header says, the safety verdict in plain words, and its files.", "Verás lo que dice su cabecera, el veredicto de seguridad en palabras sencillas y sus archivos.", "Vous verrez ce que dit son en-tête, le verdict de sécurité en termes simples et ses fichiers.", "Du siehst, was sein Header sagt, das Sicherheitsurteil in einfachen Worten und seine Dateien."),
+"models.findings": ("Trovato:", "Found:", "Encontrado:", "Trouvé :", "Gefunden:"),
+"models.more_files": ("… e altri {0} file", "… and {0} more files", "… y {0} archivos más", "… et {0} fichiers de plus", "… und {0} weitere Dateien"),
+"models.open_folder": ("Apri cartella", "Open folder", "Abrir carpeta", "Ouvrir le dossier", "Ordner öffnen"),
+"col.model": ("Modello", "Model", "Modelo", "Modèle", "Modell"),
+"col.format": ("Formato", "Format", "Formato", "Format", "Format"),
+"col.precision": ("Precisione", "Precision", "Precisión", "Précision", "Genauigkeit"),
+"col.params": ("Parametri", "Parameters", "Parámetros", "Paramètres", "Parameter"),
+"col.safety": ("Sicurezza", "Safety", "Seguridad", "Sécurité", "Sicherheit"),
+"kind.file": ("File singolo", "Single file", "Archivo único", "Fichier unique", "Einzeldatei"),
+"kind.folder": ("Cartella modello", "Model folder", "Carpeta de modelo", "Dossier de modèle", "Modellordner"),
+"kind.huggingface": ("Cache Hugging Face", "Hugging Face cache", "Caché de Hugging Face", "Cache Hugging Face", "Hugging-Face-Cache"),
+"kind.ollama": ("Ollama", "Ollama", "Ollama", "Ollama", "Ollama"),
+"mstate.ondisk": ("Sul disco", "On disk", "En el disco", "Sur le disque", "Auf der Platte"),
+"mstate.partly": ("In parte evaporato", "Partly evaporated", "Evaporado en parte", "Évaporé en partie", "Teilweise verdunstet"),
+"mstate.evaporated": ("Evaporato", "Evaporated", "Evaporado", "Évaporé", "Verdunstet"),
+"safety.safe_format": ("Formato sicuro", "Safe format", "Formato seguro", "Format sûr", "Sicheres Format"),
+"safety.no_code": ("Nessun codice trovato", "No code found", "Sin código", "Aucun code trouvé", "Kein Code gefunden"),
+"safety.suspicious": ("Da controllare", "Check before loading", "Revisar antes de cargar", "À vérifier avant de charger", "Vor dem Laden prüfen"),
+"safety.dangerous": ("Pericoloso", "Dangerous", "Peligroso", "Dangereux", "Gefährlich"),
+"safety.not_a_model": ("Non è un modello", "Not a model", "No es un modelo", "Pas un modèle", "Kein Modell"),
+"safety.pending": ("Da analizzare", "Not checked yet", "Sin revisar", "Pas encore vérifié", "Noch nicht geprüft"),
+"safety_help.safe_format": ("Questo formato contiene solo numeri: caricarlo non può eseguire codice.", "This format holds only numbers: loading it cannot run code.", "Este formato solo contiene números: cargarlo no puede ejecutar código.", "Ce format ne contient que des nombres : le charger ne peut pas exécuter de code.", "Dieses Format enthält nur Zahlen: Beim Laden kann kein Code laufen."),
+"safety_help.no_code": ("File basato su pickle. Marea ne ha letto le istruzioni senza caricarlo: ricostruiscono solo tensori con chiamate standard di PyTorch/NumPy. Se esiste una versione safetensors, preferiscila.", "Pickle-based file. Marea read its instructions without loading it: they only rebuild tensors with standard PyTorch/NumPy calls. If a safetensors version exists, prefer it.", "Archivo basado en pickle. Marea leyó sus instrucciones sin cargarlo: solo reconstruyen tensores con llamadas estándar de PyTorch/NumPy. Si hay una versión safetensors, prefiérela.", "Fichier basé sur pickle. Marea a lu ses instructions sans le charger : elles ne font que reconstruire des tenseurs avec des appels PyTorch/NumPy standard. S'il existe une version safetensors, préférez-la.", "Pickle-basierte Datei. Marea hat ihre Anweisungen gelesen, ohne sie zu laden: Sie bauen nur Tensoren mit Standard-Aufrufen von PyTorch/NumPy auf. Gibt es eine safetensors-Version, nimm lieber diese."),
+"safety_help.suspicious": ("Caricarlo potrebbe eseguire codice che Marea non riconosce (vedi sotto). Caricalo solo se ti fidi della provenienza, oppure usa una versione safetensors o GGUF.", "Loading it may run code Marea doesn't recognise (see below). Load it only if you trust where it came from, or use a safetensors or GGUF version.", "Cargarlo podría ejecutar código que Marea no reconoce (ver abajo). Cárgalo solo si confías en su origen, o usa una versión safetensors o GGUF.", "Le charger pourrait exécuter du code que Marea ne reconnaît pas (voir ci-dessous). Ne le chargez que si vous faites confiance à sa provenance, ou utilisez une version safetensors ou GGUF.", "Beim Laden könnte Code laufen, den Marea nicht kennt (siehe unten). Nur laden, wenn du der Herkunft vertraust, oder eine safetensors- bzw. GGUF-Version nutzen."),
+"safety_help.dangerous": ("Caricarlo eseguirebbe comandi, aprirebbe file o la rete, o valuterebbe codice. Non caricarlo. Finché resta sul disco è innocuo: Marea non carica mai i modelli.", "Loading it would run commands, open files or the network, or evaluate code. Don't load it. While it just sits on disk it is harmless: Marea never loads models.", "Cargarlo ejecutaría comandos, abriría archivos o la red, o evaluaría código. No lo cargues. Mientras esté en el disco es inofensivo: Marea nunca carga modelos.", "Le charger exécuterait des commandes, ouvrirait des fichiers ou le réseau, ou évaluerait du code. Ne le chargez pas. Tant qu'il reste sur le disque, il est inoffensif : Marea ne charge jamais de modèles.", "Beim Laden würden Befehle laufen, Dateien oder das Netzwerk geöffnet oder Code ausgewertet. Nicht laden. Solange sie nur auf der Platte liegt, ist sie harmlos: Marea lädt nie Modelle."),
+"safety_help.not_a_model": ("Non è un file di modello: niente da controllare.", "Not a model file: nothing to check.", "No es un archivo de modelo: nada que revisar.", "Pas un fichier de modèle : rien à vérifier.", "Keine Modelldatei: nichts zu prüfen."),
+"ov.safety_title": ("{0} modelli da controllare prima di caricarli", "{0} models to check before loading", "{0} modelos para revisar antes de cargarlos", "{0} modèles à vérifier avant de les charger", "{0} Modelle vor dem Laden prüfen"),
+"ov.safety_dangerous": ("{0} modelli eseguirebbero codice se caricati", "{0} models would run code if loaded", "{0} modelos ejecutarían código al cargarlos", "{0} modèles exécuteraient du code s'ils étaient chargés", "{0} Modelle würden beim Laden Code ausführen"),
+"ov.safety_text": ("Sul disco sono innocui. Marea li ha letti senza caricarli: guarda cosa contengono prima di usarli.", "On disk they are harmless. Marea read them without loading them: see what they contain before you use them.", "En el disco son inofensivos. Marea los leyó sin cargarlos: mira qué contienen antes de usarlos.", "Sur le disque, ils sont inoffensifs. Marea les a lus sans les charger : voyez ce qu'ils contiennent avant de les utiliser.", "Auf der Platte sind sie harmlos. Marea hat sie gelesen, ohne sie zu laden: Sieh nach, was sie enthalten, bevor du sie nutzt."),
+"ov.safety_title_one": ("1 modello da controllare prima di caricarlo", "1 model to check before loading", "1 modelo para revisar antes de cargarlo", "1 modèle à vérifier avant de le charger", "1 Modell vor dem Laden prüfen"),
+"ov.safety_dangerous_one": ("1 modello eseguirebbe codice se caricato", "1 model would run code if loaded", "1 modelo ejecutaría código al cargarlo", "1 modèle exécuterait du code s'il était chargé", "1 Modell würde beim Laden Code ausführen"),
+"models.attention_one": ("1 da controllare", "1 needs attention", "1 para revisar", "1 à vérifier", "1 zu prüfen"),
+"ov.safety_open": ("Controlla", "Review", "Revisar", "Vérifier", "Prüfen"),
+"cli.models_total": ("{0} modelli, {1}.", "{0} models, {1}.", "{0} modelos, {1}.", "{0} modèles, {1}.", "{0} Modelle, {1}."),
+"cli.not_found": ("Non trovato: {0}", "Not found: {0}", "No encontrado: {0}", "Introuvable : {0}", "Nicht gefunden: {0}"),
+"cli.check_help": ("\nFormato sicuro: non può eseguire codice. Nessun codice trovato: pickle che ricostruisce solo tensori. Da controllare: verifica la provenienza prima di caricarlo. Pericoloso: non caricarlo.\nUscita: 0 ok, 3 da controllare, 4 pericoloso.", "\nSafe format: cannot run code. No code found: pickle that only rebuilds tensors. Check before loading: verify where it came from. Dangerous: do not load it.\nExit code: 0 ok, 3 check before loading, 4 dangerous.", "\nFormato seguro: no puede ejecutar código. Sin código: pickle que solo reconstruye tensores. Revisar: comprueba su origen antes de cargarlo. Peligroso: no lo cargues.\nCódigo de salida: 0 ok, 3 revisar, 4 peligroso.", "\nFormat sûr : ne peut pas exécuter de code. Aucun code trouvé : pickle qui ne reconstruit que des tenseurs. À vérifier : contrôlez sa provenance avant de le charger. Dangereux : ne le chargez pas.\nCode de sortie : 0 ok, 3 à vérifier, 4 dangereux.", "\nSicheres Format: kann keinen Code ausführen. Kein Code gefunden: Pickle, das nur Tensoren aufbaut. Vor dem Laden prüfen: Herkunft kontrollieren. Gefährlich: nicht laden.\nExit-Code: 0 ok, 3 prüfen, 4 gefährlich."),
+"cli.read_only": ("Modalità sola lettura (MAREA_READONLY=1): nessuna modifica.", "Read-only mode (MAREA_READONLY=1): nothing changed.", "Modo solo lectura (MAREA_READONLY=1): sin cambios.", "Mode lecture seule (MAREA_READONLY=1) : rien n'a changé.", "Nur-Lese-Modus (MAREA_READONLY=1): nichts geändert."),
 }
 
 HELP = {
-"it": """marea status                     stato dei dischi e del registro
-mareactl add <cartella>             gestisci una cartella (es. ...\\checkpoints)
-mareactl remove <cartella>          riporta tutto e smetti di gestirla
-mareactl scan                       impronte, fonti (Hugging Face, mirror, ricette), classi
-mareactl free [--gb N|--all] [--instant] --yes   libera spazio in fretta (annullabile)
-mareactl undo                    annulla l'ultima liberazione
-mareactl plan [--gb N]              cosa evaporerebbe la marea (senza toccare nulla)
-mareactl evaporate [--gb N] --yes   evapora secondo il piano
-mareactl restore <file>             riporta subito un file sul disco
-mareactl replicate                  copia i file unici sul mirror (NAS)
-mareactl restore-all --yes          uscita di emergenza: riporta tutto, sgancia tutto
-mareactl journal [n]                ultime attività
-mareactl agent                      servi i file evaporati senza l'app aperta""",
-"en": """marea status                     disk and ledger status
-mareactl add <folder>               manage a folder (e.g. ...\\checkpoints)
-mareactl remove <folder>            bring everything back and stop managing it
-mareactl scan                       fingerprints, sources (Hugging Face, mirror, recipes), classes
-mareactl free [--gb N|--all] [--instant] --yes   free space fast (undoable)
-mareactl undo                    undo the last cleanup
-mareactl plan [--gb N]              what the tide would evaporate (touches nothing)
-mareactl evaporate [--gb N] --yes   evaporate according to the plan
-mareactl restore <file>             bring a file back to disk now
-mareactl replicate                  copy unique files to the mirror (NAS)
-mareactl restore-all --yes          emergency exit: bring everything back, detach everything
-mareactl journal [n]                recent activity
-mareactl agent                      serve evaporated files without the app open""",
-"es": """marea status                     estado de los discos y del registro
-mareactl add <carpeta>              gestionar una carpeta (p. ej. ...\\checkpoints)
-mareactl remove <carpeta>           devolverlo todo y dejar de gestionarla
-mareactl scan                       huellas, fuentes (Hugging Face, espejo, recetas), clases
-mareactl free [--gb N|--all] [--instant] --yes   liberar espacio rápido (se puede deshacer)
-mareactl undo                    deshacer la última liberación
-mareactl plan [--gb N]              qué evaporaría la marea (sin tocar nada)
-mareactl evaporate [--gb N] --yes   evaporar según el plan
-mareactl restore <archivo>          devolver un archivo al disco ahora
-mareactl replicate                  copiar los archivos únicos al espejo (NAS)
-mareactl restore-all --yes          salida de emergencia: devolverlo todo, desvincularlo todo
-mareactl journal [n]                actividad reciente
-mareactl agent                      servir los archivos evaporados sin la app abierta""",
-"fr": """marea status                     état des disques et du registre
-mareactl add <dossier>              gérer un dossier (p. ex. ...\\checkpoints)
-mareactl remove <dossier>           tout ramener et ne plus le gérer
-mareactl scan                       empreintes, sources (Hugging Face, miroir, recettes), classes
-mareactl free [--gb N|--all] [--instant] --yes   libérer de l'espace vite (annulable)
-mareactl undo                    annuler la dernière libération
-mareactl plan [--gb N]              ce que la marée évaporerait (sans rien toucher)
-mareactl evaporate [--gb N] --yes   évaporer selon le plan
-mareactl restore <fichier>          ramener un fichier sur le disque maintenant
-mareactl replicate                  copier les fichiers uniques sur le miroir (NAS)
-mareactl restore-all --yes          sortie de secours : tout ramener, tout détacher
-mareactl journal [n]                activité récente
-mareactl agent                      servir les fichiers évaporés sans l'application ouverte""",
-"de": """marea status                     Status von Laufwerken und Register
-mareactl add <Ordner>               einen Ordner verwalten (z. B. ...\\checkpoints)
-mareactl remove <Ordner>            alles zurückholen und nicht mehr verwalten
-mareactl scan                       Fingerabdrücke, Quellen (Hugging Face, Spiegel, Rezepte), Klassen
-mareactl free [--gb N|--all] [--instant] --yes   schnell Speicher freigeben (rückgängig machbar)
-mareactl undo                    letzte Freigabe rückgängig machen
-mareactl plan [--gb N]              was die Flut verdunsten würde (ändert nichts)
-mareactl evaporate [--gb N] --yes   nach Plan verdunsten
-mareactl restore <Datei>            eine Datei sofort zurückholen
-mareactl replicate                  einzigartige Dateien auf den Spiegel (NAS) kopieren
-mareactl restore-all --yes          Notausgang: alles zurückholen, alles lösen
-mareactl journal [n]                letzte Aktivität
-mareactl agent                      verdunstete Dateien ohne geöffnete App liefern""",
+"it": """mareactl status [--json]                            stato dei dischi e del registro
+mareactl add <cartella>                             gestisci una cartella (es. ...\\checkpoints)
+mareactl remove <cartella>                          riporta tutto e smetti di gestirla
+mareactl scan [--json]                              impronte, fonti, classi, analisi dei modelli
+mareactl models [--json]                            tutti i modelli: formato, precisione, sicurezza
+mareactl check <file|cartella>... [--json]          controlla file o cartelle prima di caricarli (non serve il registro)
+mareactl free [--gb N|--all] [--instant] --yes      libera spazio in fretta (annullabile)
+mareactl undo                                       annulla l'ultima liberazione
+mareactl plan [--gb N] [--json]                     cosa evaporerebbe la marea (senza toccare nulla)
+mareactl evaporate [--gb N] --yes                   evapora secondo il piano
+mareactl restore <file>                             riporta subito un file sul disco
+mareactl replicate                                  copia i file unici sul mirror (NAS)
+mareactl restore-all --yes                          uscita di emergenza: riporta tutto, sgancia tutto
+mareactl journal [n] [--json]                       ultime attività
+mareactl agent                                      servi i file evaporati senza l'app aperta
+
+Opzioni: --json (documento JSON versionato), --yes (conferma le modifiche).
+Ambiente: MAREA_READONLY=1 (rifiuta ogni modifica), MAREA_DATA, MAREA_LANG.
+Uscita: 0 ok, 1 errore, 2 serve conferma, 3 da controllare, 4 pericoloso, 5 sola lettura, 64 uso errato.""",
+"en": """mareactl status [--json]                            disk and ledger status
+mareactl add <folder>                               manage a folder (e.g. ...\\checkpoints)
+mareactl remove <folder>                            bring everything back and stop managing it
+mareactl scan [--json]                              fingerprints, sources, classes, model inspection
+mareactl models [--json]                            every model: format, precision, safety
+mareactl check <file|folder>... [--json]            check files or folders before loading them (no ledger needed)
+mareactl free [--gb N|--all] [--instant] --yes      free space quickly (undoable)
+mareactl undo                                       undo the last cleanup
+mareactl plan [--gb N] [--json]                     what the tide would evaporate (touches nothing)
+mareactl evaporate [--gb N] --yes                   evaporate according to the plan
+mareactl restore <file>                             bring one file back now
+mareactl replicate                                  copy unique files to the mirror (NAS)
+mareactl restore-all --yes                          emergency exit: bring everything back, detach everything
+mareactl journal [n] [--json]                       recent activity
+mareactl agent                                      serve evaporated files without the app open
+
+Options: --json (versioned JSON document), --yes (confirm changes).
+Environment: MAREA_READONLY=1 (refuse every change), MAREA_DATA, MAREA_LANG.
+Exit codes: 0 ok, 1 error, 2 needs confirmation, 3 check before loading, 4 dangerous, 5 read-only, 64 usage.""",
+"es": """mareactl status [--json]                            estado de discos y registro
+mareactl add <carpeta>                              gestionar una carpeta (p. ej. ...\\checkpoints)
+mareactl remove <carpeta>                           traer todo de vuelta y dejar de gestionarla
+mareactl scan [--json]                              huellas, fuentes, clases, análisis de modelos
+mareactl models [--json]                            todos los modelos: formato, precisión, seguridad
+mareactl check <archivo|carpeta>... [--json]        revisar archivos o carpetas antes de cargarlos (sin registro)
+mareactl free [--gb N|--all] [--instant] --yes      liberar espacio rápido (se puede deshacer)
+mareactl undo                                       deshacer la última liberación
+mareactl plan [--gb N] [--json]                     qué evaporaría la marea (no toca nada)
+mareactl evaporate [--gb N] --yes                   evaporar según el plan
+mareactl restore <archivo>                          traer un archivo de vuelta ahora
+mareactl replicate                                  copiar archivos únicos al espejo (NAS)
+mareactl restore-all --yes                          salida de emergencia: traer todo, desconectar todo
+mareactl journal [n] [--json]                       actividad reciente
+mareactl agent                                      servir archivos evaporados sin la app abierta
+
+Opciones: --json (documento JSON versionado), --yes (confirmar cambios).
+Entorno: MAREA_READONLY=1 (rechaza todo cambio), MAREA_DATA, MAREA_LANG.
+Códigos de salida: 0 ok, 1 error, 2 requiere confirmación, 3 revisar, 4 peligroso, 5 solo lectura, 64 uso incorrecto.""",
+"fr": """mareactl status [--json]                            état des disques et du registre
+mareactl add <dossier>                              gérer un dossier (p. ex. ...\\checkpoints)
+mareactl remove <dossier>                           tout ramener et ne plus le gérer
+mareactl scan [--json]                              empreintes, sources, classes, analyse des modèles
+mareactl models [--json]                            tous les modèles : format, précision, sécurité
+mareactl check <fichier|dossier>... [--json]        vérifier des fichiers ou dossiers avant de les charger (sans registre)
+mareactl free [--gb N|--all] [--instant] --yes      libérer de l'espace vite (annulable)
+mareactl undo                                       annuler la dernière libération
+mareactl plan [--gb N] [--json]                     ce que la marée évaporerait (ne touche à rien)
+mareactl evaporate [--gb N] --yes                   évaporer selon le plan
+mareactl restore <fichier>                          ramener un fichier sur le disque maintenant
+mareactl replicate                                  copier les fichiers uniques sur le miroir (NAS)
+mareactl restore-all --yes                          sortie de secours : tout ramener, tout détacher
+mareactl journal [n] [--json]                       activité récente
+mareactl agent                                      servir les fichiers évaporés sans l'application ouverte
+
+Options : --json (document JSON versionné), --yes (confirmer les changements).
+Environnement : MAREA_READONLY=1 (refuse tout changement), MAREA_DATA, MAREA_LANG.
+Codes de sortie : 0 ok, 1 erreur, 2 confirmation requise, 3 à vérifier, 4 dangereux, 5 lecture seule, 64 usage.""",
+"de": """mareactl status [--json]                            Status von Laufwerken und Register
+mareactl add <Ordner>                               einen Ordner verwalten (z. B. ...\\checkpoints)
+mareactl remove <Ordner>                            alles zurückholen und nicht mehr verwalten
+mareactl scan [--json]                              Fingerabdrücke, Quellen, Klassen, Modellprüfung
+mareactl models [--json]                            alle Modelle: Format, Genauigkeit, Sicherheit
+mareactl check <Datei|Ordner>... [--json]           Dateien oder Ordner vor dem Laden prüfen (ohne Register)
+mareactl free [--gb N|--all] [--instant] --yes      schnell Speicher freigeben (rückgängig machbar)
+mareactl undo                                       letzte Freigabe rückgängig machen
+mareactl plan [--gb N] [--json]                     was die Flut verdunsten würde (ändert nichts)
+mareactl evaporate [--gb N] --yes                   nach Plan verdunsten
+mareactl restore <Datei>                            eine Datei sofort zurückholen
+mareactl replicate                                  einzigartige Dateien auf den Spiegel (NAS) kopieren
+mareactl restore-all --yes                          Notausgang: alles zurückholen, alles lösen
+mareactl journal [n] [--json]                       letzte Aktivität
+mareactl agent                                      verdunstete Dateien ohne geöffnete App liefern
+
+Optionen: --json (versioniertes JSON-Dokument), --yes (Änderungen bestätigen).
+Umgebung: MAREA_READONLY=1 (verweigert jede Änderung), MAREA_DATA, MAREA_LANG.
+Exit-Codes: 0 ok, 1 Fehler, 2 Bestätigung nötig, 3 prüfen, 4 gefährlich, 5 nur lesen, 64 falscher Aufruf.""",
 }
 
 if __name__ == "__main__":

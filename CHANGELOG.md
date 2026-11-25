@@ -6,7 +6,29 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-25
+
+### Added
+- **Models page**: files grouped into models (Hugging Face cache repositories, Ollama tags,
+  model folders, sharded checkpoints, single files) with format detected from the bytes, GGUF
+  quantization and architecture, parameter count, safetensors dtype, size and residency.
+- **Load-safety check**, without ever loading a model: pickle-based files (`.ckpt`, `.pt`,
+  `.pth`, `.bin`, `.pkl`) are rated by walking their opcodes (GLOBAL/STACK_GLOBAL with memo
+  resolution); TorchScript archives with code and GGUF chat templates with Jinja sandbox-escape
+  patterns are flagged. Calm verdicts: safe format, no code found, check before loading,
+  dangerous. The overview shows a bar when some models need attention.
+- `mareactl models` and `mareactl check <file|folder>`: the latter works anywhere, without a
+  ledger, and returns exit code 3 (check before loading) or 4 (dangerous).
+- **Agent-ready CLI**: `--json` on `status`, `models`, `plan`, `journal`, `check`, with versioned
+  schemas (`marea.models/1`, …); documented exit codes; `MAREA_READONLY=1` refuses every change
+  (exit 5); untrusted names are stripped of control and bidi characters in text output.
+  Contract in `docs/AGENTS.md`.
+- Ledger table `meta` (model metadata by content hash, survives evaporation). Header reads during
+  a scan are ignored when judging recent use.
+
 ### Changed
+- `mareactl` commands that need `--yes` now exit with code 2 (was 0) and print the hint on
+  stderr; a missing argument exits with 64 instead of a stack trace. `--gb` accepts `1.5` and `1,5`.
 - **New look.** Every screen redesigned on the Windows 11 Fluent style, with
   [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons): icon navigation,
   a hero card with the safely freeable space, a rounded "where every byte would come back from"
@@ -21,6 +43,7 @@ All notable changes to this project are documented here. The format follows
   icon; the toolbar no longer overlaps on narrow windows.
 - Every icon button has an accessible name for screen readers and UI Automation.
 - README: animated tour (light and dark), step-by-step quick start and a screenshot gallery.
+- README and manual: Models and safety, AI agents, user-research roadmap; translations updated.
 
 ## [0.2.1] - 2026-11-25
 

@@ -75,8 +75,12 @@ public sealed class Scanner(Ledger ledger, MareaSettings settings)
         if (rec is not null && rec.Size == fi.Length && rec.MTimeTicks == mtime && rec.Sha256.Length == 64)
         {
             rec.Residency = Residency.Local;
-            rec.LastAccessUtc = ObservedAccess(fi, rec);
+            rec.LastAccessUtc = ObservedAccess(fi, rec, ledger.MetaInspectedUtc(rec.Sha256));
             ledger.Upsert(rec);
+            if (ledger.MetaInspectedUtc(rec.Sha256) is null)
+            {
+                ledger.PutMeta(rec.Sha256, ModelInspector.Inspect(fi.FullName));
+            }
             return false;
         }
         var accessBefore = fi.LastAccessTimeUtc;
@@ -94,16 +98,23 @@ public sealed class Scanner(Ledger ledger, MareaSettings settings)
             Residency = Residency.Local,
             LastAccessUtc = Max(accessBefore, fi.LastWriteTimeUtc),
         });
+        if (ledger.MetaInspectedUtc(sha) is null)
+        {
+            ledger.PutMeta(sha, ModelInspector.Inspect(fi.FullName));
+        }
         return true;
     }
 
-    /// <summary>Access time seen on disk, ignoring the read Marea itself did while hashing.</summary>
-    private static DateTime ObservedAccess(FileInfo fi, FileRecord rec)
+    /// <summary>Access time seen on disk, ignoring the reads Marea itself did while hashing or
+    /// inspecting the header (NTFS may record access times up to an hour late).</summary>
+    private static DateTime ObservedAccess(FileInfo fi, FileRecord rec, DateTime? inspectedUtc)
     {
         var atime = fi.LastAccessTimeUtc;
-        var ourRead = atime >= rec.HashedUtc.AddHours(-1) && atime <= rec.HashedUtc.AddHours(2);
+        var ourRead = Near(atime, rec.HashedUtc) || (inspectedUtc is { } at && Near(atime, at));
         return ourRead ? rec.LastAccessUtc : Max(rec.LastAccessUtc, atime);
     }
+
+    private static bool Near(DateTime atime, DateTime ours) => atime >= ours.AddHours(-1) && atime <= ours.AddHours(2);
 
     private static DateTime Max(DateTime a, DateTime b) => a > b ? a : b;
 

@@ -36,6 +36,11 @@ build/                publish.ps1 (portable), installer.ps1 (MSI).
 | `MareaEngine.cs` | Facade: roots, scan, plan, evaporate, bring back, restore-all, provider role (lock file) |
 | `Loc.cs` + `i18n/*.json` | Localization; persistent texts stored as codes and rendered at display time |
 | `FileSystemFacts.cs`, `ModelFolderFinder.cs` | Folder validation rules, model-folder discovery |
+| `Inspect/ModelInspector.cs` | Identifies a file by its bytes (GGUF, safetensors, PyTorch zip, raw pickle, ONNX) and returns its `ModelMeta` |
+| `Inspect/GgufReader.cs` | Bounded GGUF v2/v3 header reader: architecture, name, quantization, parameter count, chat template |
+| `Inspect/PickleScanner.cs`, `Inspect/ImportRating.cs` | Opcode walk of pickle streams (never unpickled) and the allow/deny lists that rate their imports; Jinja red flags for GGUF templates |
+| `Inspect/ModelCatalog.cs`, `Inspect/OllamaNames.cs` | Groups files into models (HF cache, Ollama tags, model folders, shards, single files) |
+| `LedgerMeta.cs` | Model metadata stored by content hash, versioned by inspector version |
 
 ## Life of a file
 

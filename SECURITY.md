@@ -49,6 +49,8 @@ must never do is lose data. This document lists what can go wrong and what stops
 | Folders | Only user-chosen folders | Rejected: system folders, whole drives, profile roots, network/removable drives, non-NTFS, overlaps, folders owned by OneDrive or other sync engines |
 | Ledger | SQLite in the user profile | WAL journal; append-only activity log |
 | Dependencies | `Microsoft.Data.Sqlite`, `SQLitePCLRaw` (pinned past GHSA-2m69-gcr7-jv3q), `Microsoft.Windows.CsWin32` (build-time only) | `dotnet list package --vulnerable --include-transitive` in CI |
+| Model files | Headers and pickle data of the user's models are parsed (Models page, `mareactl check`) | Never loaded, unpickled or executed. Parsers are bounded (string, count, entry and opcode limits) and fail closed to *check before loading*; a hostile header cannot allocate unbounded memory |
+| CLI used by agents | Commands may be run by AI agents | Changes need `--yes` (exit 2 without it); `MAREA_READONLY=1` refuses every change (exit 5); file and model names are untrusted text: control and bidi characters are stripped in text output, escaped in JSON |
 | Telemetry | None | — |
 | Updates | Notification only | The app never downloads or runs an update; it links to the official releases page |
 | Release integrity | Built by GitHub Actions from the tagged commit | Build-provenance attestation (Sigstore): `gh attestation verify <file> --repo indecenti/marea`, plus `.sha256` files |
@@ -60,6 +62,8 @@ must never do is lose data. This document lists what can go wrong and what stops
   not running" error (0x8007016A) until Marea starts.
 - Opening a placeholder for reading (including an antivirus scan on open) brings
   the whole file back. That is by design: progressive hydration, verified at the end.
+- The load-safety check is static, like picklescan: an obfuscated pickle may evade it.
+  "No code found" means only standard tensor rebuilding was found, not a guarantee.
 - Unsigned builds trigger SmartScreen. See `docs/DISTRIBUTION.md` for signing options.
 
 ## Reporting a vulnerability

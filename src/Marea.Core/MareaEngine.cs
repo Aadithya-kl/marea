@@ -320,6 +320,9 @@ public sealed class MareaEngine : IDisposable
         return null;
     }
 
+    /// <summary>Tracked files grouped into models, with what their headers say (format, precision, safety).</summary>
+    public List<ModelEntry> Models() => ModelCatalog.Build(Ledger.Files(), Ledger.AllMeta()).Where(m => m.IsModel).ToList();
+
     /// <summary>Space status of every volume with managed folders.</summary>
     public List<VolumeStatus> Volumes() => Settings.ManagedRoots
         .Where(Directory.Exists)

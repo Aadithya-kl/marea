@@ -2,7 +2,7 @@
 
 <h1 align="center">Marea</h1>
 
-<p align="center"><b>Your AI models eat your disk. Marea gives the space back — without deleting a byte.</b></p>
+<p align="center"><b>Your AI models eat your disk. Marea gives the space back — without deleting a byte —<br>and tells you which models could run code when you load them.</b></p>
 
 <p align="center">
   <b>English</b> ·
@@ -43,7 +43,7 @@ Your apps never notice.
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/tour-dark.gif">
     <img src="docs/images/tour.gif" width="880" alt="A tour of Marea: welcome, overview, free up space in 3 clicks, undo, files, plan, activity and settings">
   </picture>
-  <br><sub>A 25-second tour. Every screen also comes in light and dark, following Windows or your choice.</sub>
+  <br><sub>A 26-second tour. Every screen also comes in light and dark, following Windows or your choice.</sub>
 </p>
 
 > 📖 **New here?** Read the [user manual](docs/MANUAL.md). **Testing it for us?** Follow the
@@ -52,6 +52,8 @@ Your apps never notice.
 ## Table of contents
 
 - [What's new about it](#whats-new-about-it)
+- [Models and safety](#models-and-safety)
+- [Built for AI agents](#built-for-ai-agents)
 - [How it works](#how-it-works)
 - [Safety model](#safety-model)
 - [Install](#install)
@@ -78,10 +80,60 @@ only what it can bring back. As far as we know, no other tool combines these:
 | Recognises fp32 ↔ bf16 copies of the same model | ✗ | ✗ | **✓ bit-exact recipe** |
 | Matches files against public hubs | ✗ | ✗ | **✓ Hugging Face, pinned to a commit** |
 | Decides *what* to free by cost of return × recency | ✗ | ✗ | **✓ "the tide"** |
+| Inventory of every model: format, quantization, parameters | partly | ✗ | **✓ read from the file's own header** |
+| Tells you if loading a model could run code | ✗ | ✗ | **✓ pickle opcodes + GGUF chat templates, never loaded** |
+| Safe to hand to an AI agent | ✗ | ✗ | **✓ JSON schemas, exit codes, read-only mode** |
 
 Research on model storage (tensor-level dedup, fine-tune deltas, precision pairs) has so far
 targeted the data centres of model hubs. Marea brings the idea to **your own disk**, and adds
 the one missing piece: a reversible way to free the space.
+
+## Models and safety
+
+The **Models** page groups your files into models (Hugging Face cache repositories, Ollama tags,
+model folders, sharded checkpoints, single files) and shows what each one is, read from its own
+header: **format** (GGUF, safetensors, PyTorch, ONNX), **quantization or precision** (`Q4_K_M`,
+`BF16`), **parameters**, size, and whether it is on disk or evaporated.
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/models.png"><img src="docs/images/models.png" width="880" alt="Models: format, precision, parameters, size, state and safety of every model"></picture></p>
+
+It also answers a question that matters more every month: **could loading this model run code?**
+Old checkpoint formats (`.ckpt`, `.pt`, `.pth`, many `.bin`) use Python pickle, and malicious
+pickles have been found on public hubs. Marea reads the pickle's instructions **without running
+them** and rates them calmly:
+
+| Verdict | Meaning |
+|---|---|
+| **Safe format** | safetensors, GGUF, ONNX: numbers only, nothing to run |
+| **No code found** | pickle that only rebuilds tensors with standard PyTorch/NumPy calls |
+| **Check before loading** | unusual imports, embedded TorchScript code, or a GGUF chat template that tries to escape its Jinja sandbox |
+| **Dangerous** | would run commands, open files or the network, or evaluate code |
+
+Nothing is ever loaded or executed, and a risky file on disk is harmless: the verdict is there so
+you (or your agent) decide *before* a program loads it. To check a model you just downloaded,
+before it even lands in a managed folder: `mareactl check <file or folder>`.
+
+## Built for AI agents
+
+More and more disk housekeeping will be done by AI assistants through the command line. `mareactl`
+is built for that, with guard rails a person can trust:
+
+- **Versioned JSON** on every read command (`status`, `models`, `plan`, `journal`, `check`):
+  `--json` returns a document with a `schema` field such as `marea.models/1`.
+- **Meaningful exit codes**: `2` needs confirmation, `3` check before loading, `4` dangerous,
+  `5` read-only refusal.
+- **`MAREA_READONLY=1`** turns every change into a refusal: let an agent look, not touch.
+- **Nothing changes without `--yes`**, every cleanup is undoable, unique files are never touched.
+- **Untrusted text stays data**: file names and model metadata are stripped of control and bidi
+  characters in text output and escaped in JSON.
+
+```powershell
+mareactl check .\downloads
+ew-model.ckpt --json   # exit 4 = don't load it
+$env:MAREA_READONLY = "1"; mareactl models --json  # inventory, no changes possible
+```
+
+The full contract is in [docs/AGENTS.md](docs/AGENTS.md).
 
 ## How it works
 
@@ -214,15 +266,18 @@ verified. Keep Marea running; it offers to start with Windows.
 
 <table>
   <tr>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/models.png"><img src="docs/images/models.png" width="420" alt="Models"></picture><br><b>Models.</b> Format, quantization, parameters and a calm safety verdict for every model.</td>
     <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/files.png"><img src="docs/images/files.png" width="420" alt="Files"></picture><br><b>Files.</b> Every file with its class, state, source and last use. Search and filter by class.</td>
-    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/plan.png"><img src="docs/images/plan.png" width="420" alt="Detailed plan"></picture><br><b>Detailed plan.</b> Every candidate with its verified source and return time.</td>
   </tr>
   <tr>
+    <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/plan.png"><img src="docs/images/plan.png" width="420" alt="Detailed plan"></picture><br><b>Detailed plan.</b> Every candidate with its verified source and return time.</td>
     <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/activity.png"><img src="docs/images/activity.png" width="420" alt="Activity"></picture><br><b>Activity.</b> A journal of everything Marea did. Never erased.</td>
-    <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/settings.png"><img src="docs/images/settings.png" width="420" alt="Settings"></picture><br><b>Settings.</b> Language, light/dark theme, the tide, sources and the emergency exit.</td>
   </tr>
   <tr>
+    <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/settings.png"><img src="docs/images/settings.png" width="420" alt="Settings"></picture><br><b>Settings.</b> Language, light/dark theme, the tide, sources and the emergency exit.</td>
     <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/folders.png"><img src="docs/images/folders.png" width="420" alt="Managed folders"></picture><br><b>Managed folders.</b> Found automatically, added by hand, removed safely.</td>
+  </tr>
+  <tr>
     <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/overview-after.png"><img src="docs/images/overview-after.png" width="420" alt="Overview after a cleanup"></picture><br><b>After a cleanup.</b> What left the disk, and the undo bar for the last batch.</td>
   </tr>
 </table>
@@ -239,7 +294,9 @@ screen readers.
 mareactl status                     disk and ledger status
 mareactl add <folder>               manage a folder (e.g. ...\checkpoints)
 mareactl remove <folder>            bring everything back and stop managing it
-mareactl scan                       fingerprints, sources, classes
+mareactl scan                       fingerprints, sources, classes, model headers
+mareactl models [--json]            every model: format, precision, parameters, safety
+mareactl check <file|folder> [--json]   safety check before loading (no setup needed)
 mareactl plan [--gb N]              what the tide would evaporate (touches nothing)
 mareactl evaporate [--gb N] --yes   evaporate according to the plan
 mareactl free [--gb N|--all] [--instant] --yes   quick cleanup, undoable
@@ -251,7 +308,9 @@ mareactl journal [n]                recent activity
 mareactl agent                      serve evaporated files without the app open
 ```
 
-Environment: `MAREA_DATA` (data folder), `MAREA_LANG` (`en`, `it`, `es`, `fr`, `de`).
+Read commands accept `--json`. Environment: `MAREA_DATA` (data folder), `MAREA_LANG` (`en`, `it`,
+`es`, `fr`, `de`), `MAREA_READONLY=1` (refuse every change). Exit codes and JSON schemas:
+[docs/AGENTS.md](docs/AGENTS.md).
 
 ## FAQ
 
@@ -299,6 +358,12 @@ the folder (portable). Either way every file comes back first.
 - [x] "Free up space in 3 clicks" wizard with instant-only mode and one-click undo
 - [x] Automatic source discovery, Ollama source, update notifications, attested CI releases
 - [x] Fluent design with icons, light and dark theme, accessible controls
+- [x] Models inventory (GGUF, safetensors, PyTorch, Ollama, Hugging Face cache) and load-safety check
+- [x] Agent-ready CLI: versioned JSON, exit codes, read-only mode
+- [ ] Ollama update backups: give the space back without losing the rollback
+- [ ] "Endangered model" watch: warn when a model's public source disappears, and keep it
+- [ ] Cross-app sharing: one copy for ComfyUI, Forge, LM Studio and Ollama, without symlinks
+- [ ] Show the Hugging Face scan result for files that match a public file
 - [ ] Signed releases, MSI installer, winget
 - [ ] Civitai source (by hash)
 - [ ] Predictive high tide: bring models back *before* you need them

@@ -18,6 +18,21 @@ public partial class OverviewView : UserControl, IRefreshable
         Refresh();
     }
 
+    /// <summary>Warns, without alarm, when some models could run code if loaded.</summary>
+    private void ShowSafety(List<ModelEntry> models)
+    {
+        var risky = models.Where(m => m.Safety >= SafetyVerdict.Suspicious).ToList();
+        SafetyBar.Visibility = risky.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        var dangerous = risky.Any(m => m.Safety == SafetyVerdict.Dangerous);
+        var key = dangerous ? "ov.safety_dangerous" : "ov.safety_title";
+        SafetyTitle.Text = Loc.T(risky.Count == 1 ? key + "_one" : key, risky.Count);
+        SafetyIcon.Fill = (Brush)FindResource(dangerous ? "DangerBrush" : "WarningBrush");
+        SafetyBar.BorderBrush = SafetyIcon.Fill;
+    }
+
+    private void OnReviewModels(object sender, RoutedEventArgs e) =>
+        ((MainWindow)Window.GetWindow(this)).Navigate("models");
+
     /// <inheritdoc/>
     public void Refresh()
     {
@@ -30,6 +45,7 @@ public partial class OverviewView : UserControl, IRefreshable
         }
         UpdateBar.Visibility = e.Settings.AvailableUpdate is null ? Visibility.Collapsed : Visibility.Visible;
         UpdateText.Text = Loc.T("upd.title", e.Settings.AvailableUpdate);
+        ShowSafety(e.Models());
 
         VolumesList.ItemsSource = e.Volumes().Select(v => new
         {

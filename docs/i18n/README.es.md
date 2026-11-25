@@ -48,6 +48,29 @@ recuperar cada byte** y solo libera lo que sabe devolver.
 | Compara con hubs públicos | ✗ | ✗ | **✓ Hugging Face, fijado a un commit** |
 | Decide qué liberar por coste de regreso × uso reciente | ✗ | ✗ | **✓ "la marea"** |
 
+## Modelos y seguridad
+
+La página **Modelos** agrupa los archivos en modelos (repositorios de la caché de Hugging Face,
+etiquetas de Ollama, carpetas de modelos, checkpoints en partes, archivos sueltos) y muestra qué es
+cada uno, leído de su propia cabecera: **formato** (GGUF, safetensors, PyTorch, ONNX),
+**cuantización o precisión** (`Q4_K_M`, `BF16`), **parámetros**, tamaño y estado.
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="../images/dark/models.png"><img src="../images/models.png" width="820" alt="Modelos: formato, precisión, parámetros, tamaño, estado y seguridad"></picture></p>
+
+También responde a una pregunta cada vez más importante: **¿cargar este modelo podría ejecutar
+código?** Los formatos antiguos (`.ckpt`, `.pt`, `.pth`, muchos `.bin`) usan pickle de Python. Marea
+lee sus instrucciones **sin ejecutarlas** y da un veredicto sereno: *Formato seguro*, *Sin código*,
+*Revisar antes de cargar* (imports inusuales, código TorchScript, plantillas de chat GGUF que
+intentan salir de su sandbox) o *Peligroso*. Para revisar un modelo recién descargado:
+`mareactl check <archivo o carpeta>`.
+
+## Pensado para agentes de IA
+
+`mareactl` está listo para asistentes de IA: JSON versionado (`--json`), códigos de salida claros
+(`2` requiere confirmación, `3` revisar, `4` peligroso, `5` solo lectura), modo `MAREA_READONLY=1`
+que rechaza todo cambio, y nada cambia sin `--yes`. El contrato completo está en
+[docs/AGENTS.md](../AGENTS.md) (en inglés).
+
 ## Cómo funciona
 
 | Clase | Prueba | Vuelve desde |

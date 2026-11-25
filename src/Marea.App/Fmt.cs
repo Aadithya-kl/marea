@@ -20,6 +20,41 @@ public static class Fmt
             : path;
     }
 
+    /// <summary>A weight count as 7.2 B / 860 M, or a dash when unknown.</summary>
+    public static string Params(long n) => n <= 0 ? "—" : n >= 1_000_000_000 ? $"{n / 1e9:0.#} B" : $"{Math.Max(1, n / 1_000_000):0} M";
+
+    /// <summary>Translation suffix of a safety verdict.</summary>
+    public static string SafetyKey(SafetyVerdict v) => v switch
+    {
+        SafetyVerdict.SafeFormat => "safe_format",
+        SafetyVerdict.NoCodeFound => "no_code",
+        SafetyVerdict.Suspicious => "suspicious",
+        SafetyVerdict.Dangerous => "dangerous",
+        _ => "not_a_model",
+    };
+
+    /// <summary>Label of a safety verdict.</summary>
+    public static string Safety(SafetyVerdict v) => Loc.T("safety." + SafetyKey(v));
+
+    /// <summary>Icon resource key of a safety verdict.</summary>
+    public static string SafetyIcon(SafetyVerdict v) => v switch
+    {
+        SafetyVerdict.SafeFormat or SafetyVerdict.NoCodeFound => "Icon.ShieldOk",
+        SafetyVerdict.Suspicious => "Icon.ShieldQuestion",
+        SafetyVerdict.Dangerous => "Icon.ShieldError",
+        _ => "Icon.Info",
+    };
+
+    /// <summary>Brush resource key of a safety verdict.</summary>
+    public static string SafetyBrush(SafetyVerdict v) => v switch
+    {
+        SafetyVerdict.SafeFormat => "DuplicateBrush",
+        SafetyVerdict.NoCodeFound => "DerivableBrush",
+        SafetyVerdict.Suspicious => "WarningBrush",
+        SafetyVerdict.Dangerous => "DangerBrush",
+        _ => "UniqueBrush",
+    };
+
     /// <summary>Seconds as a short duration.</summary>
     public static string Duration(double s) =>
         double.IsInfinity(s) ? "—" : s < 1 ? Loc.T("dur.instant") : s < 90 ? $"{s:0} s" : s < 5400 ? $"{s / 60:0} min" : $"{s / 3600:0.0} h";

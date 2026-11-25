@@ -4,7 +4,7 @@ namespace Marea.Core;
 
 /// <summary>Durable provenance ledger (SQLite, WAL): files, verified sources, recipes, journal.</summary>
 /// <remarks>Thread-safe: every call opens a pooled connection. Safe across processes (WAL).</remarks>
-public sealed class Ledger
+public sealed partial class Ledger
 {
     private readonly string _cs;
 
@@ -25,6 +25,7 @@ public sealed class Ledger
             CREATE TABLE IF NOT EXISTS recipes(sha TEXT PRIMARY KEY, json TEXT NOT NULL, verified_at INTEGER);
             CREATE TABLE IF NOT EXISTS journal(id INTEGER PRIMARY KEY AUTOINCREMENT, at INTEGER, action TEXT,
               path TEXT, bytes INTEGER, ok INTEGER, detail TEXT);
+            CREATE TABLE IF NOT EXISTS meta(sha TEXT PRIMARY KEY, json TEXT NOT NULL, version INTEGER, at INTEGER);
             """);
         Migrate(c);
     }

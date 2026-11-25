@@ -48,6 +48,29 @@ peut être récupéré** et ne libère que ce qu'elle sait ramener.
 | Compare avec les hubs publics | ✗ | ✗ | **✓ Hugging Face, figé à un commit** |
 | Choisit quoi libérer selon coût du retour × usage récent | ✗ | ✗ | **✓ « la marée »** |
 
+## Modèles et sécurité
+
+La page **Modèles** regroupe les fichiers en modèles (dépôts du cache Hugging Face, tags Ollama,
+dossiers de modèles, checkpoints en plusieurs parties, fichiers isolés) et montre ce qu'est chacun,
+lu dans son propre en-tête : **format** (GGUF, safetensors, PyTorch, ONNX), **quantification ou
+précision** (`Q4_K_M`, `BF16`), **paramètres**, taille et état.
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="../images/dark/models.png"><img src="../images/models.png" width="820" alt="Modèles : format, précision, paramètres, taille, état et sécurité"></picture></p>
+
+Elle répond aussi à une question de plus en plus importante : **charger ce modèle pourrait-il
+exécuter du code ?** Les anciens formats (`.ckpt`, `.pt`, `.pth`, beaucoup de `.bin`) utilisent le
+pickle de Python. Marea lit ses instructions **sans les exécuter** et donne un verdict posé :
+*Format sûr*, *Aucun code trouvé*, *À vérifier avant de charger* (imports inhabituels, code
+TorchScript, modèles de chat GGUF qui tentent de sortir de leur sandbox) ou *Dangereux*. Pour
+vérifier un modèle tout juste téléchargé : `mareactl check <fichier ou dossier>`.
+
+## Conçu pour les agents IA
+
+`mareactl` est prêt pour les assistants IA : JSON versionné (`--json`), codes de sortie clairs
+(`2` confirmation requise, `3` à vérifier, `4` dangereux, `5` lecture seule), mode
+`MAREA_READONLY=1` qui refuse tout changement, et rien ne change sans `--yes`. Le contrat complet est
+dans [docs/AGENTS.md](../AGENTS.md) (en anglais).
+
 ## Comment ça marche
 
 | Classe | Preuve | Revient depuis |

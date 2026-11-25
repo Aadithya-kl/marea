@@ -1,6 +1,6 @@
 # Marea — User manual
 
-Version 0.2 · Windows 10 1809+ / Windows 11 · English
+Version 0.3 · Windows 10 1809+ / Windows 11 · English
 ([Italiano](i18n/README.it.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [Deutsch](i18n/README.de.md))
 
 1. [What Marea does](#1-what-marea-does)
@@ -10,16 +10,17 @@ Version 0.2 · Windows 10 1809+ / Windows 11 · English
 5. [Free up space in 3 clicks](#5-free-up-space-in-3-clicks)
 6. [The detailed plan](#6-the-detailed-plan)
 7. [Files: why a file stays or may leave](#7-files-why-a-file-stays-or-may-leave)
-8. [When a program opens an evaporated file](#8-when-a-program-opens-an-evaporated-file)
-9. [Undo and bring files back](#9-undo-and-bring-files-back)
-10. [Managed folders](#10-managed-folders)
-11. [Settings](#11-settings)
-12. [Sources: Hugging Face, Ollama, your NAS, recipes](#12-sources-hugging-face-ollama-your-nas-recipes)
-13. [Activity journal](#13-activity-journal)
-14. [Command line (mareactl)](#14-command-line-mareactl)
-15. [Uninstall](#15-uninstall)
-16. [Troubleshooting](#16-troubleshooting)
-17. [Glossary](#17-glossary)
+8. [Models: what is on your disk, and is it safe to load?](#8-models-what-is-on-your-disk-and-is-it-safe-to-load)
+9. [When a program opens an evaporated file](#9-when-a-program-opens-an-evaporated-file)
+10. [Undo and bring files back](#10-undo-and-bring-files-back)
+11. [Managed folders](#11-managed-folders)
+12. [Settings](#12-settings)
+13. [Sources: Hugging Face, Ollama, your NAS, recipes](#13-sources-hugging-face-ollama-your-nas-recipes)
+14. [Activity journal](#14-activity-journal)
+15. [Command line (mareactl)](#15-command-line-mareactl)
+16. [Uninstall](#16-uninstall)
+17. [Troubleshooting](#17-troubleshooting)
+18. [Glossary](#18-glossary)
 
 ---
 
@@ -84,7 +85,7 @@ OneDrive or similar services.
 - **Safely freeable now**: how much can leave the disk right now with a verified way back.
 - **Already evaporated** / **Unique: always stays** / **In the ledger**.
 - **Where every byte would come back from**: the split between the four classes (see the
-  [glossary](#17-glossary)).
+  [glossary](#18-glossary)).
 - Buttons:
   - **Free up space in 3 clicks**: the simple guided path (next section);
   - **Free up space…**: the detailed plan, file by file;
@@ -141,7 +142,41 @@ in plain words, why it stays or how it would come back:
 From here you can also **Evaporate…** selected files, **Bring back to disk**, or
 **Replicate to mirror**.
 
-## 8. When a program opens an evaporated file
+## 8. Models: what is on your disk, and is it safe to load?
+
+![Models](images/models.png)
+
+The **Models** page groups your files into models and tells you what each one is, read from its
+own header (Marea never loads a model):
+
+| Column | Where it comes from |
+|---|---|
+| Model | Hugging Face cache repository (`org/name`), Ollama tag (`llama3.2:3b`), model folder (with `config.json` or `model_index.json`), sharded checkpoint, or single file |
+| Format | Detected from the bytes, not the extension: GGUF, safetensors, PyTorch, TorchScript, pickle, ONNX |
+| Precision | GGUF quantization (`Q4_K_M`, `Q8_0`, …) or the dominant tensor type (`BF16`, `F16`, `F32`) |
+| Parameters | Counted from the tensor table (GGUF and safetensors) |
+| State | On disk, partly evaporated, evaporated |
+| Safety | What loading the file could do (below) |
+
+**Safety verdicts.** Old checkpoint formats (`.ckpt`, `.pt`, `.pth`, many `.bin`) use Python
+*pickle*, which can run any code when a program loads the file. Marea reads the pickle's
+instructions without running them and tells you what it found:
+
+| Verdict | Meaning | What to do |
+|---|---|---|
+| **Safe format** | safetensors, GGUF, ONNX: the file holds only numbers | Nothing |
+| **No code found** | Pickle that only rebuilds tensors with standard PyTorch/NumPy calls | Fine; prefer a safetensors version when one exists |
+| **Check before loading** | Imports something unusual, contains TorchScript code, or could not be read fully. Also a GGUF chat template that tries to escape its sandbox | Load it only if you trust where it came from |
+| **Dangerous** | Would run commands, open files or the network, or evaluate code | Don't load it. On disk it is harmless; delete it or keep it for analysis |
+
+When some models need attention, the overview shows a bar with a **Review** button. The check is
+a strong signal, not a proof: like every static scanner it can be fooled by an obfuscated
+payload, so "No code found" means "nothing but standard tensor rebuilding was found".
+
+To check a file **before** you even put it in a managed folder, for example a model you just
+downloaded, use the command line: `mareactl check <file or folder>`.
+
+## 9. When a program opens an evaporated file
 
 Nothing special happens on your side: ComfyUI, Python, Ollama or any other program opens the
 file as usual. Windows asks Marea for the data, and Marea delivers it from the cheapest live
@@ -159,7 +194,7 @@ scratch.
 > If Marea is **not running**, the program gets an error (like OneDrive files when OneDrive is
 > closed). Start Marea and open the file again.
 
-## 9. Undo and bring files back
+## 10. Undo and bring files back
 
 - **Undo this cleanup** (end of the 3-click wizard) or **Undo last cleanup** (overview):
   bring back exactly the files of that cleanup.
@@ -168,7 +203,7 @@ scratch.
   back, becomes an ordinary file again, and the folders are detached from Windows. Marea
   checks free space first, and refuses to detach a folder that still contains evaporated files.
 
-## 10. Managed folders
+## 11. Managed folders
 
 ![Managed folders](images/folders.png)
 
@@ -176,7 +211,7 @@ Marea works **only** inside the folders listed here. *Stop managing* brings ever
 that folder back first, then detaches it. *Find model folders* runs the discovery from the
 first-run guide again.
 
-## 11. Settings
+## 12. Settings
 
 ![Settings](images/settings.png)
 
@@ -195,13 +230,13 @@ Every screenshot in this manual uses the light theme; the dark theme looks like 
 | Download speed for estimates | 50 MB/s | Only used to estimate return times |
 | Mirror folder | — | A NAS or second drive for verified copies of unique files |
 | Hugging Face repositories to compare with | — | Extra repositories that discovery can't guess (one per line) |
-| Find out by itself where models come from | **On** | Discovery from evidence on disk (see §12) |
+| Find out by itself where models come from | **On** | Discovery from evidence on disk (see §13) |
 | Also search Hugging Face by folder name | **Off** | Finds more, but sends folder names to Hugging Face |
 | Use Ollama as a source | On | Only matters if you manage Ollama's `blobs` folder |
 | Start Marea with Windows | asked on first cleanup | Needed for evaporated files to open after a reboot |
 | Tell me when a new version is out | On | Daily check on GitHub; notification only |
 
-## 12. Sources: Hugging Face, Ollama, your NAS, recipes
+## 13. Sources: Hugging Face, Ollama, your NAS, recipes
 
 - **Duplicates** are found by fingerprint across all managed folders.
 - **Recipes**: if a safetensors file can be rebuilt bit-for-bit from other local files (the
@@ -220,7 +255,7 @@ Every screenshot in this manual uses the light theme; the dark theme looks like 
   on your NAS (`marea-store\sha256\…`), verified while copying. Those files become
   re-obtainable from your own network.
 
-## 13. Activity journal
+## 14. Activity journal
 
 ![Activity](images/activity.png)
 
@@ -228,30 +263,35 @@ Everything Marea does is recorded: scans, verified recipes, evaporations, return
 source used), undos and problems (marked ⚠). The journal is never erased and is translated
 into the current language. Run `mareactl journal 50` to copy it into a bug report.
 
-## 14. Command line (mareactl)
+## 15. Command line (mareactl)
 
 `mareactl.exe` sits next to `Marea.exe` and uses the same engine.
 
 ```
-mareactl status                                   disk and ledger status
+mareactl status [--json]                          disk and ledger status
 mareactl add <folder>                             manage a folder
-mareactl scan                                     fingerprints, sources, classes
-mareactl plan [--gb N]                            what would evaporate (touches nothing)
+mareactl scan                                     fingerprints, sources, classes, model headers
+mareactl models [--json]                          every model: format, precision, safety
+mareactl check <file|folder>... [--json]          safety check before loading (no setup needed)
+mareactl plan [--gb N] [--instant] [--json]       what would evaporate (touches nothing)
 mareactl free [--gb N|--all] [--instant] --yes    quick cleanup, undoable
 mareactl undo                                     undo the last cleanup
 mareactl evaporate [<file>] [--gb N] --yes        evaporate per plan, or one file
 mareactl restore <file>                           bring one file back now
 mareactl replicate                                copy unique files to the mirror
 mareactl restore-all --yes                        emergency exit
-mareactl journal [n]                              recent activity
+mareactl journal [n] [--json]                     recent activity
 mareactl agent                                    serve evaporated files without the app
 ```
 
-Every command that changes something shows the plan first and does nothing without `--yes`.
+Every command that changes something shows the plan first and does nothing without `--yes`
+(exit code 2). `--json` prints a versioned JSON document for scripts and AI agents, and
+`MAREA_READONLY=1` refuses every change (exit code 5). The full contract, with exit codes and
+JSON schemas, is in [AGENTS.md](AGENTS.md).
 Environment variables: `MAREA_DATA` (data folder, default `%LOCALAPPDATA%\Marea`) and
 `MAREA_LANG` (`en`, `it`, `es`, `fr`, `de`).
 
-## 15. Uninstall
+## 16. Uninstall
 
 **Portable version:**
 
@@ -263,7 +303,7 @@ Environment variables: `MAREA_DATA` (data folder, default `%LOCALAPPDATA%\Marea`
 > Never delete Marea while files are evaporated. Windows would keep empty placeholders
 > that no program can open until Marea runs again.
 
-## 16. Troubleshooting
+## 17. Troubleshooting
 
 | Symptom | What to do |
 |---|---|
@@ -275,7 +315,7 @@ Environment variables: `MAREA_DATA` (data folder, default `%LOCALAPPDATA%\Marea`
 | The folder I want is refused | System folders, whole drives, network drives and OneDrive folders are refused on purpose; pick a specific subfolder |
 | Something looks wrong | Settings → *Bring everything back and detach*, then open an issue with `mareactl journal 50` |
 
-## 17. Glossary
+## 18. Glossary
 
 | Term | Meaning |
 |---|---|

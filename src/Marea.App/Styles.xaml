@@ -12,6 +12,7 @@
     <SolidColorBrush x:Key="UniqueBrush" Color="#8C96A1" />
     <SolidColorBrush x:Key="EvaporatedBrush" Color="#4FB8D8" />
     <SolidColorBrush x:Key="WarningBrush" Color="#E0A030" />
+    <SolidColorBrush x:Key="DangerBrush" Color="#D9534F" />
     <SolidColorBrush x:Key="SeaBrush" Color="#0E4C5C" />
 
     <!-- Vector icon that takes the colour of the surrounding text. -->
