@@ -40,6 +40,11 @@ public sealed class CloudFilesIntegrationTests : IDisposable
             var read = File.ReadAllBytes(target);
 
             Assert.Equal(data, read);
+            // Windows clears the "recall" attribute shortly after the last range lands.
+            for (var i = 0; i < 50 && Placeholder.GetState(target) != PlaceholderState.Hydrated; i++)
+            {
+                Thread.Sleep(100);
+            }
             Assert.Equal(PlaceholderState.Hydrated, Placeholder.GetState(target));
             Placeholder.Revert(target);
             Assert.Equal(PlaceholderState.NormalFile, Placeholder.GetState(target));

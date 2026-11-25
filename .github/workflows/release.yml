@@ -15,12 +15,16 @@ jobs:
   release:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
-      - name: Tests
-        run: dotnet test tests/Marea.Tests -c Release --filter "Category!=Network"
+      - name: Unit tests
+        run: dotnet test tests/Marea.Tests -c Release --filter "Category!=Network&Category!=CloudFilter"
+      - name: Cloud Files integration tests
+        # Depends on the cloud filter driver of the hosted runner: informative, like in CI.
+        continue-on-error: true
+        run: dotnet test tests/Marea.Tests -c Release --no-build --filter "Category=CloudFilter"
       - name: Publish portable build
         shell: pwsh
         run: ./build/publish.ps1 -Version ("${{ github.ref_name }}".TrimStart("v"))
