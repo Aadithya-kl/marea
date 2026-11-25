@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SignPath artifact configuration for Marea (paste into the SignPath project).
+     The GitHub artifact is the unsigned dist/Marea folder, uploaded as a ZIP by the release
+     workflow. Only Marea's own binaries are signed; the .NET runtime and third-party libraries
+     keep their original signatures. -->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <zip-file>
+    <pe-file-set>
+      <include path="Marea.exe" />
+      <include path="Marea.dll" />
+      <include path="mareactl.exe" />
+      <include path="mareactl.dll" />
+      <include path="Marea.Core.dll" />
+      <include path="Marea.CloudFiles.dll" />
+      <for-each>
+        <authenticode-sign />
+      </for-each>
+    </pe-file-set>
+  </zip-file>
+</artifact-configuration>

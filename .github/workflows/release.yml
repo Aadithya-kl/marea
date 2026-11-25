@@ -1,6 +1,7 @@
 name: Release
 
-# Builds the portable package on GitHub's runners from the tagged commit, attests its build
+# Builds the portable package on GitHub's runners from the tagged commit, signs Marea's own
+# binaries through SignPath when it is configured (see CODE_SIGNING_POLICY.md), attests the build
 # provenance (Sigstore, verifiable with `gh attestation verify`) and publishes a pre-release.
 on:
   push:
@@ -10,6 +11,7 @@ permissions:
   contents: write
   id-token: write
   attestations: write
+  actions: read
 
 jobs:
   release:
@@ -25,9 +27,57 @@ jobs:
         # Depends on the cloud filter driver of the hosted runner: informative, like in CI.
         continue-on-error: true
         run: dotnet test tests/Marea.Tests -c Release --no-build --filter "Category=CloudFilter"
-      - name: Publish portable build
+      - name: Publish (unsigned)
         shell: pwsh
-        run: ./build/publish.ps1 -Version ("${{ github.ref_name }}".TrimStart("v"))
+        run: ./build/publish.ps1 -Version ("${{ github.ref_name }}".TrimStart("v")) -NoPackage
+
+      # --- Code signing (SignPath Foundation). Skipped until the SIGNPATH_API_TOKEN secret and the
+      # SIGNPATH_ORGANIZATION_ID variable exist, so releases keep working before approval.
+      - name: Is code signing configured?
+        id: signing
+        shell: pwsh
+        env:
+          TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+          ORG: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+        run: |
+          $on = -not [string]::IsNullOrEmpty($env:TOKEN) -and -not [string]::IsNullOrEmpty($env:ORG)
+          "enabled=$($on.ToString().ToLower())" >> $env:GITHUB_OUTPUT
+          if (-not $on) { Write-Host "SignPath not configured: this release will not be code-signed." }
+      - name: Upload unsigned build for signing
+        id: unsigned
+        if: steps.signing.outputs.enabled == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: marea-unsigned
+          path: dist/Marea
+          if-no-files-found: error
+      - name: Sign with SignPath (manual approval)
+        if: steps.signing.outputs.enabled == 'true'
+        uses: signpath/github-action-submit-signing-request@a2c5b60d9c75f073142b653c354b632eedce097b # v3.2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG || 'marea' }}
+          signing-policy-slug: ${{ vars.SIGNPATH_POLICY_SLUG || 'release-signing' }}
+          github-artifact-id: ${{ steps.unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 7200
+          output-artifact-directory: dist/signed
+      - name: Use the signed files
+        if: steps.signing.outputs.enabled == 'true'
+        shell: pwsh
+        run: |
+          Copy-Item dist/signed/* dist/Marea -Recurse -Force
+          foreach ($f in "Marea.exe", "mareactl.exe", "Marea.dll", "mareactl.dll", "Marea.Core.dll", "Marea.CloudFiles.dll") {
+            $s = Get-AuthenticodeSignature (Join-Path "dist/Marea" $f)
+            if ($s.Status -ne "Valid") { throw "$f is not validly signed: $($s.Status)" }
+            Write-Host "$f signed by $($s.SignerCertificate.Subject)"
+          }
+      # --- End of code signing.
+
+      - name: Package and checksum
+        shell: pwsh
+        run: ./build/publish.ps1 -Version ("${{ github.ref_name }}".TrimStart("v")) -PackageOnly
       - name: Attest build provenance
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
         with:
@@ -39,6 +89,8 @@ jobs:
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
+          SIGNED: ${{ steps.signing.outputs.enabled }}
         run: |
-          $notes = "Built by GitHub Actions from $env:GITHUB_SHA. Verify: ``gh attestation verify <file> --repo $env:GITHUB_REPOSITORY``. Not code-signed yet: SmartScreen may warn. See CHANGELOG.md."
-          gh release create "${{ github.ref_name }}" dist/*.zip dist/*.sha256 --prerelease --verify-tag --title "Marea ${{ github.ref_name }}" --notes $notes
+          $verify = "Built by GitHub Actions from $env:GITHUB_SHA. Verify: ``gh attestation verify <file> --repo $env:GITHUB_REPOSITORY``. See CHANGELOG.md."
+          $sign = if ($env:SIGNED -eq "true") { "Free code signing provided by SignPath.io, certificate by SignPath Foundation." } else { "Not code-signed yet: SmartScreen may warn." }
+          gh release create "${{ github.ref_name }}" dist/*.zip dist/*.sha256 --prerelease --verify-tag --title "Marea ${{ github.ref_name }}" --notes "$verify $sign"

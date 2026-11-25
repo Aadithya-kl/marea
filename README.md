@@ -407,6 +407,8 @@ the folder (portable). Either way every file comes back first.
 | [User manual](docs/MANUAL.md) | Everyone: install, first run, freeing space, undo, settings, troubleshooting |
 | [Tester guide](docs/TESTING.md) | Early testers: a safe 15-minute checklist and what to report |
 | [Security model](SECURITY.md) | How Marea guarantees it never loses a byte |
+| [Code signing policy](CODE_SIGNING_POLICY.md) | How releases are built and signed, and what Marea sends over the network |
+| [Code signing policy](CODE_SIGNING_POLICY.md) | How releases are built and signed, and what Marea sends over the network |
 | [Architecture](docs/ARCHITECTURE.md) | Contributors: how the engine works |
 | [Distribution](docs/DISTRIBUTION.md) | Maintainers: releases, signing, installer, winget |
 | [Changelog](CHANGELOG.md) | What changed in each version |

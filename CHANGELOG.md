@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Code signing prepared for the SignPath Foundation program: `CODE_SIGNING_POLICY.md` (roles,
+  what is signed, privacy policy), artifact configuration, and release steps that sign Marea's own
+  binaries after manual approval and verify every signature. Skipped until configured.
+- `build/publish.ps1 -NoPackage` / `-PackageOnly`, so signing can happen between build and package.
+
 ### Security
 - GitHub Actions in every workflow are pinned to the exact commit SHA of their release (version kept
   as a comment, still updated weekly by Dependabot), so a changed or hijacked tag cannot reach the

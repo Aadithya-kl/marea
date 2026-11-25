@@ -35,6 +35,40 @@ individual developer in the EU:
 
 EV certificates no longer bypass SmartScreen; reputation grows with downloads.
 
+### SignPath setup (prepared, waiting for approval)
+
+Everything on the repository side is ready: [CODE_SIGNING_POLICY.md](../CODE_SIGNING_POLICY.md),
+[build/signpath/artifact-configuration.xml](../build/signpath/artifact-configuration.xml), and the
+signing steps in [release.yml](../.github/workflows/release.yml), which stay skipped until they are
+configured. The maintainer then:
+
+1. Turns on two-factor authentication on GitHub (Settings → Password and authentication).
+2. Applies at <https://signpath.org/apply> with the repository URL.
+3. After approval, in SignPath: connects GitHub.com as trusted build system, creates the project
+   `marea` with the signing policy `release-signing`, pastes the artifact configuration, and adds
+   themselves as approver.
+4. In GitHub → Settings → Secrets and variables → Actions: secret `SIGNPATH_API_TOKEN`, variable
+   `SIGNPATH_ORGANIZATION_ID` (optionally `SIGNPATH_PROJECT_SLUG`, `SIGNPATH_POLICY_SLUG`).
+5. Pushes a tag. The release job waits (up to 2 hours) for the signing request to be approved in
+   SignPath, checks every signature with `Get-AuthenticodeSignature`, then packages and publishes.
+
+### SignPath setup (prepared, waiting for approval)
+
+Everything on the repository side is ready: [CODE_SIGNING_POLICY.md](../CODE_SIGNING_POLICY.md),
+[build/signpath/artifact-configuration.xml](../build/signpath/artifact-configuration.xml), and the
+signing steps in [release.yml](../.github/workflows/release.yml), which stay skipped until they are
+configured. The maintainer then:
+
+1. Turns on two-factor authentication on GitHub (Settings → Password and authentication).
+2. Applies at <https://signpath.org/apply> with the repository URL (the text is in the launch kit).
+3. After approval, in SignPath: connects GitHub.com as trusted build system, creates the project
+   `marea` with the signing policy `release-signing`, pastes the artifact configuration, and adds
+   themselves as approver.
+4. In GitHub → Settings → Secrets and variables → Actions: secret `SIGNPATH_API_TOKEN`, variable
+   `SIGNPATH_ORGANIZATION_ID` (optionally `SIGNPATH_PROJECT_SLUG`, `SIGNPATH_POLICY_SLUG`).
+5. Pushes a tag. The release job waits (up to 2 hours) for the signing request to be approved in
+   SignPath, checks every signature with `Get-AuthenticodeSignature`, then packages and publishes.
+
 ## winget
 
 Manifest schema 1.12.0; a per-user MSI is accepted (`Scope: user`). Templates live in
