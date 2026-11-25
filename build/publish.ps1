@@ -17,7 +17,7 @@ if ($LASTEXITCODE -ne 0) { throw "app publish failed" }
 dotnet publish (Join-Path $root "src\Marea.Cli\Marea.Cli.csproj") @common
 if ($LASTEXITCODE -ne 0) { throw "mareactl publish failed" }
 
-Copy-Item (Join-Path $root "README.md"), (Join-Path $root "SECURITY.md") $out
+Copy-Item (Join-Path $root "README.md"), (Join-Path $root "SECURITY.md"), (Join-Path $root "LICENSE"), (Join-Path $root "THIRD-PARTY-NOTICES.md") $out
 $zip = Join-Path $dist "Marea-$Version-win-x64-portable.zip"
 if (Test-Path $zip) { Remove-Item $zip }
 Compress-Archive -Path "$out\*" -DestinationPath $zip

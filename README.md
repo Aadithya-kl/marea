@@ -38,7 +38,13 @@ its name and size, but takes **0 bytes** on disk. When any program opens it, Com
 Python or anything else, Marea brings it back on the fly and **verifies its SHA-256**.
 Your apps never notice.
 
-<p align="center"><img src="docs/images/overview.png" width="880" alt="Marea overview: free space, what can leave safely, where every byte would come back from"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/tour-dark.gif">
+    <img src="docs/images/tour.gif" width="880" alt="A tour of Marea: welcome, overview, free up space in 3 clicks, undo, files, plan, activity and settings">
+  </picture>
+  <br><sub>A 25-second tour. Every screen also comes in light and dark, following Windows or your choice.</sub>
+</p>
 
 > 📖 **New here?** Read the [user manual](docs/MANUAL.md). **Testing it for us?** Follow the
 > [tester guide](docs/TESTING.md): 15 minutes, safe, every step undoable.
@@ -50,6 +56,7 @@ Your apps never notice.
 - [Safety model](#safety-model)
 - [Install](#install)
 - [Quick start](#quick-start)
+- [Screenshots](#screenshots)
 - [Command line](#command-line)
 - [FAQ](#faq)
 - [Roadmap](#roadmap)
@@ -117,7 +124,7 @@ Under the hood Marea uses the **Windows Cloud Files API**, the same mechanism as
 "online-only" files. Each file's own provenance plays the part of the cloud. No admin rights,
 no kernel driver of its own, no background service.
 
-<p align="center"><img src="docs/images/files.png" width="880" alt="Every file with its class, state and source"></p>
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/files.png"><img src="docs/images/files.png" width="880" alt="Every file with its class, state and source"></picture></p>
 
 ## Safety model
 
@@ -170,20 +177,59 @@ with the first signed release.
 
 ## Quick start
 
-1. **First run**: a short guide explains what Marea does and never does, then finds your
-   model folders automatically (`checkpoints`, `models`, `hub`, …). Untick any you don't want
-   managed.
-2. **Scan**: Marea fingerprints the files and looks for sources. This step only measures.
-3. **Free up space in 3 clicks**: choose *how much* (10 GB, 50 GB, up to your target, or
-   everything that is safe) and *how files must come back* (instant only, meaning duplicates and
-   recipes that return offline in seconds, or also from your NAS / the internet), then press
-   **Free up now**. A single **Undo this cleanup** button brings back exactly that batch. Power
-   users can open the detailed plan instead and pick files one by one.
+Five minutes from download to free space. Nothing changes on disk until step 4.
 
-   <p align="center"><img src="docs/images/quick-free.png" width="560" alt="Free up space in 3 clicks"></p>
+**1. Meet Marea.** The first run explains in three points what Marea does and never does.
 
-4. **Forget about it**: when a program opens an evaporated file, it comes back by itself.
-   Keep Marea running (it offers to start with Windows).
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/welcome.png"><img src="docs/images/welcome.png" width="620" alt="Welcome screen: three things to know before starting"></picture></p>
+
+**2. Pick your model folders.** Marea finds them by itself (`checkpoints`, `models`, `hub`,
+`.ollama\models`, …) and shows how many GB each holds. Untick any you don't want managed; you
+can add or remove folders later under *Managed folders*.
+
+**3. Scan.** Marea fingerprints every file (SHA-256 plus tensor headers) and looks for a source
+for each one. This step only measures. The overview then shows how much can leave the disk
+**safely right now**, and where every byte would come back from.
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/overview.png"><img src="docs/images/overview.png" width="820" alt="Overview: freeable space, drive status and where every byte would come back from"></picture></p>
+
+**4. Free up space in 3 clicks.** Choose *how much* (10 GB, 50 GB, up to your target, or
+everything that is safe) and *how files must come back*: **instant only** (duplicates and
+recipes, back offline in seconds) or **also from your NAS / the internet**. Press
+**Free up now**.
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/quick-free.png"><img src="docs/images/quick-free.png" width="560" alt="Free up space in 3 clicks: how much, how it comes back, go"></picture></p>
+
+**5. Changed your mind?** **Undo this cleanup** brings back exactly that batch, in one click.
+Otherwise just keep working: when a program opens an evaporated file it comes back by itself,
+verified. Keep Marea running; it offers to start with Windows.
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/quick-free-done.png"><img src="docs/images/quick-free-done.png" width="560" alt="Done: space freed, with a one-click undo"></picture></p>
+
+> **Power users:** *Choose files…* opens the detailed plan, where you can see each file's
+> source and return time and pick files one by one. The *Files* page lets you evaporate,
+> bring back or replicate to your NAS any single file.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/files.png"><img src="docs/images/files.png" width="420" alt="Files"></picture><br><b>Files.</b> Every file with its class, state, source and last use. Search and filter by class.</td>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/plan.png"><img src="docs/images/plan.png" width="420" alt="Detailed plan"></picture><br><b>Detailed plan.</b> Every candidate with its verified source and return time.</td>
+  </tr>
+  <tr>
+    <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/activity.png"><img src="docs/images/activity.png" width="420" alt="Activity"></picture><br><b>Activity.</b> A journal of everything Marea did. Never erased.</td>
+    <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/settings.png"><img src="docs/images/settings.png" width="420" alt="Settings"></picture><br><b>Settings.</b> Language, light/dark theme, the tide, sources and the emergency exit.</td>
+  </tr>
+  <tr>
+    <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/folders.png"><img src="docs/images/folders.png" width="420" alt="Managed folders"></picture><br><b>Managed folders.</b> Found automatically, added by hand, removed safely.</td>
+    <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/overview-after.png"><img src="docs/images/overview-after.png" width="420" alt="Overview after a cleanup"></picture><br><b>After a cleanup.</b> What left the disk, and the undo bar for the last batch.</td>
+  </tr>
+</table>
+
+The app speaks English, Italiano, Español, Français and Deutsch, follows the Windows light or
+dark theme (or the one you pick in *Settings*), and every control has an accessible name for
+screen readers.
 
 ## Command line
 
@@ -252,6 +298,7 @@ the folder (portable). Either way every file comes back first.
 - [x] Tide planner, desktop app, `mareactl`, 5 languages, portable build
 - [x] "Free up space in 3 clicks" wizard with instant-only mode and one-click undo
 - [x] Automatic source discovery, Ollama source, update notifications, attested CI releases
+- [x] Fluent design with icons, light and dark theme, accessible controls
 - [ ] Signed releases, MSI installer, winget
 - [ ] Civitai source (by hash)
 - [ ] Predictive high tide: bring models back *before* you need them
@@ -292,3 +339,6 @@ issues privately (see [SECURITY.md](SECURITY.md)).
 ## License
 
 [MIT](LICENSE) © Marea contributors
+
+Icons: [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons)
+© Microsoft Corporation, MIT license. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

@@ -26,6 +26,11 @@ public partial class SettingsView : UserControl, IRefreshable
             .Concat(Loc.Languages.Select(l => new LangItem(l.Code, l.Name))).ToList();
         LanguageBox.ItemsSource = langs;
         LanguageBox.SelectedItem = langs.FirstOrDefault(l => l.Code == s.Language) ?? langs[0];
+        var themes = new[] { "system", "light", "dark" }.Select(t => new LangItem(t, Loc.T("set.theme_" + t))).ToList();
+        _loading = true;
+        ThemeBox.ItemsSource = themes;
+        ThemeBox.SelectedItem = themes.FirstOrDefault(t => t.Code == s.Theme) ?? themes[0];
+        _loading = false;
         AutoTide.IsChecked = s.AutoTide;
         Target.Text = s.FreeSpaceTargetGb.ToString(CultureInfo.CurrentCulture);
         Idle.Text = s.MinIdleDays.ToString(CultureInfo.CurrentCulture);
@@ -85,6 +90,7 @@ public partial class SettingsView : UserControl, IRefreshable
         s.HubNameSearch = NameSearch.IsChecked == true;
         s.OllamaSource = Ollama.IsChecked == true;
         s.CheckForUpdates = Updates.IsChecked == true;
+        s.Theme = ((LangItem)ThemeBox.SelectedItem).Code;
         StartupRegistration.Set(s.StartWithWindows);
         App.Engine.SaveSettings();
         if (langChanged)
@@ -94,6 +100,17 @@ public partial class SettingsView : UserControl, IRefreshable
             return;
         }
         SavedText.Text = Loc.T("set.saved");
+    }
+
+    private bool _loading;
+
+    /// <summary>Applies the chosen theme immediately (saved with the other settings).</summary>
+    private void OnThemePreview(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_loading && ThemeBox.SelectedItem is LangItem t)
+        {
+            App.ApplyTheme(t.Code);
+        }
     }
 
     private void OnOpenReleases(object sender, RoutedEventArgs e) =>

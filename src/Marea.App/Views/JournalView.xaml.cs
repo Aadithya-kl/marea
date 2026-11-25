@@ -1,4 +1,5 @@
 using System.Windows.Controls;
+using System.Windows.Media;
 using Marea.Core;
 
 namespace Marea.App.Views;
@@ -17,6 +18,8 @@ public partial class JournalView : UserControl, IRefreshable
     public void Refresh() =>
         Grid.ItemsSource = App.Engine.Ledger.Journal(1000).Select(j => new
         {
+            Icon = (Geometry)FindResource(Fmt.JournalIcon(j).Icon),
+            Brush = (Brush)FindResource(Fmt.JournalIcon(j).Brush),
             When = j.AtUtc.ToLocalTime().ToString("g"),
             Action = (j.Ok ? "" : "⚠ ") + Loc.Render(j.Action),
             File = Fmt.ShortPath(j.Path),

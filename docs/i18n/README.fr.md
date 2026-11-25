@@ -31,7 +31,7 @@ Marea n'efface rien : elle **fait s'évaporer**. Chaque fichier reste dans son d
 nom et sa taille, mais occupe **0 octet**. Quand un programme l'ouvre, Marea le ramène à la
 volée et **vérifie son SHA-256**. Vos applications ne remarquent rien.
 
-<p align="center"><img src="../images/overview.png" width="880" alt="Vue d'ensemble de Marea"></p>
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="../images/tour-dark.gif"><img src="../images/tour.gif" width="880" alt="Vue d'ensemble de Marea"></picture></p>
 
 ## Ce qui est nouveau
 

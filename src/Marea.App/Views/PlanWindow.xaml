@@ -10,27 +10,38 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <StackPanel>
-            <TextBlock Text="{l:T plan.title}" Style="{StaticResource PageTitle}" />
-            <TextBlock Text="{l:T plan.subtitle}" Style="{StaticResource PageSubtitle}" />
-        </StackPanel>
-        <DataGrid x:Name="Grid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True"
-                  HeadersVisibility="Column" GridLinesVisibility="None" SelectionMode="Extended">
+        <DockPanel Margin="0,0,0,16">
+            <Border DockPanel.Dock="Left" Width="48" Height="48" CornerRadius="24" Background="{StaticResource SeaAccentBrush}" Margin="0,0,16,0" VerticalAlignment="Top">
+                <Path Data="{StaticResource Icon.Broom}" Style="{StaticResource Ico}" Width="24" Height="24" Fill="White" />
+            </Border>
+            <StackPanel>
+                <TextBlock Text="{l:T plan.title}" Style="{StaticResource PageTitle}" FontSize="24" />
+                <TextBlock Text="{l:T plan.subtitle}" Style="{StaticResource Caption}" FontSize="13" />
+            </StackPanel>
+        </DockPanel>
+        <DataGrid x:Name="Grid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" RowHeight="36"
+                  HeadersVisibility="Column" GridLinesVisibility="None" SelectionMode="Extended" BorderThickness="0">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="{l:T col.name}" Binding="{Binding Name}" Width="2*" />
-                <DataGridTextColumn Header="{l:T col.folder}" Binding="{Binding Folder}" Width="2*" />
-                <DataGridTextColumn Header="{l:T col.size}" Binding="{Binding Size}" Width="120" />
-                <DataGridTextColumn Header="{l:T col.class}" Binding="{Binding Class}" Width="110" />
-                <DataGridTextColumn Header="{l:T col.return}" Binding="{Binding Return}" Width="100" />
-                <DataGridTextColumn Header="{l:T col.source}" Binding="{Binding Source}" Width="3*" />
+                <DataGridTextColumn Header="{l:T col.name}" Binding="{Binding Name}" Width="2*" ElementStyle="{StaticResource CellText}" />
+                <DataGridTextColumn Header="{l:T col.folder}" Binding="{Binding Folder}" Width="2*" ElementStyle="{StaticResource CellText}" />
+                <DataGridTextColumn Header="{l:T col.size}" Binding="{Binding Size}" Width="120" ElementStyle="{StaticResource CellText}" />
+                <DataGridTextColumn Header="{l:T col.class}" Binding="{Binding Class}" Width="110" ElementStyle="{StaticResource CellText}" />
+                <DataGridTextColumn Header="{l:T col.return}" Binding="{Binding Return}" Width="100" ElementStyle="{StaticResource CellText}" />
+                <DataGridTextColumn Header="{l:T col.source}" Binding="{Binding Source}" Width="3*" ElementStyle="{StaticResource CellText}" />
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel Grid.Row="2" Margin="0,16,0,0">
             <TextBlock x:Name="TotalText" FontSize="16" FontWeight="SemiBold" />
             <CheckBox x:Name="Understand" Content="{l:T plan.understand}" Margin="0,10,0,0" Checked="OnUnderstand" Unchecked="OnUnderstand" />
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
-                <Button Content="{l:T op.cancel}" IsCancel="True" Width="120" Margin="0,0,10,0" />
-                <Button x:Name="GoButton" Style="{StaticResource AccentButtonStyle}" Content="{l:T plan.go}" Width="160" IsEnabled="False" Click="OnGo" />
+                <Button Content="{l:T op.cancel}" IsCancel="True" Width="120" Margin="0,0,10,0" Padding="0,8" />
+                <Button x:Name="GoButton" Style="{StaticResource AccentButtonStyle}" Width="170" IsEnabled="False" Click="OnGo" Padding="0,8"
+                        AutomationProperties.Name="{l:T plan.go}">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource Icon.CloudUp}" Style="{StaticResource Ico}" Margin="0,0,8,0" />
+                        <TextBlock Text="{l:T plan.go}" FontWeight="SemiBold" />
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </StackPanel>
     </Grid>

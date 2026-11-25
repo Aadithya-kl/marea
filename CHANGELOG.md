@@ -4,6 +4,24 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+- **New look.** Every screen redesigned on the Windows 11 Fluent style, with
+  [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons): icon navigation,
+  a hero card with the safely freeable space, a rounded "where every byte would come back from"
+  bar with a two-column legend, icon cards for the 3-click wizard choices, coloured class dots
+  and state icons in the file list, icons in the activity journal, grouped settings.
+- **Light and dark theme**: follows Windows by default, or pick one in *Settings → General*;
+  it switches immediately.
+- Sizes below 1 GB are shown in MB instead of "0,0 GB".
+- Managed folders and first-run candidates show the user profile as `~`, so the account name
+  doesn't appear on screen or in screenshots.
+- File list: search by name or folder, an empty-state message, a detail card with the class
+  icon; the toolbar no longer overlaps on narrow windows.
+- Every icon button has an accessible name for screen readers and UI Automation.
+- README: animated tour (light and dark), step-by-step quick start and a screenshot gallery.
+
 ## [0.2.1] - 2026-11-25
 
 ### Added

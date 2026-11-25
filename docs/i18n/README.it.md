@@ -32,7 +32,7 @@ cartella, con il suo nome e la sua dimensione, ma occupa **0 byte** sul disco. Q
 programma lo apre (ComfyUI, Python, qualunque cosa), Marea lo riporta al volo e **ne verifica
 lo SHA-256**. Le tue app non se ne accorgono.
 
-<p align="center"><img src="../images/overview.png" width="880" alt="Panoramica di Marea"></p>
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="../images/tour-dark.gif"><img src="../images/tour.gif" width="880" alt="Panoramica di Marea"></picture></p>
 
 ## Cosa c'è di nuovo
 

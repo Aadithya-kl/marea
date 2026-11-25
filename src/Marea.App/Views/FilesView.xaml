@@ -13,37 +13,113 @@
             <TextBlock Text="{l:T files.title}" Style="{StaticResource PageTitle}" />
             <TextBlock Text="{l:T files.subtitle}" Style="{StaticResource PageSubtitle}" />
         </StackPanel>
-        <DockPanel Grid.Row="1" Margin="0,0,0,10">
+
+        <!-- Toolbar: search, filter, actions -->
+        <DockPanel Grid.Row="1" Margin="0,0,0,12">
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                <Button x:Name="EvaporateButton" Content="{l:T files.evaporate}" Click="OnEvaporate" Margin="0,0,8,0" />
-                <Button x:Name="BackButton" Content="{l:T files.bring_back}" Click="OnBringBack" Margin="0,0,8,0" />
-                <Button x:Name="ReplicateButton" Content="{l:T files.replicate}" Click="OnReplicate" />
+                <Button x:Name="EvaporateButton" Click="OnEvaporate" Margin="0,0,8,0" Padding="12,6" AutomationProperties.Name="{l:T files.evaporate}">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource Icon.CloudUp}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                        <TextBlock Text="{l:T files.evaporate}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="BackButton" Click="OnBringBack" Margin="0,0,8,0" Padding="12,6" AutomationProperties.Name="{l:T files.bring_back}">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource Icon.CloudDown}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                        <TextBlock Text="{l:T files.bring_back}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="ReplicateButton" Click="OnReplicate" Padding="12,6" AutomationProperties.Name="{l:T files.replicate}">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource Icon.Server}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                        <TextBlock Text="{l:T files.replicate}" />
+                    </StackPanel>
+                </Button>
             </StackPanel>
-            <ComboBox x:Name="Filter" Width="200" HorizontalAlignment="Left" SelectionChanged="OnFilter" />
+            <ComboBox x:Name="Filter" DockPanel.Dock="Right" Width="170" Margin="0,0,12,0" SelectionChanged="OnFilter"
+                      AutomationProperties.Name="{l:T col.class}" />
+            <Grid MinWidth="160" Margin="0,0,8,0">
+                <TextBox x:Name="Search" Padding="30,6,8,6" TextChanged="OnSearch" VerticalContentAlignment="Center"
+                         AutomationProperties.Name="{l:T files.search}" />
+                <Path Data="{StaticResource Icon.Search}" Style="{StaticResource Ico}" Width="14" Height="14"
+                      HorizontalAlignment="Left" Margin="10,0,0,0" IsHitTestVisible="False" Opacity="0.7" />
+                <TextBlock x:Name="SearchHint" Text="{l:T files.search}" Style="{StaticResource Caption}" FontSize="13"
+                           Margin="31,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False" />
+            </Grid>
         </DockPanel>
-        <DataGrid x:Name="Grid" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True"
-                  HeadersVisibility="Column" GridLinesVisibility="None" SelectionMode="Extended"
-                  SelectionChanged="OnSelection">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="{l:T col.name}" Binding="{Binding Name}" Width="2*" />
-                <DataGridTextColumn Header="{l:T col.folder}" Binding="{Binding Folder}" Width="2*">
-                    <DataGridTextColumn.CellStyle>
-                        <Style TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
-                            <Setter Property="ToolTip" Value="{Binding File.Path}" />
-                        </Style>
-                    </DataGridTextColumn.CellStyle>
-                </DataGridTextColumn>
-                <DataGridTextColumn Header="{l:T col.size}" Binding="{Binding Size}" Width="120" SortMemberPath="Bytes" />
-                <DataGridTextColumn Header="{l:T col.class}" Binding="{Binding Class}" Width="105" />
-                <DataGridTextColumn Header="{l:T col.state}" Binding="{Binding State}" Width="100" />
-                <DataGridTextColumn Header="{l:T col.last_use}" Binding="{Binding LastUse}" Width="110" />
-            </DataGrid.Columns>
-        </DataGrid>
+
+        <Grid Grid.Row="2">
+            <DataGrid x:Name="Grid" AutoGenerateColumns="False" IsReadOnly="True" RowHeight="40"
+                      HeadersVisibility="Column" GridLinesVisibility="None" SelectionMode="Extended"
+                      SelectionChanged="OnSelection" BorderThickness="0">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="{l:T col.name}" Width="2*" SortMemberPath="Name">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="6,0">
+                                    <Path Data="{Binding StateIcon}" Style="{StaticResource Ico}" Fill="{Binding StateBrush}" Margin="0,0,10,0" />
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="{l:T col.folder}" Binding="{Binding Folder}" Width="2*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                <Setter Property="ToolTip" Value="{Binding Folder}" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="{l:T col.size}" Binding="{Binding Size}" Width="110" SortMemberPath="Bytes">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Header="{l:T col.class}" Width="140" SortMemberPath="Class">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Ellipse Style="{StaticResource Dot}" Fill="{Binding ClassBrush}" />
+                                    <TextBlock Text="{Binding Class}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="{l:T col.state}" Binding="{Binding State}" Width="110">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="{l:T col.last_use}" Binding="{Binding LastUse}" Width="120">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock x:Name="EmptyText" Text="{l:T files.empty}" Style="{StaticResource Caption}" FontSize="14"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" />
+        </Grid>
+
+        <!-- Detail of the selected file -->
         <Border Grid.Row="3" Style="{StaticResource Card}" Margin="0,12,0,0">
-            <StackPanel>
-                <TextBlock x:Name="DetailTitle" Style="{StaticResource SectionTitle}" Margin="0,0,0,4" />
-                <TextBlock x:Name="DetailText" TextWrapping="Wrap" />
-            </StackPanel>
+            <DockPanel>
+                <Border x:Name="DetailBadge" DockPanel.Dock="Left" Width="40" Height="40" CornerRadius="20" Margin="0,0,14,0" VerticalAlignment="Top">
+                    <Path x:Name="DetailIcon" Style="{StaticResource Ico}" Width="20" Height="20" Fill="White" />
+                </Border>
+                <StackPanel>
+                    <TextBlock x:Name="DetailTitle" Style="{StaticResource SectionTitle}" Margin="0,0,0,4" />
+                    <TextBlock x:Name="DetailText" TextWrapping="Wrap" LineHeight="20" />
+                </StackPanel>
+            </DockPanel>
         </Border>
     </Grid>
 </UserControl>

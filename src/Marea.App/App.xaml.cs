@@ -38,6 +38,7 @@ public partial class App : Application
         }
         Engine = new MareaEngine(Environment.GetEnvironmentVariable("MAREA_DATA"));
         Loc.SetLanguage(Engine.Settings.Language);
+        ApplyTheme(Engine.Settings.Theme);
         ProviderElsewhere = !Engine.StartProvider();
         Engine.Hydration.Progress += OnHydration;
         CreateTray();
@@ -76,6 +77,15 @@ public partial class App : Application
         }
         w.Activate();
     }
+
+    /// <summary>Switches between the system, light and dark Fluent themes at runtime.</summary>
+    public static void ApplyTheme(string theme) =>
+        Current.ThemeMode = theme switch
+        {
+            "light" => ThemeMode.Light,
+            "dark" => ThemeMode.Dark,
+            _ => ThemeMode.System,
+        };
 
     /// <summary>Rebuilds the main window and tray menu after a language change.</summary>
     public void ReopenMainWindow()

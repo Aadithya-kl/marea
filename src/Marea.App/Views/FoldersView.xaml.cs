@@ -26,6 +26,8 @@ public partial class FoldersView : UserControl, IRefreshable
             return new
             {
                 Path = r,
+                Display = Fmt.HomePath(r),
+                Name = System.IO.Path.GetFileName(r.TrimEnd(System.IO.Path.DirectorySeparatorChar)) is { Length: > 0 } n ? n : r,
                 Summary = Loc.T("folders.summary", inRoot.Count, Fmt.Gb(inRoot.Sum(f => f.Size)), Fmt.Gb(gone)),
             };
         }).ToList();

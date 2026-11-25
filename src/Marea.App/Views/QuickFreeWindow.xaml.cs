@@ -143,6 +143,8 @@ public partial class QuickFreeWindow : Window
         DoneTitle.Text = Loc.T("qf.undoing");
         var problem = await Task.Run(() => App.Engine.UndoBatchAsync(_batch!));
         DoneTitle.Text = problem is null ? Loc.T("qf.undone") : problem;
+        DoneIcon.Data = (System.Windows.Media.Geometry)FindResource(problem is null ? "Icon.Undo" : "Icon.Warning");
+        DoneBadge.Background = (System.Windows.Media.Brush)FindResource(problem is null ? "SeaAccentBrush" : "WarningBrush");
         DoneText.Text = "";
         DoneKept.Text = "";
         App.Current.UpdateTrayText();

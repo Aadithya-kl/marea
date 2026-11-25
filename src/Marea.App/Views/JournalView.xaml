@@ -11,14 +11,21 @@
             <TextBlock Text="{l:T journal.title}" Style="{StaticResource PageTitle}" />
             <TextBlock Text="{l:T journal.subtitle}" Style="{StaticResource PageSubtitle}" />
         </StackPanel>
-        <DataGrid x:Name="Grid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True"
-                  HeadersVisibility="Column" GridLinesVisibility="None">
+        <DataGrid x:Name="Grid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" RowHeight="34"
+                  HeadersVisibility="Column" GridLinesVisibility="None" BorderThickness="0">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="{l:T col.when}" Binding="{Binding When}" Width="130" />
-                <DataGridTextColumn Header="{l:T col.action}" Binding="{Binding Action}" Width="190" />
-                <DataGridTextColumn Header="{l:T col.file}" Binding="{Binding File}" Width="2*" />
-                <DataGridTextColumn Header="{l:T col.size}" Binding="{Binding Size}" Width="90" />
-                <DataGridTextColumn Header="{l:T col.detail}" Binding="{Binding Detail}" Width="3*" />
+                <DataGridTemplateColumn Width="40">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Path Data="{Binding Icon}" Style="{StaticResource Ico}" Fill="{Binding Brush}" HorizontalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="{l:T col.when}" Binding="{Binding When}" Width="140" ElementStyle="{StaticResource CellText}" />
+                <DataGridTextColumn Header="{l:T col.action}" Binding="{Binding Action}" Width="190" ElementStyle="{StaticResource CellText}" />
+                <DataGridTextColumn Header="{l:T col.file}" Binding="{Binding File}" Width="2*" ElementStyle="{StaticResource CellText}" />
+                <DataGridTextColumn Header="{l:T col.size}" Binding="{Binding Size}" Width="90" ElementStyle="{StaticResource CellText}" />
+                <DataGridTextColumn Header="{l:T col.detail}" Binding="{Binding Detail}" Width="3*" ElementStyle="{StaticResource CellText}" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

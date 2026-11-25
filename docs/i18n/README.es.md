@@ -31,7 +31,7 @@ Marea no borra nada de eso: lo **evapora**. Cada archivo se queda en su carpeta,
 y su tamaño, pero ocupa **0 bytes** en el disco. Cuando un programa lo abre, Marea lo devuelve
 al instante y **verifica su SHA-256**. Tus aplicaciones no lo notan.
 
-<p align="center"><img src="../images/overview.png" width="880" alt="Resumen de Marea"></p>
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="../images/tour-dark.gif"><img src="../images/tour.gif" width="880" alt="Resumen de Marea"></picture></p>
 
 ## Qué tiene de nuevo
 

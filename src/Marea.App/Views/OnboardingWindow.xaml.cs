@@ -17,6 +17,9 @@ public partial class OnboardingWindow : Window
 
         /// <summary>Folder path.</summary>
         public required string Path { get; init; }
+
+        /// <summary>Path as shown, with the user profile shortened to "~".</summary>
+        public string Display => Fmt.HomePath(Path);
         /// <summary>Size and count summary.</summary>
         public required string Summary { get; init; }
 
@@ -40,6 +43,7 @@ public partial class OnboardingWindow : Window
         InitializeComponent();
         _findOnly = findOnly;
         Found.ItemsSource = _candidates;
+        StepText.Text = Loc.T("ob.step", 1, 2);
         if (findOnly)
         {
             ShowFolders();
@@ -62,6 +66,7 @@ public partial class OnboardingWindow : Window
         Step1.Visibility = Visibility.Visible;
         BackButton.Visibility = Visibility.Collapsed;
         NextButton.Content = Loc.T("ob.next");
+        StepText.Text = Loc.T("ob.step", 1, 2);
     }
 
     private async void ShowFolders()
@@ -70,6 +75,7 @@ public partial class OnboardingWindow : Window
         Step2.Visibility = Visibility.Visible;
         BackButton.Visibility = _findOnly ? Visibility.Collapsed : Visibility.Visible;
         NextButton.Content = Loc.T(_findOnly ? "ob.add_selected" : "ob.finish");
+        StepText.Text = _findOnly ? "" : Loc.T("ob.step", 2, 2);
         if (_candidates.Count > 0)
         {
             return;

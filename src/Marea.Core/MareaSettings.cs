@@ -55,6 +55,9 @@ public sealed class MareaSettings
     /// <summary>UI language code (it, en, es, fr, de) or "auto" to follow Windows.</summary>
     public string Language { get; set; } = "auto";
 
+    /// <summary>Colour theme: "system", "light" or "dark".</summary>
+    public string Theme { get; set; } = "system";
+
     /// <summary>True once the first-run guide has been completed.</summary>
     public bool OnboardingDone { get; set; }
 

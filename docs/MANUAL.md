@@ -180,9 +180,14 @@ first-run guide again.
 
 ![Settings](images/settings.png)
 
+Every screenshot in this manual uses the light theme; the dark theme looks like this:
+
+![Settings, dark theme](images/dark/settings.png)
+
 | Setting | Default | Meaning |
 |---|---|---|
 | Language | Automatic | English, Italiano, Español, Français, Deutsch |
+| Theme | Follow Windows | Light, dark, or the Windows setting. Changes as soon as you pick it |
 | Automatic tide | **Off** | Every 10 minutes, if free space is below the target, evaporate the cheapest files |
 | Free space to keep | 100 GB | The tide target |
 | Never evaporate files used in the last | 7 days | Protects files you're working with |

@@ -31,7 +31,7 @@ Marea löscht nichts davon, sondern lässt es **verdunsten**. Jede Datei bleibt 
 Größe in ihrem Ordner, belegt aber **0 Byte**. Öffnet ein Programm sie, holt Marea sie sofort
 zurück und **prüft ihren SHA-256**. Deine Apps merken nichts.
 
-<p align="center"><img src="../images/overview.png" width="880" alt="Marea-Übersicht"></p>
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="../images/tour-dark.gif"><img src="../images/tour.gif" width="880" alt="Marea-Übersicht"></picture></p>
 
 ## Was daran neu ist
 

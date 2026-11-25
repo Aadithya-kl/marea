@@ -5,8 +5,20 @@ namespace Marea.App;
 /// <summary>Formatting shared by the views, in the current language.</summary>
 public static class Fmt
 {
-    /// <summary>Bytes as GB with one decimal.</summary>
-    public static string Gb(long bytes) => $"{bytes / (double)(1L << 30):N1} GB";
+    /// <summary>Bytes as a short size: MB below 1 GB, otherwise GB with one decimal.</summary>
+    public static string Gb(long bytes) =>
+        bytes == 0 ? "0 GB" : bytes < 1L << 30 ? $"{Math.Max(1, bytes >> 20):N0} MB" : $"{bytes / (double)(1L << 30):N1} GB";
+
+    /// <summary>A folder path for display, with the user profile shortened to "~" so screens and
+    /// screenshots don't show the account name. Other paths are returned unchanged.</summary>
+    public static string HomePath(string path)
+    {
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).TrimEnd('\\');
+        return home.Length > 0 && path.StartsWith(home, StringComparison.OrdinalIgnoreCase)
+               && (path.Length == home.Length || path[home.Length] == '\\')
+            ? "~" + path[home.Length..]
+            : path;
+    }
 
     /// <summary>Seconds as a short duration.</summary>
     public static string Duration(double s) =>
@@ -31,6 +43,28 @@ public static class Fmt
              : d.TotalDays < 2 ? Loc.T("ago.yesterday")
              : Loc.T("ago.days", Math.Floor(d.TotalDays));
     }
+
+    /// <summary>Icon resource key for a recoverability class.</summary>
+    public static string ClassIcon(Recoverability c) => c switch
+    {
+        Recoverability.Duplicate => "Icon.Copy",
+        Recoverability.Derivable => "Icon.Formula",
+        Recoverability.Reobtainable => "Icon.CloudDown",
+        _ => "Icon.Lock",
+    };
+
+    /// <summary>Icon and brush resource keys for a journal line.</summary>
+    public static (string Icon, string Brush) JournalIcon(JournalEntry j) => j switch
+    {
+        { Ok: false } => ("Icon.Warning", "WarningBrush"),
+        { Action: "j.evaporated" } => ("Icon.CloudUp", "EvaporatedBrush"),
+        { Action: "j.returned_verified" or "j.brought_back" or "j.batch_undone" or "j.restore_all" } => ("Icon.CloudDown", "DuplicateBrush"),
+        { Action: "j.recipe_verified" } => ("Icon.Formula", "DerivableBrush"),
+        { Action: "j.kept" } => ("Icon.Shield", "UniqueBrush"),
+        { Action: "j.root_added" or "j.root_removed" } => ("Icon.Folder", "UniqueBrush"),
+        { Action: "j.replicated" } => ("Icon.Server", "ReobtainableBrush"),
+        _ => ("Icon.Info", "UniqueBrush"),
+    };
 
     /// <summary>A path shown relative to its managed folder ("models\sub\file"), so the UI and
     /// screenshots don't expose the user profile path. Paths outside managed folders are unchanged.</summary>

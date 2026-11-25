@@ -62,7 +62,8 @@ public partial class MainWindow : Window
     private void UpdateProviderBadge()
     {
         var ok = App.Engine.IsProvider;
-        ProviderDot.Fill = ok ? (Brush)FindResource("DuplicateBrush") : (Brush)FindResource("ReobtainableBrush");
+        ProviderBadge.Background = ok ? (Brush)FindResource("DuplicateBrush") : (Brush)FindResource("WarningBrush");
+        ProviderIcon.Data = (Geometry)FindResource(ok ? "Icon.Shield" : "Icon.Warning");
         ProviderText.Text = ok ? Loc.T("prov.active") : Loc.T("prov.elsewhere");
         ProviderDetail.Text = ok ? Loc.T("prov.active_detail") : Loc.T("prov.elsewhere_detail");
     }
