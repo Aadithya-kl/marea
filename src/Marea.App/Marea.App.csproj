@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Marea.exe: desktop app (WPF, system Fluent theme) with a tray icon. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>Marea</AssemblyName>
+    <ApplicationIcon>Assets\marea.ico</ApplicationIcon>
+    <NoWarn>$(NoWarn);WPF0001</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- WinForms is used only for the tray icon: no ambiguous global usings. -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+    <Using Include="System.IO" />
+    <Using Include="System.Net.Http" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\marea.png" />
+    <Resource Include="Assets\marea.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Marea.Core\Marea.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,59 @@
+<!--
+  Marea - per-user MSI installer (no administrator rights), WiX Toolset v7.
+
+  Uninstall safety: before removing any file it runs "mareactl restore-all --yes --uninstall",
+  which brings every evaporated file back, turns it into an ordinary file, detaches the folders
+  from Windows and removes the start-with-Windows entry. If the command fails (non-zero exit
+  code) the uninstall stops and rolls back: the user's files are never stranded.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+  <Package Name="Marea"
+           Manufacturer="Marea"
+           Version="$(var.Version)"
+           Scope="perUser"
+           UpgradeCode="FA33DA71-F43F-42EC-B476-6A6B8EC1193D"
+           Compressed="yes">
+
+    <MajorUpgrade DowngradeErrorMessage="!(loc.Downgrade)" />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+    <Icon Id="MareaIcon" SourceFile="..\src\Marea.App\Assets\marea.ico" />
+    <Property Id="ARPPRODUCTICON" Value="MareaIcon" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsDir" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="Marea" />
+      </Directory>
+    </StandardDirectory>
+
+    <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
+      <Files Include="..\dist\Marea\**" />
+    </ComponentGroup>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Component Id="StartMenuShortcut">
+        <Shortcut Id="MareaShortcut" Name="Marea" Description="!(loc.ShortcutDescription)"
+                  Target="[INSTALLFOLDER]Marea.exe" WorkingDirectory="INSTALLFOLDER" Icon="MareaIcon" />
+        <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\Marea" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
+    <Feature Id="Main" Title="Marea">
+      <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="StartMenuShortcut" />
+    </Feature>
+
+    <!-- Bring everything back BEFORE removing files; if it fails, the uninstall is rolled back. -->
+    <SetProperty Id="MareaRestoreAll" Sequence="execute" Before="MareaRestoreAll"
+                 Value="&quot;[INSTALLFOLDER]mareactl.exe&quot; restore-all --yes --uninstall"
+                 Condition="REMOVE~=&quot;ALL&quot; AND NOT UPGRADINGPRODUCTCODE" />
+    <CustomAction Id="MareaRestoreAll" BinaryRef="Wix4UtilCA_X64" DllEntry="WixQuietExec"
+                  Execute="deferred" Impersonate="yes" Return="check" />
+    <InstallExecuteSequence>
+      <Custom Action="MareaRestoreAll" Before="RemoveFiles"
+              Condition="REMOVE~=&quot;ALL&quot; AND NOT UPGRADINGPRODUCTCODE" />
+    </InstallExecuteSequence>
+  </Package>
+</Wix>

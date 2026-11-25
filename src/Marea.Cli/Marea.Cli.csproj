@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <!-- mareactl.exe: command line on the same engine as the app. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>mareactl</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Marea.Core\Marea.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Marea engine: provenance ledger, sources, safety rules, tide policy. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0" />
+    <!-- Native SQLite pinned past GHSA-2m69-gcr7-jv3q (2.1.11 is vulnerable). -->
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.14" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Marea.CloudFiles\Marea.CloudFiles.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Marea.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Translations: one file per language, English as fallback. -->
+    <EmbeddedResource Include="i18n\*.json" LogicalName="Marea.Core.i18n.%(Filename).json" />
+  </ItemGroup>
+</Project>

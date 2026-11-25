@@ -1,0 +1,102 @@
+<p align="center"><img src="../../src/Marea.App/Assets/marea.png" width="104" alt="Logo de Marea"></p>
+
+<h1 align="center">Marea</h1>
+
+<p align="center"><b>Tus modelos de IA se comen tu disco. Marea te devuelve el espacio, sin borrar un solo byte.</b></p>
+
+<p align="center">
+  <a href="../../README.md">English</a> ·
+  <a href="README.it.md">Italiano</a> ·
+  <b>Español</b> ·
+  <a href="README.fr.md">Français</a> ·
+  <a href="README.de.md">Deutsch</a>
+</p>
+
+---
+
+La IA local pesa. Checkpoints de Hugging Face, modelos de ComfyUI, LoRA, archivos GGUF, el
+mismo modelo en fp32 **y** en bf16, el mismo codificador de texto de 3 GB copiado en cuatro
+aplicaciones… Un disco de 1 TB se llena en semanas.
+
+En una estación de trabajo real, Marea analizó **125 GB de modelos** y encontró **71 GB que
+podían salir del disco sin ningún riesgo**:
+
+- 18 GB de duplicados idénticos byte a byte;
+- 44 GB idénticos a archivos públicos de Hugging Face;
+- 9 GB de pesos bf16 que se recalculan **bit a bit** desde sus originales fp32.
+
+Marea no borra nada de eso: lo **evapora**. Cada archivo se queda en su carpeta, con su nombre
+y su tamaño, pero ocupa **0 bytes** en el disco. Cuando un programa lo abre, Marea lo devuelve
+al instante y **verifica su SHA-256**. Tus aplicaciones no lo notan.
+
+<p align="center"><img src="../images/overview.png" width="880" alt="Resumen de Marea"></p>
+
+## Qué tiene de nuevo
+
+Los limpiadores adivinan por el nombre de las carpetas y preguntan *"¿lo borro?"*. Los
+deduplicadores solo ven archivos idénticos byte a byte. Marea **demuestra de dónde se puede
+recuperar cada byte** y solo libera lo que sabe devolver.
+
+| | Limpiadores | Deduplicadores / enlaces duros | **Marea** |
+|---|---|---|---|
+| Sabe de dónde recuperar un archivo | ✗ | ✗ | **✓ prueba criptográfica (SHA-256)** |
+| Libera espacio sin borrar | ✗ | en parte | **✓ marcadores de 0 bytes** |
+| Devuelve los archivos solo al abrirlos | ✗ | — | **✓ transparente y verificado** |
+| Reconoce copias fp32 ↔ bf16 del mismo modelo | ✗ | ✗ | **✓ receta exacta al bit** |
+| Compara con hubs públicos | ✗ | ✗ | **✓ Hugging Face, fijado a un commit** |
+| Decide qué liberar por coste de regreso × uso reciente | ✗ | ✗ | **✓ "la marea"** |
+
+## Cómo funciona
+
+| Clase | Prueba | Vuelve desde |
+|---|---|---|
+| **Duplicado** | mismo SHA-256 que otro archivo del disco | esa copia local, en segundos |
+| **Derivable** | se reconstruye desde otros archivos locales (p. ej. bf16 desde fp32), probado con la huella de la reconstrucción completa | un recálculo |
+| **Recuperable** | mismo SHA-256 que un archivo público de Hugging Face fijado a un commit, o una copia verificada en el NAS | descarga / red local |
+| **Único** | sin fuente conocida | **nunca se evapora**: replícalo antes en el NAS |
+
+**La marea** mantiene un umbral de espacio libre (100 GB por defecto) y ordena los candidatos
+por *coste esperado* = probabilidad de necesitarlo pronto × segundos para recuperarlo ÷ GB
+liberados. El modo automático está **desactivado por defecto**.
+
+Marea usa la **API Cloud Files de Windows**, la misma de los archivos "solo en línea" de
+OneDrive, con la procedencia de cada archivo en lugar de la nube. Sin permisos de
+administrador, sin controlador propio y sin servicio en segundo plano.
+
+## Seguridad
+
+1. **Nada sale sin una vía de regreso independiente y verificada** que siga existiendo después.
+2. **Prueba en el último momento**: acceso exclusivo, nueva huella de cada byte, la fuente debe
+   responder *ahora*.
+3. **Cada byte que vuelve se verifica de nuevo.**
+4. **Una carpeta nunca se desvincula mientras contenga marcadores**, porque Windows los borraría.
+5. **Tú decides**: el primer escaneo solo mide. "Devolverlo todo" es un clic, y el desinstalador
+   lo ejecuta antes de quitar nada.
+6. **Red mínima**: solo HTTPS hacia Hugging Face, sin telemetría.
+
+Detalles: [SECURITY.md](../../SECURITY.md).
+
+## Instalación
+
+> **Versión preliminar.** Las compilaciones aún no están firmadas: SmartScreen puede avisar en
+> la primera ejecución. Verifica la descarga con el archivo `.sha256`.
+
+1. Descarga `Marea-<versión>-win-x64-portable.zip` desde [Releases](https://github.com/indecenti/marea/releases).
+2. Descomprímelo y ejecuta **`Marea.exe`** (incluye .NET).
+3. Antes de borrar la carpeta: *Ajustes → Devolver todo y desvincular*.
+
+Requisitos: Windows 10 1809+ o Windows 11, x64, NTFS.
+
+## Preguntas frecuentes
+
+**¿Y si Marea no está activa cuando un programa abre un archivo evaporado?** El programa recibe
+un error, como con OneDrive cerrado. Inicia Marea y vuelve a funcionar.
+
+**¿Puedo perder un archivo?** Marea está diseñada para impedirlo: solo evapora archivos con una
+fuente verificada que sobrevive y verifica de nuevo al volver.
+
+**¿Necesita internet?** Solo para los archivos cuya fuente es Hugging Face.
+
+## Contribuir · Licencia
+
+Lee [CONTRIBUTING.md](../../CONTRIBUTING.md). Licencia [MIT](../../LICENSE) © Marea contributors.

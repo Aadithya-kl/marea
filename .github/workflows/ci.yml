@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore (fails on known vulnerable dependencies)
+        run: dotnet restore
+      - name: Build
+        run: dotnet build -c Release --no-restore
+      - name: Unit tests
+        run: dotnet test tests/Marea.Tests -c Release --no-build --filter "Category!=Network&Category!=CloudFilter"
+      - name: Cloud Files integration tests
+        # The Windows cloud filter driver may be unavailable on hosted runners: informative only.
+        continue-on-error: true
+        run: dotnet test tests/Marea.Tests -c Release --no-build --filter "Category=CloudFilter"
+      - name: Vulnerability audit
+        run: dotnet list package --vulnerable --include-transitive
+
+  package:
+    needs: build-and-test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Publish portable build
+        shell: pwsh
+        run: ./build/publish.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: marea-portable
+          path: |
+            dist/*.zip
+            dist/*.sha256

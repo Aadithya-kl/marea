@@ -1,0 +1,24 @@
+# Build output
+bin/
+obj/
+dist/
+publish/
+*.msi
+*.wixpdb
+
+# IDE / tooling
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+.config/
+TestResults/
+*.trx
+coverage*/
+
+# Local data and secrets never belong here
+*.db
+*.db-wal
+*.db-shm
+.env

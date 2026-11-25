@@ -1,0 +1,14 @@
+PackageIdentifier: Marea.Marea
+PackageVersion: 0.1.0
+PackageLocale: en-US
+Publisher: Marea
+PackageName: Marea
+License: REPLACE-ME
+ShortDescription: Frees disk space taken by AI models without losing a byte - files evaporate and come back on read, verified by SHA-256.
+Tags:
+  - disk-space
+  - ai-models
+  - huggingface
+  - cleanup
+ManifestType: defaultLocale
+ManifestVersion: 1.12.0

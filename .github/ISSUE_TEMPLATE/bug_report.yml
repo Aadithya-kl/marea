@@ -1,0 +1,34 @@
+name: Bug report
+description: Something did not work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **If a file did not come back**, first try *Settings → Bring everything back*
+        (or `mareactl restore-all --yes`) and include the output of `mareactl journal 50`.
+        Please remove any personal paths you do not want to share.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Steps to reproduce, what you expected and what you saw.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Marea version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      placeholder: "Windows 11 25H2"
+  - type: textarea
+    id: journal
+    attributes:
+      label: Activity journal (mareactl journal 50)
+      render: text

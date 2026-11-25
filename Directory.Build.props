@@ -1,0 +1,21 @@
+<Project>
+  <!-- Settings shared by every Marea project. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <Company>Marea</Company>
+    <Product>Marea</Product>
+    <Version>0.1.0</Version>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <!-- Supply-chain safety: the build fails if any dependency (direct or transitive) has a known vulnerability. -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
+    <WarningsAsErrors>$(WarningsAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsAsErrors>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+</Project>
