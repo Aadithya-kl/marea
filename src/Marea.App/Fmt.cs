@@ -93,7 +93,7 @@ public static class Fmt
     {
         { Ok: false } => ("Icon.Warning", "WarningBrush"),
         { Action: "j.evaporated" } => ("Icon.CloudUp", "EvaporatedBrush"),
-        { Action: "j.returned_verified" or "j.brought_back" or "j.batch_undone" or "j.restore_all" } => ("Icon.CloudDown", "DuplicateBrush"),
+        { Action: "j.returned_verified" or "j.brought_back" or "j.batch_undone" or "j.restore_all" or "j.rescued" } => ("Icon.CloudDown", "DuplicateBrush"),
         { Action: "j.recipe_verified" } => ("Icon.Formula", "DerivableBrush"),
         { Action: "j.kept" } => ("Icon.Shield", "UniqueBrush"),
         { Action: "j.root_added" or "j.root_removed" } => ("Icon.Folder", "UniqueBrush"),

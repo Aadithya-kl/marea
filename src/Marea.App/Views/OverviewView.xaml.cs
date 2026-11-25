@@ -30,6 +30,19 @@ public partial class OverviewView : UserControl, IRefreshable
         SafetyBar.BorderBrush = SafetyIcon.Fill;
     }
 
+    /// <summary>Shows how many files depend only on public sources that are disappearing or gone.</summary>
+    private void ShowRisks(List<WatchFinding> risks)
+    {
+        RiskBar.Visibility = risks.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        var lost = risks.Count(r => r.Action == WatchAction.Lost);
+        var key = lost > 0 ? "ov.risk_lost" : "ov.risk_title";
+        var n = lost > 0 ? lost : risks.Count;
+        RiskTitle.Text = Loc.T(n == 1 ? key + "_one" : key, n);
+        RiskIcon.Fill = (Brush)FindResource(lost > 0 ? "DangerBrush" : "WarningBrush");
+        RiskIcon.Data = (Geometry)FindResource(lost > 0 ? "Icon.ShieldError" : "Icon.Warning");
+        RiskBar.BorderBrush = RiskIcon.Fill;
+    }
+
     private void OnReviewModels(object sender, RoutedEventArgs e) =>
         ((MainWindow)Window.GetWindow(this)).Navigate("models");
 
@@ -46,6 +59,7 @@ public partial class OverviewView : UserControl, IRefreshable
         UpdateBar.Visibility = e.Settings.AvailableUpdate is null ? Visibility.Collapsed : Visibility.Visible;
         UpdateText.Text = Loc.T("upd.title", e.Settings.AvailableUpdate);
         ShowSafety(e.Models());
+        ShowRisks(e.SourceRisks());
 
         VolumesList.ItemsSource = e.Volumes().Select(v => new
         {

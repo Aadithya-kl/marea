@@ -43,7 +43,7 @@ Your apps never notice.
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/tour-dark.gif">
     <img src="docs/images/tour.gif" width="880" alt="A tour of Marea: welcome, overview, free up space in 3 clicks, undo, files, plan, activity and settings">
   </picture>
-  <br><sub>A 26-second tour. Every screen also comes in light and dark, following Windows or your choice.</sub>
+  <br><sub>A 29-second tour. Every screen also comes in light and dark, following Windows or your choice.</sub>
 </p>
 
 > 📖 **New here?** Read the [user manual](docs/MANUAL.md). **Testing it for us?** Follow the
@@ -53,6 +53,7 @@ Your apps never notice.
 
 - [What's new about it](#whats-new-about-it)
 - [Models and safety](#models-and-safety)
+- [Endangered models](#endangered-models)
 - [Built for AI agents](#built-for-ai-agents)
 - [How it works](#how-it-works)
 - [Safety model](#safety-model)
@@ -83,6 +84,7 @@ only what it can bring back. As far as we know, no other tool combines these:
 | Inventory of every model: format, quantization, parameters | partly | ✗ | **✓ read from the file's own header** |
 | Tells you if loading a model could run code | ✗ | ✗ | **✓ pickle opcodes + GGUF chat templates, never loaded** |
 | Safe to hand to an AI agent | ✗ | ✗ | **✓ JSON schemas, exit codes, read-only mode** |
+| Notices when a model is disappearing from its hub, and rescues it | ✗ | ✗ | **✓ daily source watch** |
 
 Research on model storage (tensor-level dedup, fine-tune deltas, precision pairs) has so far
 targeted the data centres of model hubs. Marea brings the idea to **your own disk**, and adds
@@ -113,12 +115,38 @@ Nothing is ever loaded or executed, and a risky file on disk is harmless: the ve
 you (or your agent) decide *before* a program loads it. To check a model you just downloaded,
 before it even lands in a managed folder: `mareactl check <file or folder>`.
 
+## Endangered models
+
+Models disappear: repositories get deleted, made private or gated, files are removed in a new
+revision, Ollama tags are withdrawn. For a file Marea has evaporated, its public source *is* the way
+back, so Marea watches those sources **every day** and looks for the early signs, while the pinned
+bytes are still served:
+
+| Signal | What Marea does |
+|---|---|
+| File removed from the repository's latest revision (old revisions can be squashed away) | **At risk** |
+| Repository became gated, private or disabled | **At risk** |
+| Ollama tag removed from the registry | **At risk** |
+| The pinned file or blob is no longer served | **Gone** |
+| Network error, timeout | Nothing: no conclusion is drawn from a failed check |
+
+When a source is at risk, evaporated files that depend only on it are **brought back automatically
+while it still answers**, files on disk are **never freed again** (the gate treats the source as
+unreliable), and if they may now be the last copy they are **copied to your NAS mirror**. You get a
+notification, a bar on the overview, and the details on the Models page.
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/models-risk.png"><img src="docs/images/models-risk.png" width="880" alt="A model whose public source removed it upstream: Marea keeps it and offers to copy it to the mirror"></picture></p>
+
+```powershell
+mareactl watch --json      # exit 3 = models at risk, 4 = a file can no longer come back
+```
+
 ## Built for AI agents
 
 More and more disk housekeeping will be done by AI assistants through the command line. `mareactl`
 is built for that, with guard rails a person can trust:
 
-- **Versioned JSON** on every read command (`status`, `models`, `plan`, `journal`, `check`):
+- **Versioned JSON** on every read command (`status`, `models`, `plan`, `journal`, `check`, `watch`):
   `--json` returns a document with a `schema` field such as `marea.models/1`.
 - **Meaningful exit codes**: `2` needs confirmation, `3` check before loading, `4` dangerous,
   `5` read-only refusal.
@@ -297,6 +325,7 @@ mareactl remove <folder>            bring everything back and stop managing it
 mareactl scan                       fingerprints, sources, classes, model headers
 mareactl models [--json]            every model: format, precision, parameters, safety
 mareactl check <file|folder> [--json]   safety check before loading (no setup needed)
+mareactl watch [--no-rescue] [--json]   check public sources, rescue models at risk
 mareactl plan [--gb N]              what the tide would evaporate (touches nothing)
 mareactl evaporate [--gb N] --yes   evaporate according to the plan
 mareactl free [--gb N|--all] [--instant] --yes   quick cleanup, undoable
@@ -361,7 +390,7 @@ the folder (portable). Either way every file comes back first.
 - [x] Models inventory (GGUF, safetensors, PyTorch, Ollama, Hugging Face cache) and load-safety check
 - [x] Agent-ready CLI: versioned JSON, exit codes, read-only mode
 - [ ] Ollama update backups: give the space back without losing the rollback
-- [ ] "Endangered model" watch: warn when a model's public source disappears, and keep it
+- [x] Endangered-model watch: early warnings, automatic rescue, last copies protected
 - [ ] Cross-app sharing: one copy for ComfyUI, Forge, LM Studio and Ollama, without symlinks
 - [ ] Show the Hugging Face scan result for files that match a public file
 - [ ] Signed releases, MSI installer, winget

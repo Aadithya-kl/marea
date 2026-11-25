@@ -6,6 +6,29 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-25
+
+### Added
+- **Endangered-model watch.** Once a day (and on demand with *Check sources* or `mareactl watch`)
+  Marea probes every public source it relies on and looks for early signs that a model is going
+  away while the pinned bytes are still served: file removed from the repository's latest revision,
+  repository gated, private or disabled, Ollama tag withdrawn. A failed check never counts as a sign.
+- **Automatic rescue**: evaporated files that depend only on a disappearing source are brought back
+  while it still answers; files that may now be the last copy are never freed again and are copied to
+  the mirror when one is set. Notification, overview bar, journal entries (`j.source_at_risk`,
+  `j.source_gone`, `j.rescued`).
+- Models page: **Source** column (local copy, recipe, mirror, Hugging Face, Ollama, only here, or the
+  risk), *Source at risk* filter, *Bring back now* / *Copy to mirror* actions.
+- `mareactl watch [--no-rescue] [--json]` (schema `marea.watch/1`, exit 3 at risk, 4 lost);
+  `status --json` reports `sourcesAtRisk` and `lastWatch`.
+- Settings: *Watch public sources every day* and *Rescue models at risk automatically* (both on).
+
+### Changed
+- The safety gate no longer counts a public source that is at risk or gone: such files stay on disk,
+  and the local copies or recipe sources of evaporated files stay pinned.
+- A file whose public sources are all gone is classified *Unique* ("this may be the last copy").
+- Models page: format and precision share one column.
+
 ## [0.3.0] - 2026-11-25
 
 ### Added

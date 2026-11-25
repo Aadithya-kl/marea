@@ -41,6 +41,9 @@ build/                publish.ps1 (portable), installer.ps1 (MSI).
 | `Inspect/PickleScanner.cs`, `Inspect/ImportRating.cs` | Opcode walk of pickle streams (never unpickled) and the allow/deny lists that rate their imports; Jinja red flags for GGUF templates |
 | `Inspect/ModelCatalog.cs`, `Inspect/OllamaNames.cs` | Groups files into models (HF cache, Ollama tags, model folders, shards, single files) |
 | `LedgerMeta.cs` | Model metadata stored by content hash, versioned by inspector version |
+| `Watch/SourceWatch.cs`, `Watch/SourceHealth.cs` | Daily source watch: probes, pure health rules (healthy, unreachable, at risk, gone), findings (rescue, protect, lost) |
+| `Watch/HubWatch.cs`, `Watch/OllamaWatch.cs` | Probes: pinned Hub file HEAD, repository flags and latest revision, Ollama blob HEAD and tag manifests |
+| `LedgerHealth.cs`, `MareaEngineWatch.cs` | Stored source health (a failed check never overwrites a conclusive state); rescue and protection |
 
 ## Life of a file
 

@@ -15,6 +15,8 @@ public enum BlockerCode
     Unique,
     /// <summary>Its only source would leave with it.</summary>
     SourceLeaving,
+    /// <summary>Its only sources are public ones that are disappearing or gone.</summary>
+    SourceAtRisk,
 }
 
 /// <summary>A reason to keep a file.</summary>
@@ -125,9 +127,15 @@ public sealed class SafetyGate(Ledger ledger, MareaSettings settings)
         {
             return (gb / 0.1, ReturnPath.Mirror);
         }
-        if (sources.Any(s => s.Kind is SourceKind.HuggingFace or SourceKind.Ollama))
+        var publicSources = sources.Where(s => s.Kind is SourceKind.HuggingFace or SourceKind.Ollama).ToList();
+        if (publicSources.Any(s => HealthRules.Usable(ledger.HealthState(s.Locator))))
         {
             return (gb * 1000 / Math.Max(1, settings.BandwidthMBps), ReturnPath.Download);
+        }
+        if (publicSources.Count > 0)
+        {
+            why.Add(new(BlockerCode.SourceAtRisk, "gate.source_at_risk"));
+            return (double.PositiveInfinity, ReturnPath.None);
         }
         why.Add(f.Class == Recoverability.Unique
             ? new(BlockerCode.Unique, "gate.unique")
@@ -141,7 +149,9 @@ public sealed class SafetyGate(Ledger ledger, MareaSettings settings)
         var pinned = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var gone in all.Where(f => f.Residency == Residency.Evaporated))
         {
-            var external = ledger.SourcesOf(gone.Sha256).Any(s => s.Kind is SourceKind.HuggingFace or SourceKind.Mirror or SourceKind.Ollama);
+            // A public source that is disappearing does not count: keep the local ways back pinned.
+            var external = ledger.SourcesOf(gone.Sha256).Any(s => s.Kind == SourceKind.Mirror
+                || (s.Kind is SourceKind.HuggingFace or SourceKind.Ollama && HealthRules.Usable(ledger.HealthState(s.Locator))));
             if (external)
             {
                 continue;

@@ -66,6 +66,12 @@ trovato*, *Da controllare* (import insoliti, codice TorchScript, template di cha
 uscire dalla sandbox) o *Pericoloso*. Per controllare un modello appena scaricato:
 `mareactl check <file o cartella>`.
 
+## Modelli a rischio
+
+I modelli spariscono: repository cancellati, resi privati o ad accesso limitato, file tolti in una nuova versione, tag Ollama ritirati. Ogni giorno Marea controlla le fonti pubbliche e coglie i segnali in anticipo, finché i byte fissati sono ancora serviti: **riporta sul disco** i file evaporati che dipendono solo da una fonte che sta sparendo, **non libera più** quelli che potrebbero essere l'ultima copia e li **copia sul mirror** (NAS). Un controllo fallito per rete non conta mai come segnale. Da riga di comando: `mareactl watch --json`.
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="../images/dark/models-risk.png"><img src="../images/models-risk.png" width="820" alt="Un modello la cui fonte pubblica lo ha tolto: Marea lo tiene e propone di copiarlo sul mirror"></picture></p>
+
 ## Pensato per gli agenti AI
 
 `mareactl` è pronto per essere usato da assistenti AI: JSON versionato (`--json`), codici di uscita

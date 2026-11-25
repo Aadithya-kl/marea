@@ -41,7 +41,7 @@ must never do is lose data. This document lists what can go wrong and what stops
 | Area | Exposure | Mitigation |
 |---|---|---|
 | Network | Outbound HTTPS only, to `huggingface.co` / `*.huggingface.co` / `*.hf.co`, `registry.ollama.ai` + its exact blob storage host (`dd20bb891979d25aebc8bec07b2b3bbc.r2.cloudflarestorage.com`, pinned, not a wildcard), and `api.github.com` (update check) | Host allow-list enforced on every request **and every redirect**, HTTPS only, no cookies, no credentials, no inbound listener |
-| Data sent | Public repository / author names found on disk or in settings, requests for public files by digest, one GitHub API call a day | Never local paths or hashes of the user's files. Folder names are sent **only** if the user enables *search by folder name* (off by default) |
+| Data sent | Public repository / author names found on disk or in settings, requests for public files by digest, one GitHub API call a day; the daily source watch sends the same public repository names and Ollama tag names already used as sources | Never local paths or hashes of the user's files. Folder names are sent **only** if the user enables *search by folder name* (off by default) |
 | Repo names | Taken from settings | Validated against `owner/name` pattern before use |
 | Local IPC | Named events `Local\Marea.App.*` (show / quit) | Session-local; at worst another process of the same user can close Marea, which it could do anyway |
 | Provider role | Lock file in `%LOCALAPPDATA%\Marea` | Released by Windows if the process dies |

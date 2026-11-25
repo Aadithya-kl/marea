@@ -99,6 +99,10 @@
                     <TextBlock Text="{l:T set.name_search_help}" Style="{StaticResource Help}" />
                     <CheckBox x:Name="Ollama" Content="{l:T set.ollama}" />
                     <TextBlock Text="{l:T set.ollama_help}" Style="{StaticResource Help}" />
+                    <CheckBox x:Name="Watch" Content="{l:T set.watch}" />
+                    <TextBlock Text="{l:T set.watch_help}" Style="{StaticResource Help}" />
+                    <CheckBox x:Name="Rescue" Content="{l:T set.rescue}" />
+                    <TextBlock Text="{l:T set.rescue_help}" Style="{StaticResource Help}" />
                     <TextBlock Text="{l:T set.mirror}" Style="{StaticResource Field}" Margin="0,4,0,4" />
                     <DockPanel Margin="0,0,0,2">
                         <Button DockPanel.Dock="Right" Click="OnPickMirror" Margin="8,0,0,0" Padding="12,5" AutomationProperties.Name="{l:T set.pick}">

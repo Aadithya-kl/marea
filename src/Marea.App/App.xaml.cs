@@ -14,6 +14,7 @@ public partial class App : Application
     private EventWaitHandle? _quitEvent;
     private Forms.NotifyIcon? _tray;
     private System.Threading.Timer? _tideTimer;
+    private System.Threading.Timer? _watchTimer;
     private int _tideRunning;
 
     /// <summary>The engine shared by every view.</summary>
@@ -47,6 +48,7 @@ public partial class App : Application
         _quitEvent = new EventWaitHandle(false, EventResetMode.AutoReset, @"Local\Marea.App.Quit.v1");
         new Thread(() => { if (_quitEvent.WaitOne()) Dispatcher.Invoke(Shutdown); }) { IsBackground = true }.Start();
         _tideTimer = new System.Threading.Timer(_ => _ = TideTickAsync(), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(10));
+        _watchTimer = new System.Threading.Timer(_ => _ = WatchTickAsync(), null, TimeSpan.FromMinutes(3), TimeSpan.FromHours(1));
         _ = CheckForUpdateAsync();
         if (!Engine.Settings.OnboardingDone)
         {
@@ -185,6 +187,45 @@ public partial class App : Application
         }
     }
 
+    /// <summary>Once a day, checks that public sources still publish the models, rescues the ones
+    /// that are disappearing, and tells the user. Never runs together with the tide.</summary>
+    private async Task WatchTickAsync()
+    {
+        var s = Engine.Settings;
+        if (!s.WatchSources || !Engine.IsProvider || DateTime.UtcNow - s.LastWatchUtc < TimeSpan.FromHours(24)
+            || Interlocked.Exchange(ref _tideRunning, 1) == 1)
+        {
+            return;
+        }
+        try
+        {
+            var outcome = await Engine.WatchAsync(act: true);
+            if (outcome.Report.Changed > 0 || outcome.Rescued > 0)
+            {
+                var lost = outcome.Remaining.Count(f => f.Action == WatchAction.Lost);
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    Notify(Loc.T("watch.tray_title"), lost > 0
+                        ? Loc.T("watch.tray_lost", lost)
+                        : Loc.T("watch.tray_text", outcome.Rescued, outcome.Remaining.Count), warning: true);
+                    foreach (var w in Windows.OfType<MainWindow>())
+                    {
+                        w.RefreshPage();
+                    }
+                });
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or CloudFiles.CloudFilesException
+                                       or HttpRequestException or InvalidOperationException)
+        {
+            Engine.Ledger.Log("j.watch_interrupted", "", 0, false, ex.Message);
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _tideRunning, 0);
+        }
+    }
+
     /// <summary>Once a day, asks GitHub for a newer release and only notifies (never installs).</summary>
     private async Task CheckForUpdateAsync()
     {
@@ -229,6 +270,7 @@ public partial class App : Application
     protected override void OnExit(ExitEventArgs e)
     {
         _tideTimer?.Dispose();
+        _watchTimer?.Dispose();
         if (_tray is not null)
         {
             _tray.Visible = false;

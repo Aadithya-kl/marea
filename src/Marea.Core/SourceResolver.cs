@@ -178,12 +178,17 @@ public sealed class SourceResolver(Ledger ledger, MareaSettings settings, Huggin
         {
             return (Recoverability.Reobtainable, Loc.Code("src.mirror", m.Locator));
         }
-        if (sources.FirstOrDefault(s => s.Kind == SourceKind.Ollama) is { } o)
+        var publicSources = sources.Where(s => s.Kind is SourceKind.HuggingFace or SourceKind.Ollama).ToList();
+        if (publicSources.Count > 0 && publicSources.All(s => ledger.HealthState(s.Locator) == SourceHealth.Gone))
+        {
+            return (Recoverability.Unique, Loc.Code("src.public_gone"));
+        }
+        if (sources.FirstOrDefault(s => s.Kind == SourceKind.Ollama && ledger.HealthState(s.Locator) != SourceHealth.Gone) is { } o)
         {
             var blob = OllamaBlob.Parse(o.Locator, o.Size);
             return (Recoverability.Reobtainable, Loc.Code("src.ollama", $"{blob.Host}/{blob.Repository}"));
         }
-        if (sources.FirstOrDefault(s => s.Kind == SourceKind.HuggingFace) is { } h)
+        if (sources.FirstOrDefault(s => s.Kind == SourceKind.HuggingFace && ledger.HealthState(s.Locator) != SourceHealth.Gone) is { } h)
         {
             var hf = HubFile.Parse(h.Locator, h.Sha256, h.Size);
             return (Recoverability.Reobtainable, Loc.Code("src.hf", $"{hf.Repo}/{hf.Path}"));

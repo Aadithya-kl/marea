@@ -24,13 +24,20 @@
                 </StackPanel>
             </Border>
             <TextBlock x:Name="TotalText" DockPanel.Dock="Right" Style="{StaticResource Caption}" FontSize="13" VerticalAlignment="Center" Margin="12,0,0,0" />
+            <Button DockPanel.Dock="Right" Click="OnCheckSources" Padding="12,6" Margin="8,0,0,0" VerticalAlignment="Center"
+                    ToolTip="{l:T models.check_sources_tip}" AutomationProperties.Name="{l:T models.check_sources}">
+                <StackPanel Orientation="Horizontal">
+                    <Path Data="{StaticResource Icon.Globe}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                    <TextBlock Text="{l:T models.check_sources}" />
+                </StackPanel>
+            </Button>
             <ComboBox x:Name="Filter" DockPanel.Dock="Right" Width="200" SelectionChanged="OnFilter" AutomationProperties.Name="{l:T models.filter}" />
             <Grid MinWidth="160" Margin="0,0,8,0">
                 <TextBox x:Name="Search" Padding="30,6,8,6" TextChanged="OnSearch" VerticalContentAlignment="Center"
                          AutomationProperties.Name="{l:T models.search}" />
                 <Path Data="{StaticResource Icon.Search}" Style="{StaticResource Ico}" Width="14" Height="14"
                       HorizontalAlignment="Left" Margin="10,0,0,0" IsHitTestVisible="False" Opacity="0.7" />
-                <TextBlock x:Name="SearchHint" Text="{l:T models.search}" Style="{StaticResource Caption}" FontSize="13"
+                <TextBlock x:Name="SearchHint" Text="{l:T models.search}" Style="{StaticResource Caption}" FontSize="13" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
                            Margin="31,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False" />
             </Grid>
         </DockPanel>
@@ -40,7 +47,7 @@
                       HeadersVisibility="Column" GridLinesVisibility="None" SelectionMode="Single"
                       SelectionChanged="OnSelection" BorderThickness="0">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="{l:T col.model}" Width="*" MinWidth="280" SortMemberPath="Name">
+                    <DataGridTemplateColumn Header="{l:T col.model}" Width="*" MinWidth="200" SortMemberPath="Name">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <DockPanel VerticalAlignment="Center" Margin="6,0">
@@ -53,12 +60,21 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="{l:T col.format}" Binding="{Binding Format}" Width="110" ElementStyle="{StaticResource CellText}" />
-                    <DataGridTextColumn Header="{l:T col.precision}" Binding="{Binding Precision}" Width="112" ElementStyle="{StaticResource CellText}" />
-                    <DataGridTextColumn Header="{l:T col.params}" Binding="{Binding Params}" Width="125" SortMemberPath="ParamCount" ElementStyle="{StaticResource CellText}" />
+                    <DataGridTextColumn Header="{l:T col.format}" Binding="{Binding Format}" Width="150" ElementStyle="{StaticResource CellText}" />
+                    <DataGridTextColumn Header="{l:T col.params}" Binding="{Binding Params}" Width="100" SortMemberPath="ParamCount" ElementStyle="{StaticResource CellText}" />
                     <DataGridTextColumn Header="{l:T col.size}" Binding="{Binding Size}" Width="85" SortMemberPath="Bytes" ElementStyle="{StaticResource CellText}" />
-                    <DataGridTextColumn Header="{l:T col.state}" Binding="{Binding State}" Width="115" ElementStyle="{StaticResource CellText}" />
-                    <DataGridTemplateColumn Header="{l:T col.safety}" Width="195" SortMemberPath="SafetyRank">
+                    <DataGridTextColumn Header="{l:T col.state}" Binding="{Binding State}" Width="105" ElementStyle="{StaticResource CellText}" />
+                    <DataGridTemplateColumn Header="{l:T col.source}" Width="180" SortMemberPath="SourceRank">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="6,0">
+                                    <Path Data="{Binding SourceIcon}" Style="{StaticResource Ico}" Fill="{Binding SourceBrush}" Margin="0,0,8,0" />
+                                    <TextBlock Text="{Binding Source}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Source}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="{l:T col.safety}" Width="180" SortMemberPath="SafetyRank">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="6,0">
@@ -81,13 +97,29 @@
                         VerticalAlignment="Top" Background="{StaticResource SeaAccentBrush}">
                     <Path x:Name="DetailIcon" Data="{StaticResource Icon.Cube}" Style="{StaticResource Ico}" Width="20" Height="20" Fill="White" />
                 </Border>
-                <Button x:Name="OpenButton" DockPanel.Dock="Right" VerticalAlignment="Top" Click="OnOpenFolder" Padding="12,6"
-                        IsEnabled="False" AutomationProperties.Name="{l:T models.open_folder}">
-                    <StackPanel Orientation="Horizontal">
-                        <Path Data="{StaticResource Icon.Open}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
-                        <TextBlock Text="{l:T models.open_folder}" />
-                    </StackPanel>
-                </Button>
+                <StackPanel DockPanel.Dock="Right" VerticalAlignment="Top">
+                    <Button x:Name="OpenButton" Click="OnOpenFolder" Padding="12,6" HorizontalAlignment="Stretch"
+                            IsEnabled="False" AutomationProperties.Name="{l:T models.open_folder}">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource Icon.Open}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                            <TextBlock Text="{l:T models.open_folder}" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="RescueButton" Click="OnRescue" Padding="12,6" Margin="0,8,0,0" HorizontalAlignment="Stretch"
+                            Visibility="Collapsed" Style="{StaticResource AccentButtonStyle}" AutomationProperties.Name="{l:T models.rescue}">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource Icon.CloudDown}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                            <TextBlock Text="{l:T models.rescue}" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="ProtectButton" Click="OnProtect" Padding="12,6" Margin="0,8,0,0" HorizontalAlignment="Stretch"
+                            Visibility="Collapsed" AutomationProperties.Name="{l:T models.protect}">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource Icon.Server}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                            <TextBlock Text="{l:T models.protect}" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
                 <StackPanel Margin="0,0,12,0">
                     <TextBlock x:Name="DetailTitle" Text="{l:T models.select_title}" Style="{StaticResource SectionTitle}" Margin="0,0,0,4" TextTrimming="CharacterEllipsis" />
                     <TextBlock x:Name="DetailText" Text="{l:T models.select_hint}" TextWrapping="Wrap" LineHeight="20" />

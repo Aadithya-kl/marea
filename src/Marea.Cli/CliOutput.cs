@@ -13,9 +13,9 @@ internal static class Exit
     public const int Error = 1;
     /// <summary>Not done: needs --yes, or the desktop app to close.</summary>
     public const int NeedsConfirmation = 2;
-    /// <summary>check: something loading the file could run is unknown or unreadable.</summary>
+    /// <summary>check: something loading the file could run is unknown or unreadable. watch: models at risk.</summary>
     public const int Suspicious = 3;
-    /// <summary>check: loading the file would run commands, open the network or evaluate code.</summary>
+    /// <summary>check: loading the file would run commands, open the network or evaluate code. watch: a model cannot come back.</summary>
     public const int Dangerous = 4;
     /// <summary>Refused: MAREA_READONLY=1 forbids changes.</summary>
     public const int ReadOnly = 5;

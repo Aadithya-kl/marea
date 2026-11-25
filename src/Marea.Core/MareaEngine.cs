@@ -15,7 +15,7 @@ public sealed record VolumeStatus(string Volume, long FreeBytes, long TotalBytes
 
 /// <summary>Facade used by the desktop app and the CLI: one place that orchestrates scanning,
 /// sources, the safety gate, the tide and the provider connections.</summary>
-public sealed class MareaEngine : IDisposable
+public sealed partial class MareaEngine : IDisposable
 {
     private readonly List<ProviderConnection> _connections = [];
 

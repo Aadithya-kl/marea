@@ -35,7 +35,7 @@ public sealed partial record OllamaBlob(string Host, string Repository, string S
 
 /// <summary>Reads local Ollama manifests and fetches blobs from the public registries, by digest.
 /// Allow-list: registry.ollama.ai, its blob storage host, and Hugging Face for hf.co models.</summary>
-public sealed class OllamaRegistry : IDisposable
+public sealed partial class OllamaRegistry : IDisposable
 {
     /// <summary>Cloudflare R2 bucket host the Ollama registry redirects blob downloads to.</summary>
     public const string OllamaBlobHost = "dd20bb891979d25aebc8bec07b2b3bbc.r2.cloudflarestorage.com";

@@ -64,6 +64,12 @@ lee sus instrucciones **sin ejecutarlas** y da un veredicto sereno: *Formato seg
 intentan salir de su sandbox) o *Peligroso*. Para revisar un modelo recién descargado:
 `mareactl check <archivo o carpeta>`.
 
+## Modelos en riesgo
+
+Los modelos desaparecen: repositorios borrados, privados o restringidos, archivos retirados en una nueva versión, etiquetas de Ollama retiradas. Cada día Marea revisa las fuentes públicas y detecta las señales a tiempo, mientras los bytes fijados aún se sirven: **trae de vuelta** los archivos evaporados que solo dependen de una fuente que desaparece, **no vuelve a liberar** los que pueden ser la última copia y los **copia al espejo** (NAS). Un fallo de red nunca cuenta como señal. Desde la línea de comandos: `mareactl watch --json`.
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="../images/dark/models-risk.png"><img src="../images/models-risk.png" width="820" alt="Un modelo que su fuente pública retiró: Marea lo conserva y ofrece copiarlo al espejo"></picture></p>
+
 ## Pensado para agentes de IA
 
 `mareactl` está listo para asistentes de IA: JSON versionado (`--json`), códigos de salida claros

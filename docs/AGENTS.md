@@ -19,6 +19,8 @@ doing anything a person did not approve.
 | What could be freed, and how it would come back | `mareactl plan [--gb N] [--instant] --json` | No |
 | Recent activity | `mareactl journal [n] --json` | No |
 | Refresh fingerprints, sources and model metadata | `mareactl scan --json` | Ledger only, never files |
+| Are any models disappearing from their hub? | `mareactl watch --no-rescue --json` | No (ledger only) |
+| Same, and rescue what is at risk | `mareactl watch --json` | Brings files back, copies to the mirror |
 | Free space (undoable) | `mareactl free --gb N --instant --yes` | **Yes**, needs `--yes` |
 | Undo the last cleanup | `mareactl undo` | **Yes** |
 
@@ -66,8 +68,8 @@ user's NAS.
 | 0 | Done (for `check`: nothing worrying) |
 | 1 | Failed; the message says why |
 | 2 | Not done: needs `--yes`, or the desktop app to close (for `restore-all`) |
-| 3 | `check`: check before loading |
-| 4 | `check`: dangerous, do not load |
+| 3 | `check`: check before loading. `watch`: models at risk |
+| 4 | `check`: dangerous, do not load. `watch`: a file can no longer come back |
 | 5 | Refused: `MAREA_READONLY=1` |
 | 64 | Wrong command line |
 
@@ -108,9 +110,17 @@ checkpoint or single file): `name`, `kind`, `folder`, `formats`, `precisions`, `
 `safety`, `findings`, and `files` with `path`, `sizeBytes`, `sha256`, `class`, `residency`,
 `format`, `safety`.
 
+### `marea.watch/1`
+
+`sourcesChecked`, `changed` (sources whose state changed in this run), `rescued`, `protected`, and
+`findings` with `path`, `residency`, `state` (`at_risk`, `gone`), `action` (`rescue`, `protect`,
+`lost`) and `detail` (translated). In read-only mode, or with `--no-rescue`, nothing is brought back
+or copied: the report says what *would* need attention.
+
 ### `marea.status/1`, `marea.plan/1`, `marea.journal/1`
 
-Status: `volumes`, `files`, `bytes`, `byClass`, `evaporated`, `freeableBytes`, `readOnly`.
+Status: `volumes`, `files`, `bytes`, `byClass`, `evaporated`, `freeableBytes`, `sourcesAtRisk`,
+`lastWatch`, `readOnly`.
 Plan: `items` with `path`, `sizeBytes`, `class`, `returnPath` (`local_copy`, `recipe`, `mirror`,
 `download`), `returnSeconds`, `instant`; and `totalBytes`.
 Journal: `entries` with `at`, `action` (stable code), `text` (translated), `path`, `bytes`, `ok`,

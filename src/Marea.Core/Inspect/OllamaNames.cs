@@ -2,17 +2,28 @@ using System.Text.Json;
 
 namespace Marea.Core;
 
-/// <summary>Maps Ollama model blobs to the names people type (<c>llama3.2:3b</c>), from local manifests.</summary>
+/// <summary>A local Ollama tag: where it was pulled from and how the user calls it.</summary>
+/// <param name="Host">Registry host (registry.ollama.ai, hf.co).</param>
+/// <param name="Repository">Repository path on the registry (library/llama3.2).</param>
+/// <param name="Tag">Tag (3b, latest).</param>
+/// <param name="Name">Name as the Ollama CLI shows it (llama3.2:3b).</param>
+public sealed record OllamaTag(string Host, string Repository, string Tag, string Name);
+
+/// <summary>Maps Ollama model blobs to the tags that use them, from local manifests.</summary>
 public static class OllamaNames
 {
     /// <summary>Model-layer digest (sha256 hex) → model names, for the manifests under <paramref name="modelsDir"/>.</summary>
-    public static Dictionary<string, List<string>> Read(string modelsDir)
+    public static Dictionary<string, List<string>> Read(string modelsDir) =>
+        ReadTags(modelsDir).ToDictionary(kv => kv.Key, kv => kv.Value.Select(t => t.Name).ToList(), StringComparer.Ordinal);
+
+    /// <summary>Model-layer digest (sha256 hex) → local tags using it, sorted by name.</summary>
+    public static Dictionary<string, List<OllamaTag>> ReadTags(string modelsDir)
     {
-        var names = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        var tags = new Dictionary<string, List<OllamaTag>>(StringComparer.Ordinal);
         var root = Path.Combine(modelsDir, "manifests");
         if (!Directory.Exists(root))
         {
-            return names;
+            return tags;
         }
         var opts = new EnumerationOptions { RecurseSubdirectories = true, IgnoreInaccessible = true };
         foreach (var file in Directory.EnumerateFiles(root, "*", opts))
@@ -22,7 +33,7 @@ public static class OllamaNames
             {
                 continue;
             }
-            var name = Display(parts);
+            var tag = new OllamaTag(parts[0], string.Join('/', parts[1..^1]), parts[^1], Display(parts));
             try
             {
                 using var doc = JsonDocument.Parse(File.ReadAllText(file));
@@ -37,11 +48,11 @@ public static class OllamaNames
                     if (media == "application/vnd.ollama.image.model" && digest.StartsWith("sha256:", StringComparison.Ordinal))
                     {
                         var hex = digest[7..];
-                        if (!names.TryGetValue(hex, out var list))
+                        if (!tags.TryGetValue(hex, out var list))
                         {
-                            names[hex] = list = [];
+                            tags[hex] = list = [];
                         }
-                        list.Add(name);
+                        list.Add(tag);
                     }
                 }
             }
@@ -50,11 +61,11 @@ public static class OllamaNames
                 // An unreadable manifest only means one name fewer.
             }
         }
-        foreach (var list in names.Values)
+        foreach (var list in tags.Values)
         {
-            list.Sort(StringComparer.OrdinalIgnoreCase);
+            list.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
         }
-        return names;
+        return tags;
     }
 
     /// <summary>host/namespace/model/tag → the short name the Ollama CLI shows.</summary>

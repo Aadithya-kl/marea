@@ -1,6 +1,6 @@
 # Marea — User manual
 
-Version 0.3 · Windows 10 1809+ / Windows 11 · English
+Version 0.4 · Windows 10 1809+ / Windows 11 · English
 ([Italiano](i18n/README.it.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [Deutsch](i18n/README.de.md))
 
 1. [What Marea does](#1-what-marea-does)
@@ -176,6 +176,25 @@ payload, so "No code found" means "nothing but standard tensor rebuilding was fo
 To check a file **before** you even put it in a managed folder, for example a model you just
 downloaded, use the command line: `mareactl check <file or folder>`.
 
+### Endangered models
+
+![A model at risk](images/models-risk.png)
+
+The **Source** column says where each model would come back from (local copy, recipe, mirror,
+Hugging Face, Ollama, or *Only here*). Once a day, Marea also checks that Hugging Face and the Ollama
+registry still publish the files it relies on, and looks for early signs that they are going away:
+a file removed from the repository's latest revision, a repository that became gated, private or
+disabled, an Ollama tag withdrawn. A failed check (offline, timeout) never counts as a signal.
+
+| Source column | Meaning | What Marea does |
+|---|---|---|
+| **Source at risk** | The file is evaporated and its public source is disappearing, but still answers | Brings it back automatically (or press **Bring back now**) |
+| **Maybe the last copy** | The file is on disk and its public source is disappearing or gone | Never frees it; copies it to the mirror if you have one (or press **Copy to mirror**) |
+| **Can't come back** | The file is evaporated and every source is gone | Tells you; put a copy back in its folder if you have one elsewhere |
+
+**Check sources** on the Models page runs the check now. Both the daily check and the automatic
+rescue can be turned off in *Settings → Sources*.
+
 ## 9. When a program opens an evaporated file
 
 Nothing special happens on your side: ComfyUI, Python, Ollama or any other program opens the
@@ -233,6 +252,8 @@ Every screenshot in this manual uses the light theme; the dark theme looks like 
 | Find out by itself where models come from | **On** | Discovery from evidence on disk (see §13) |
 | Also search Hugging Face by folder name | **Off** | Finds more, but sends folder names to Hugging Face |
 | Use Ollama as a source | On | Only matters if you manage Ollama's `blobs` folder |
+| Watch public sources every day | **On** | Early warnings when a model is disappearing from Hugging Face or Ollama |
+| Rescue models at risk automatically | **On** | Brings back evaporated files while their source still answers; copies possible last copies to the mirror |
 | Start Marea with Windows | asked on first cleanup | Needed for evaporated files to open after a reboot |
 | Tell me when a new version is out | On | Daily check on GitHub; notification only |
 
@@ -273,6 +294,7 @@ mareactl add <folder>                             manage a folder
 mareactl scan                                     fingerprints, sources, classes, model headers
 mareactl models [--json]                          every model: format, precision, safety
 mareactl check <file|folder>... [--json]          safety check before loading (no setup needed)
+mareactl watch [--no-rescue] [--json]            check public sources, rescue models at risk
 mareactl plan [--gb N] [--instant] [--json]       what would evaporate (touches nothing)
 mareactl free [--gb N|--all] [--instant] --yes    quick cleanup, undoable
 mareactl undo                                     undo the last cleanup

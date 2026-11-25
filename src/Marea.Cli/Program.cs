@@ -149,6 +149,8 @@ async Task<int> Dispatch()
             var unique = engine.Ledger.Files().Where(f => f.Class == Recoverability.Unique && f.Residency == Residency.Local).ToList();
             Console.WriteLine(Loc.T("cli.replicated", await engine.ReplicateAsync(unique, progress)));
             return Exit.Ok;
+        case "watch":
+            return await Watch();
         case "journal":
             Journal(positional.Count > 0 && int.TryParse(positional[0], out var n) ? n : 30);
             return Exit.Ok;
@@ -180,6 +182,48 @@ async Task<int> EvaporatePlan(List<PlanItem> plan, string? batch)
         Console.Error.WriteLine($"  {Loc.T("cli.kept")}: {CliOutput.Clean(f.Path)} -> {CliOutput.Clean(why)}");
     }
     return Exit.Ok;
+}
+
+// Checks public sources; rescues and protects unless read-only or --no-rescue.
+// Exit code: 0 nothing at risk, 3 models at risk, 4 a model cannot come back.
+async Task<int> Watch()
+{
+    var act = !readOnly && !args.Contains("--no-rescue");
+    if (act)
+    {
+        engine.StartProvider();
+    }
+    var o = await engine.WatchAsync(act, progress);
+    if (json)
+    {
+        CliOutput.Json("marea.watch/1", new
+        {
+            sourcesChecked = o.Report.SourcesChecked,
+            changed = o.Report.Changed,
+            rescued = o.Rescued,
+            @protected = o.Protected,
+            findings = o.Remaining.Select(f => new
+            {
+                path = f.File.Path,
+                residency = f.File.Residency,
+                state = f.State,
+                action = f.Action,
+                detail = Loc.Render(f.Detail),
+            }),
+        });
+    }
+    else
+    {
+        Console.Error.WriteLine();
+        Console.WriteLine(Loc.T("cli.watch_summary", o.Report.SourcesChecked, o.Rescued, o.Protected));
+        foreach (var f in o.Remaining)
+        {
+            Console.WriteLine($"  {Loc.T("risk." + f.Action.ToString().ToLowerInvariant()),-24} {CliOutput.Short(f.File.Path)}");
+            Console.WriteLine($"  {"",-24} {CliOutput.Clean(Loc.Render(f.Detail))}");
+        }
+    }
+    return o.Remaining.Any(f => f.Action == WatchAction.Lost) ? Exit.Dangerous
+        : o.Remaining.Count > 0 ? Exit.Suspicious : Exit.Ok;
 }
 
 async Task<int> Serve()
@@ -281,6 +325,8 @@ void Status()
             byClass = files.GroupBy(f => f.Class).ToDictionary(g => g.Key.ToString().ToLowerInvariant(), g => new { files = g.Count(), bytes = g.Sum(f => f.Size) }),
             evaporated = new { files = gone.Count, bytes = gone.Sum(f => f.Size) },
             freeableBytes = allowed,
+            sourcesAtRisk = engine.SourceRisks().Count,
+            lastWatch = engine.Settings.LastWatchUtc == default ? (DateTime?)null : engine.Settings.LastWatchUtc,
             readOnly,
         });
         return;

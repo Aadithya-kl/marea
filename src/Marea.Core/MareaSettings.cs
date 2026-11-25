@@ -40,6 +40,16 @@ public sealed class MareaSettings
     /// <summary>When the last update check ran (UTC).</summary>
     public DateTime LastUpdateCheckUtc { get; set; }
 
+    /// <summary>Once a day, check that public sources still publish the models (on by default).</summary>
+    public bool WatchSources { get; set; } = true;
+
+    /// <summary>Bring back evaporated models whose public source is disappearing, and copy models that
+    /// may now be the last copy to the mirror (when one is set). On by default.</summary>
+    public bool RescueAtRisk { get; set; } = true;
+
+    /// <summary>Last source watch.</summary>
+    public DateTime LastWatchUtc { get; set; }
+
     /// <summary>Newest version announced by the last check, if newer than the running one.</summary>
     public string? AvailableUpdate { get; set; }
 

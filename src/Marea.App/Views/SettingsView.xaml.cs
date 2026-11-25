@@ -42,6 +42,8 @@ public partial class SettingsView : UserControl, IRefreshable
         Discover.IsChecked = s.DiscoverHubRepos;
         NameSearch.IsChecked = s.HubNameSearch;
         Ollama.IsChecked = s.OllamaSource;
+        Watch.IsChecked = s.WatchSources;
+        Rescue.IsChecked = s.RescueAtRisk;
         Updates.IsChecked = s.CheckForUpdates;
         UpdateCard.Visibility = s.AvailableUpdate is null ? Visibility.Collapsed : Visibility.Visible;
         UpdateTitle.Text = Loc.T("upd.title", s.AvailableUpdate);
@@ -89,6 +91,8 @@ public partial class SettingsView : UserControl, IRefreshable
         s.DiscoverHubRepos = Discover.IsChecked == true;
         s.HubNameSearch = NameSearch.IsChecked == true;
         s.OllamaSource = Ollama.IsChecked == true;
+        s.WatchSources = Watch.IsChecked == true;
+        s.RescueAtRisk = Rescue.IsChecked == true;
         s.CheckForUpdates = Updates.IsChecked == true;
         s.Theme = ((LangItem)ThemeBox.SelectedItem).Code;
         StartupRegistration.Set(s.StartWithWindows);

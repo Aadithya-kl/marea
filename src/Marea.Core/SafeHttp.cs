@@ -20,7 +20,7 @@ public static class SafeHttp
     /// <summary>Sends a request and follows up to 5 redirects, each checked against <paramref name="allowed"/>.</summary>
     /// <exception cref="HttpRequestException">When a hop leaves the allow-list or redirects loop.</exception>
     public static async Task<HttpResponseMessage> SendAsync(HttpClient http, HttpMethod method, Uri uri,
-        RangeHeaderValue? range, Func<Uri, bool> allowed, CancellationToken ct, bool followRedirects = true)
+        RangeHeaderValue? range, Func<Uri, bool> allowed, CancellationToken ct, bool followRedirects = true, string? accept = null)
     {
         for (var hop = 0; hop < 6; hop++)
         {
@@ -32,6 +32,10 @@ public static class SafeHttp
             if (range is not null)
             {
                 req.Headers.Range = range;
+            }
+            if (accept is not null)
+            {
+                req.Headers.Accept.ParseAdd(accept);
             }
             var resp = await http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, ct);
             if (followRedirects && (int)resp.StatusCode is >= 300 and < 400 && resp.Headers.Location is { } loc)

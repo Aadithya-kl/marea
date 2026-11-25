@@ -64,6 +64,12 @@ gefunden*, *Vor dem Laden prüfen* (ungewöhnliche Importe, TorchScript-Code, GG
 aus ihrer Sandbox ausbrechen wollen) oder *Gefährlich*. Ein gerade geladenes Modell prüfen:
 `mareactl check <Datei oder Ordner>`.
 
+## Gefährdete Modelle
+
+Modelle verschwinden: Repositories werden gelöscht, privat oder beschränkt, Dateien in einer neuen Version entfernt, Ollama-Tags zurückgezogen. Jeden Tag prüft Marea die öffentlichen Quellen und erkennt die Anzeichen früh, solange die fixierten Bytes noch geliefert werden: Verdunstete Dateien, die nur von einer verschwindenden Quelle abhängen, werden **zurückgeholt**, mögliche letzte Kopien werden **nicht mehr freigegeben** und auf den **Spiegel** (NAS) kopiert. Ein Netzwerkfehler zählt nie als Anzeichen. Auf der Kommandozeile: `mareactl watch --json`.
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="../images/dark/models-risk.png"><img src="../images/models-risk.png" width="820" alt="Ein Modell, das seine öffentliche Quelle entfernt hat: Marea behält es und bietet an, es auf den Spiegel zu kopieren"></picture></p>
+
 ## Gebaut für KI-Agenten
 
 `mareactl` ist bereit für KI-Assistenten: versioniertes JSON (`--json`), klare Exit-Codes

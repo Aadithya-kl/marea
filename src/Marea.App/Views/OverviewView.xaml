@@ -21,6 +21,24 @@
                 </DockPanel>
             </Border>
 
+            <!-- Models whose public source is disappearing -->
+            <Border x:Name="RiskBar" Style="{StaticResource InfoBar}" BorderBrush="{StaticResource WarningBrush}" Visibility="Collapsed">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Click="OnReviewModels" Padding="12,4" VerticalAlignment="Center" AutomationProperties.Name="{l:T ov.safety_open}">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource Icon.Cube}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                            <TextBlock Text="{l:T ov.safety_open}" />
+                        </StackPanel>
+                    </Button>
+                    <Path x:Name="RiskIcon" DockPanel.Dock="Left" Data="{StaticResource Icon.Warning}" Style="{StaticResource IcoLarge}"
+                          Fill="{StaticResource WarningBrush}" Margin="0,0,12,0" />
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock x:Name="RiskTitle" FontWeight="SemiBold" />
+                        <TextBlock Text="{l:T ov.risk_text}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,2,12,0" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
             <!-- Models whose loading could run code -->
             <Border x:Name="SafetyBar" Style="{StaticResource InfoBar}" BorderBrush="{StaticResource WarningBrush}" Visibility="Collapsed">
                 <DockPanel>
