@@ -14,6 +14,8 @@
 
 ---
 
+📖 [Manuale utente (in inglese)](../MANUAL.md) · [Tester guide](../TESTING.md)
+
 L'IA in locale pesa. Checkpoint di Hugging Face, modelli ComfyUI, LoRA, file GGUF, lo stesso
 modello in fp32 **e** in bf16, lo stesso text encoder da 3 GB copiato in quattro app diverse…
 Un disco da 1 TB si riempie in poche settimane.

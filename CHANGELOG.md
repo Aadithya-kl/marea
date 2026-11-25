@@ -4,6 +4,18 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.1] - 2026-11-25
+
+### Added
+- English **user manual** (`docs/MANUAL.md`) and **tester guide** (`docs/TESTING.md`), with
+  screenshots of every screen.
+
+### Changed
+- File, plan and activity views show paths relative to the managed folder
+  (`models\sub\file`) instead of full paths, so screenshots and bug reports don't expose the
+  user profile path.
+- Checksum files use LF line endings, so `sha256sum -c` works on Linux and macOS.
+
 ## [0.2.0] - 2026-11-25
 
 Field-tested on a real workstation: 63.7 GB of ACE-Step / Side-Step models scanned in 65 s,

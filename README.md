@@ -40,6 +40,9 @@ Your apps never notice.
 
 <p align="center"><img src="docs/images/overview.png" width="880" alt="Marea overview: free space, what can leave safely, where every byte would come back from"></p>
 
+> 📖 **New here?** Read the [user manual](docs/MANUAL.md). **Testing it for us?** Follow the
+> [tester guide](docs/TESTING.md): 15 minutes, safe, every step undoable.
+
 ## Table of contents
 
 - [What's new about it](#whats-new-about-it)
@@ -50,6 +53,7 @@ Your apps never notice.
 - [Command line](#command-line)
 - [FAQ](#faq)
 - [Roadmap](#roadmap)
+- [Documentation](#documentation)
 - [Build from source](#build-from-source)
 - [Contributing](#contributing) · [License](#license)
 
@@ -254,6 +258,17 @@ the folder (portable). Either way every file comes back first.
 - [ ] Tensor-level store: share layers across fine-tunes and merges
 - [ ] File Explorer navigation-pane entry
 - [ ] macOS and Linux backends
+
+## Documentation
+
+| Document | For |
+|---|---|
+| [User manual](docs/MANUAL.md) | Everyone: install, first run, freeing space, undo, settings, troubleshooting |
+| [Tester guide](docs/TESTING.md) | Early testers: a safe 15-minute checklist and what to report |
+| [Security model](SECURITY.md) | How Marea guarantees it never loses a byte |
+| [Architecture](docs/ARCHITECTURE.md) | Contributors: how the engine works |
+| [Distribution](docs/DISTRIBUTION.md) | Maintainers: releases, signing, installer, winget |
+| [Changelog](CHANGELOG.md) | What changed in each version |
 
 ## Build from source
 

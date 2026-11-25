@@ -20,7 +20,7 @@ public partial class PlanWindow : Window
             Size = Fmt.Gb(p.File.Size),
             Class = Fmt.Class(p.File.Class),
             Return = Fmt.Duration(p.RebuildSeconds),
-            Source = Loc.Render(p.File.SourceLabel),
+            Source = Fmt.Source(p.File.SourceLabel),
         }).ToList();
         TotalText.Text = Loc.T("plan.total", Fmt.Gb(plan.Sum(p => p.File.Size)), plan.Count);
     }

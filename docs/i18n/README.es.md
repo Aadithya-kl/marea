@@ -14,6 +14,8 @@
 
 ---
 
+📖 [Manual de usuario (en inglés)](../MANUAL.md) · [Tester guide](../TESTING.md)
+
 La IA local pesa. Checkpoints de Hugging Face, modelos de ComfyUI, LoRA, archivos GGUF, el
 mismo modelo en fp32 **y** en bf16, el mismo codificador de texto de 3 GB copiado en cuatro
 aplicaciones… Un disco de 1 TB se llena en semanas.

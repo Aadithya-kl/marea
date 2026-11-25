@@ -1,0 +1,284 @@
+# Marea — User manual
+
+Version 0.2 · Windows 10 1809+ / Windows 11 · English
+([Italiano](i18n/README.it.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [Deutsch](i18n/README.de.md))
+
+1. [What Marea does](#1-what-marea-does)
+2. [Install](#2-install)
+3. [First run](#3-first-run)
+4. [The overview](#4-the-overview)
+5. [Free up space in 3 clicks](#5-free-up-space-in-3-clicks)
+6. [The detailed plan](#6-the-detailed-plan)
+7. [Files: why a file stays or may leave](#7-files-why-a-file-stays-or-may-leave)
+8. [When a program opens an evaporated file](#8-when-a-program-opens-an-evaporated-file)
+9. [Undo and bring files back](#9-undo-and-bring-files-back)
+10. [Managed folders](#10-managed-folders)
+11. [Settings](#11-settings)
+12. [Sources: Hugging Face, Ollama, your NAS, recipes](#12-sources-hugging-face-ollama-your-nas-recipes)
+13. [Activity journal](#13-activity-journal)
+14. [Command line (mareactl)](#14-command-line-mareactl)
+15. [Uninstall](#15-uninstall)
+16. [Troubleshooting](#16-troubleshooting)
+17. [Glossary](#17-glossary)
+
+---
+
+## 1. What Marea does
+
+AI models are huge, and the same bytes often sit on disk several times: two apps with
+their own copy of the same checkpoint, a model kept in fp32 *and* bf16, files you could
+download again from Hugging Face in minutes.
+
+Marea checks, with a SHA-256 fingerprint, **where every model file could be obtained again**.
+Only files with such a way back can **evaporate**. An evaporated file:
+
+- stays in its folder, with the same name and size as before;
+- takes **0 bytes** on disk;
+- comes back automatically the moment any program reads it, and Marea checks that its
+  fingerprint is identical.
+
+Files with no known source are **unique** and are never touched.
+
+> **Marea never deletes your files.** Freeing space is reversible: one click brings
+> everything back.
+
+## 2. Install
+
+1. Download `Marea-<version>-win-x64-portable.zip` from the
+   [Releases page](https://github.com/indecenti/marea/releases).
+2. *(Optional but recommended)* verify the download:
+   - with the checksum: `Get-FileHash .\Marea-<version>-win-x64-portable.zip -Algorithm SHA256`
+     must match the `.sha256` file next to the zip;
+   - or, with the GitHub CLI, check it was built by this repository's CI:
+     `gh attestation verify Marea-<version>-win-x64-portable.zip --repo indecenti/marea`.
+3. Unzip anywhere (for example `C:\Tools\Marea`) and run **`Marea.exe`**.
+
+The build is not code-signed yet, so Windows may show *"Windows protected your PC"*. Click
+**More info → Run anyway**. No administrator rights are needed, and .NET is included.
+
+Requirements: Windows 10 1809 or later / Windows 11, x64, folders on an **NTFS** local drive.
+
+## 3. First run
+
+![Welcome](images/welcome.png)
+
+The first-run guide explains in three points what Marea does and never does. It then
+**looks for your model folders** (folders named `checkpoints`, `models`, `hub`, `llm`, …
+holding at least 1 GB of model weights, plus Ollama's `blobs` folder if you use Ollama).
+
+- Untick any folder you don't want Marea to manage.
+- *Add another folder…* lets you pick one by hand.
+- Press **Start**: Marea fingerprints the files and looks for sources. **This first scan
+  only measures; nothing is changed.**
+
+Marea refuses folders where it could do harm: system folders, whole drives, your whole
+user profile, network or removable drives, non-NTFS drives, and folders already synced by
+OneDrive or similar services.
+
+## 4. The overview
+
+![Overview](images/overview.png)
+
+- **Drive card**: free space, used space and the *tide target* (the free space Marea aims to
+  keep, 100 GB by default).
+- **Safely freeable now**: how much can leave the disk right now with a verified way back.
+- **Already evaporated** / **Unique: always stays** / **In the ledger**.
+- **Where every byte would come back from**: the split between the four classes (see the
+  [glossary](#17-glossary)).
+- Buttons:
+  - **Free up space in 3 clicks**: the simple guided path (next section);
+  - **Free up space…**: the detailed plan, file by file;
+  - **Scan and find sources**: re-scan after you add or download models;
+  - **Undo last cleanup**: appears after a cleanup and brings back exactly those files.
+- **Service running** (bottom left): evaporated files can only come back while Marea is
+  running. Closing the window keeps Marea in the notification area.
+
+## 5. Free up space in 3 clicks
+
+![Free up space in 3 clicks](images/quick-free.png)
+
+1. **How much space do you need?** Pick 10 GB, 50 GB, *Up to the target* or *Everything that
+   is safe*. Under each choice Marea shows how much is really available.
+2. **How must files come back?**
+   - **Instant return only** *(recommended)*: only duplicates and recomputable files. They
+     come back in seconds, even offline.
+   - **Also from NAS or internet**: also files with a copy on your NAS or a public download.
+     This frees more, but bringing them back depends on your network.
+3. Read the one-sentence summary and press **Free up now**.
+
+The first time, Marea asks whether it should start with Windows. Say **Yes** unless you
+plan to keep it running yourself: evaporated files only open while Marea runs.
+
+![Done](images/quick-free-done.png)
+
+The last screen shows how much was freed. **Undo this cleanup** brings back exactly those
+files and nothing else.
+
+## 6. The detailed plan
+
+![Detailed plan](images/plan.png)
+
+*Free up space…* shows the same safe plan as a table: file, folder, size, class, estimated
+time to come back, and the source that guarantees it. Tick *I understand* and press
+**Evaporate**. Marea re-checks every file at the last moment, so a file can still stay on
+disk: it may be in use, changed since the scan, or its source may not answer right now.
+You get a short report of those cases.
+
+## 7. Files: why a file stays or may leave
+
+![Files](images/files.png)
+
+The **Files** page lists every tracked file with its class and state. Select a file to see,
+in plain words, why it stays or how it would come back:
+
+- *unique: no verified source*: replicate it to your mirror (NAS) to make it re-obtainable;
+- *used N days ago*: recently used files are never evaporated (7 days by default);
+- *needed to rebuild a file that is already evaporated*: the source of a recipe or the last
+  local copy stays pinned;
+- *its only source would evaporate together with it*: two copies never leave together
+  unless a public or NAS copy exists.
+
+From here you can also **Evaporate…** selected files, **Bring back to disk**, or
+**Replicate to mirror**.
+
+## 8. When a program opens an evaporated file
+
+Nothing special happens on your side: ComfyUI, Python, Ollama or any other program opens the
+file as usual. Windows asks Marea for the data, and Marea delivers it from the cheapest live
+source:
+
+1. an identical local copy (seconds);
+2. a recipe, e.g. bf16 recomputed from fp32 (about 35 s for 9 GB on an NVMe drive);
+3. your mirror / NAS;
+4. a public download (Hugging Face, Ollama registry), pinned to the exact version.
+
+A bar at the bottom of the window shows progress. When the whole file is back, Marea checks
+its SHA-256. If it doesn't match, the problem is logged and the file is fetched again from
+scratch.
+
+> If Marea is **not running**, the program gets an error (like OneDrive files when OneDrive is
+> closed). Start Marea and open the file again.
+
+## 9. Undo and bring files back
+
+- **Undo this cleanup** (end of the 3-click wizard) or **Undo last cleanup** (overview):
+  bring back exactly the files of that cleanup.
+- **Files → Bring back to disk**: bring back the selected files.
+- **Settings → Bring everything back and detach**: the emergency exit. Every file comes
+  back, becomes an ordinary file again, and the folders are detached from Windows. Marea
+  checks free space first, and refuses to detach a folder that still contains evaporated files.
+
+## 10. Managed folders
+
+![Managed folders](images/folders.png)
+
+Marea works **only** inside the folders listed here. *Stop managing* brings every file of
+that folder back first, then detaches it. *Find model folders* runs the discovery from the
+first-run guide again.
+
+## 11. Settings
+
+![Settings](images/settings.png)
+
+| Setting | Default | Meaning |
+|---|---|---|
+| Language | Automatic | English, Italiano, Español, Français, Deutsch |
+| Automatic tide | **Off** | Every 10 minutes, if free space is below the target, evaporate the cheapest files |
+| Free space to keep | 100 GB | The tide target |
+| Never evaporate files used in the last | 7 days | Protects files you're working with |
+| Ignore files smaller than | 50 MB | Small files are not worth it |
+| Download speed for estimates | 50 MB/s | Only used to estimate return times |
+| Mirror folder | — | A NAS or second drive for verified copies of unique files |
+| Hugging Face repositories to compare with | — | Extra repositories that discovery can't guess (one per line) |
+| Find out by itself where models come from | **On** | Discovery from evidence on disk (see §12) |
+| Also search Hugging Face by folder name | **Off** | Finds more, but sends folder names to Hugging Face |
+| Use Ollama as a source | On | Only matters if you manage Ollama's `blobs` folder |
+| Start Marea with Windows | asked on first cleanup | Needed for evaporated files to open after a reboot |
+| Tell me when a new version is out | On | Daily check on GitHub; notification only |
+
+## 12. Sources: Hugging Face, Ollama, your NAS, recipes
+
+- **Duplicates** are found by fingerprint across all managed folders.
+- **Recipes**: if a safetensors file can be rebuilt bit-for-bit from other local files (the
+  typical case: a bf16 model and its fp32 original), Marea proves it by rebuilding the whole
+  file once and comparing fingerprints.
+- **Hugging Face**: Marea finds candidate repositories on its own, from your Hugging Face
+  cache, `base_model` in model cards, `_name_or_path` in configs, git remotes and Ollama models
+  pulled from `hf.co`. It also checks the same authors' related repositories. A file counts as
+  re-obtainable only if its SHA-256 equals the public file, pinned to a commit. Only public
+  repository and author names are sent; folder names are sent only if you enable the search
+  by folder name.
+- **Ollama**: if you manage `%USERPROFILE%\.ollama\models\blobs`, each blob listed in your
+  Ollama manifests comes back from `registry.ollama.ai` (or `hf.co`) by digest. If you don't
+  use Ollama, nothing changes.
+- **Mirror / NAS**: *Replicate to mirror* copies unique files into a content-addressed store
+  on your NAS (`marea-store\sha256\…`), verified while copying. Those files become
+  re-obtainable from your own network.
+
+## 13. Activity journal
+
+![Activity](images/activity.png)
+
+Everything Marea does is recorded: scans, verified recipes, evaporations, returns (with the
+source used), undos and problems (marked ⚠). The journal is never erased and is translated
+into the current language. Run `mareactl journal 50` to copy it into a bug report.
+
+## 14. Command line (mareactl)
+
+`mareactl.exe` sits next to `Marea.exe` and uses the same engine.
+
+```
+mareactl status                                   disk and ledger status
+mareactl add <folder>                             manage a folder
+mareactl scan                                     fingerprints, sources, classes
+mareactl plan [--gb N]                            what would evaporate (touches nothing)
+mareactl free [--gb N|--all] [--instant] --yes    quick cleanup, undoable
+mareactl undo                                     undo the last cleanup
+mareactl evaporate [<file>] [--gb N] --yes        evaporate per plan, or one file
+mareactl restore <file>                           bring one file back now
+mareactl replicate                                copy unique files to the mirror
+mareactl restore-all --yes                        emergency exit
+mareactl journal [n]                              recent activity
+mareactl agent                                    serve evaporated files without the app
+```
+
+Every command that changes something shows the plan first and does nothing without `--yes`.
+Environment variables: `MAREA_DATA` (data folder, default `%LOCALAPPDATA%\Marea`) and
+`MAREA_LANG` (`en`, `it`, `es`, `fr`, `de`).
+
+## 15. Uninstall
+
+**Portable version:**
+
+1. Open Marea → **Settings → Bring everything back and detach** (or run
+   `mareactl restore-all --yes --uninstall`, which also removes the start-with-Windows entry).
+2. Wait for *Done*, close Marea from the notification area (**Exit**).
+3. Delete the Marea folder. Optionally delete `%LOCALAPPDATA%\Marea` (settings and journal).
+
+> Never delete Marea while files are evaporated. Windows would keep empty placeholders
+> that no program can open until Marea runs again.
+
+## 16. Troubleshooting
+
+| Symptom | What to do |
+|---|---|
+| A program says the file can't be opened / "cloud provider not running" | Start Marea, then open the file again |
+| "Windows protected your PC" | The build is not signed yet: *More info → Run anyway* |
+| A file I expected to free stays on disk | Select it in **Files**: the panel explains why |
+| A model shows as *Unique* but it's public | Enable *Also search Hugging Face by folder name*, or add its repository in Settings, then *Scan and find sources* |
+| A big file takes long to open the first time | It's coming back from its source; see the progress bar. Use *Instant return only* to evaporate only files that return in seconds |
+| The folder I want is refused | System folders, whole drives, network drives and OneDrive folders are refused on purpose; pick a specific subfolder |
+| Something looks wrong | Settings → *Bring everything back and detach*, then open an issue with `mareactl journal 50` |
+
+## 17. Glossary
+
+| Term | Meaning |
+|---|---|
+| **Evaporate** | Turn a file into a 0-byte placeholder that comes back on read |
+| **Duplicate** | Same SHA-256 as another file on disk |
+| **Derivable** | Rebuildable bit for bit from other local files (a *recipe*) |
+| **Re-obtainable** | Same SHA-256 as a public file or a verified copy on your mirror |
+| **Unique** | No known source: never evaporated |
+| **Tide** | The planner that chooses what to free, cheapest to bring back first |
+| **Ledger** | Marea's local record of files, fingerprints and sources (`%LOCALAPPDATA%\Marea\marea.db`) |
+| **Mirror** | A folder (usually a NAS) holding verified copies, stored by fingerprint |

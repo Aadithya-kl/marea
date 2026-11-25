@@ -19,8 +19,8 @@ public partial class JournalView : UserControl, IRefreshable
         {
             When = j.AtUtc.ToLocalTime().ToString("g"),
             Action = (j.Ok ? "" : "⚠ ") + Loc.Render(j.Action),
-            File = j.Path,
+            File = Fmt.ShortPath(j.Path),
             Size = j.Bytes > 0 ? Fmt.Gb(j.Bytes) : "",
-            Detail = Loc.Render(j.Detail),
+            Detail = Fmt.Source(j.Detail),
         }).ToList();
 }

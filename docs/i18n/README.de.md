@@ -14,6 +14,8 @@
 
 ---
 
+📖 [Benutzerhandbuch (auf Englisch)](../MANUAL.md) · [Tester guide](../TESTING.md)
+
 Lokale KI ist schwer. Hugging-Face-Checkpoints, ComfyUI-Modelle, LoRAs, GGUF-Dateien, dasselbe
 Modell in fp32 **und** bf16, derselbe 3-GB-Text-Encoder in vier verschiedenen Apps… Eine 1-TB-Platte
 ist in wenigen Wochen voll.

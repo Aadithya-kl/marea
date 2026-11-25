@@ -14,6 +14,8 @@
 
 ---
 
+📖 [Manuel utilisateur (en anglais)](../MANUAL.md) · [Tester guide](../TESTING.md)
+
 L'IA locale pèse lourd. Checkpoints Hugging Face, modèles ComfyUI, LoRA, fichiers GGUF, le
 même modèle en fp32 **et** en bf16, le même encodeur de texte de 3 Go copié dans quatre
 applications… Un disque de 1 To se remplit en quelques semaines.

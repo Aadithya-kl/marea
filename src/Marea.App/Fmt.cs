@@ -32,6 +32,31 @@ public static class Fmt
              : Loc.T("ago.days", Math.Floor(d.TotalDays));
     }
 
+    /// <summary>A path shown relative to its managed folder ("models\sub\file"), so the UI and
+    /// screenshots don't expose the user profile path. Paths outside managed folders are unchanged.</summary>
+    public static string ShortPath(string path)
+    {
+        foreach (var root in App.Engine.Settings.ManagedRoots.OrderByDescending(r => r.Length))
+        {
+            if (path.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+            {
+                return System.IO.Path.GetFileName(root) + path[root.Length..];
+            }
+        }
+        return path;
+    }
+
+    /// <summary>Renders a coded source label with managed-folder paths shortened.</summary>
+    public static string Source(string coded)
+    {
+        var text = Loc.Render(coded);
+        foreach (var root in App.Engine.Settings.ManagedRoots.OrderByDescending(r => r.Length))
+        {
+            text = text.Replace(root, System.IO.Path.GetFileName(root), StringComparison.OrdinalIgnoreCase);
+        }
+        return text;
+    }
+
     /// <summary>Folder relative to its managed root (e.g. "checkpoints › acestep-v15-turbo").</summary>
     public static string RelativeFolder(FileRecord f)
     {

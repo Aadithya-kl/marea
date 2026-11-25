@@ -59,7 +59,7 @@ public partial class FilesView : UserControl, IRefreshable
         }
         var file = sel[0];
         DetailTitle.Text = System.IO.Path.GetFileName(file.Path);
-        var source = Loc.T("files.source_line", Loc.Render(file.SourceLabel));
+        var source = Loc.T("files.source_line", Fmt.Source(file.SourceLabel));
         if (file.Residency == Residency.Evaporated)
         {
             DetailText.Text = Loc.T("files.is_evaporated", Fmt.Ago(file.EvaporatedUtc ?? default)) + "\n" + source;
