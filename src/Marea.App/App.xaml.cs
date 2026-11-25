@@ -106,6 +106,7 @@ public partial class App : Application
             ContextMenuStrip = new Forms.ContextMenuStrip(),
         };
         _tray.ContextMenuStrip.Items.Add(Loc.T("tray.open"), null, (_, _) => ShowMain());
+        _tray.ContextMenuStrip.Items.Add(Loc.T("tray.quick"), null, (_, _) => Dispatcher.Invoke(() => QuickFreeWindow.Open(null)));
         _tray.ContextMenuStrip.Items.Add(Loc.T("tray.exit"), null, (_, _) => Dispatcher.Invoke(ConfirmExit));
         _tray.DoubleClick += (_, _) => ShowMain();
         UpdateTrayText();

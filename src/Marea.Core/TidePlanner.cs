@@ -4,7 +4,12 @@ namespace Marea.Core;
 /// <param name="File">The file.</param>
 /// <param name="RebuildSeconds">Estimated seconds to bring it back.</param>
 /// <param name="ExpectedCost">Probability of use × rebuild seconds, per GB freed (lower is better).</param>
-public sealed record PlanItem(FileRecord File, double RebuildSeconds, double ExpectedCost);
+/// <param name="Path">How it would come back.</param>
+public sealed record PlanItem(FileRecord File, double RebuildSeconds, double ExpectedCost, ReturnPath Path)
+{
+    /// <summary>True when it comes back offline in seconds.</summary>
+    public bool Instant => Path is ReturnPath.LocalCopy or ReturnPath.Recipe;
+}
 
 /// <summary>Chooses what leaves the disk: the files whose expected cost of coming back, per GB freed,
 /// is lowest. Probability of use decays with idle time (half-life ~ 10 days).</summary>
@@ -16,13 +21,13 @@ public sealed class TidePlanner(SafetyGate gate, Ledger ledger)
     /// <summary>Greedy plan freeing at least <paramref name="bytesNeeded"/> (or everything allowed when 0 or less).
     /// Every pick is re-checked against the files already picked, so two copies never leave together
     /// unless an external source exists.</summary>
-    public List<PlanItem> Plan(long bytesNeeded, DateTime nowUtc)
+    public List<PlanItem> Plan(long bytesNeeded, DateTime nowUtc, bool instantOnly = false)
     {
         var all = ledger.Files();
         var pinned = gate.PinnedPaths(all);
         var leaving = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var ranked = gate.EvaluateAll(nowUtc).Where(v => v.Allowed)
-            .Select(v => new PlanItem(v.File, v.RebuildSeconds, Cost(v, nowUtc)))
+        var ranked = gate.EvaluateAll(nowUtc).Where(v => v.Allowed && (!instantOnly || v.Instant))
+            .Select(v => new PlanItem(v.File, v.RebuildSeconds, Cost(v, nowUtc), v.Path))
             .OrderBy(p => p.ExpectedCost).ThenByDescending(p => p.File.Size)
             .ToList();
         var plan = new List<PlanItem>();
@@ -34,11 +39,11 @@ public sealed class TidePlanner(SafetyGate gate, Ledger ledger)
                 break;
             }
             var recheck = gate.Evaluate(item.File, all, pinned, leaving, nowUtc);
-            if (!recheck.Allowed)
+            if (!recheck.Allowed || (instantOnly && !recheck.Instant))
             {
                 continue;
             }
-            plan.Add(item with { RebuildSeconds = recheck.RebuildSeconds });
+            plan.Add(item with { RebuildSeconds = recheck.RebuildSeconds, Path = recheck.Path });
             leaving.Add(item.File.Path);
             freed += item.File.Size;
         }

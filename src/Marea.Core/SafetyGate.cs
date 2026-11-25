@@ -30,14 +30,33 @@ public sealed record Blocker(BlockerCode Code, string Key, params object?[] Args
     public string Coded => Loc.Code(Key, Args);
 }
 
+/// <summary>How an evaporated file would come back.</summary>
+public enum ReturnPath
+{
+    /// <summary>No independent way back.</summary>
+    None,
+    /// <summary>Copied from an identical local file (seconds, offline).</summary>
+    LocalCopy,
+    /// <summary>Recomputed from other local files (seconds, offline).</summary>
+    Recipe,
+    /// <summary>Copied from the mirror / NAS (needs the LAN).</summary>
+    Mirror,
+    /// <summary>Downloaded from a public hub (needs internet).</summary>
+    Download,
+}
+
 /// <summary>Verdict for one file: either it may evaporate or why not.</summary>
 /// <param name="File">The file.</param>
 /// <param name="Blockers">Reasons it must stay; empty when it may evaporate.</param>
 /// <param name="RebuildSeconds">Estimated seconds to bring it back.</param>
-public sealed record GateVerdict(FileRecord File, IReadOnlyList<Blocker> Blockers, double RebuildSeconds)
+/// <param name="Path">Cheapest way back.</param>
+public sealed record GateVerdict(FileRecord File, IReadOnlyList<Blocker> Blockers, double RebuildSeconds, ReturnPath Path)
 {
     /// <summary>True when nothing blocks evaporation.</summary>
     public bool Allowed => Blockers.Count == 0;
+
+    /// <summary>True when the file comes back offline in seconds (local copy or recipe).</summary>
+    public bool Instant => Path is ReturnPath.LocalCopy or ReturnPath.Recipe;
 }
 
 /// <summary>The rules that make evaporation safe. A file may leave the disk only when a verified,
@@ -76,12 +95,12 @@ public sealed class SafetyGate(Ledger ledger, MareaSettings settings)
         {
             why.Add(new(BlockerCode.Pinned, "gate.pinned"));
         }
-        var seconds = RebuildSeconds(f, all, alsoLeaving, why);
-        return new GateVerdict(f, why, seconds);
+        var (seconds, path) = RebuildSeconds(f, all, alsoLeaving, why);
+        return new GateVerdict(f, why, seconds, path);
     }
 
     /// <summary>Cheapest independent way back; adds a blocker when there is none.</summary>
-    private double RebuildSeconds(FileRecord f, List<FileRecord> all, HashSet<string> leaving, List<Blocker> why)
+    private (double, ReturnPath) RebuildSeconds(FileRecord f, List<FileRecord> all, HashSet<string> leaving, List<Blocker> why)
     {
         var gb = f.Size / 1e9;
         var otherCopy = all.Any(o => o.Sha256 == f.Sha256 && o.Residency == Residency.Local
@@ -89,7 +108,7 @@ public sealed class SafetyGate(Ledger ledger, MareaSettings settings)
                                     && !leaving.Contains(o.Path));
         if (otherCopy)
         {
-            return gb / 1.5;
+            return (gb / 1.5, ReturnPath.LocalCopy);
         }
         var sources = ledger.SourcesOf(f.Sha256);
         if (sources.Any(s => s.Kind == SourceKind.Recipe) && ledger.GetRecipe(f.Sha256) is { } json)
@@ -99,21 +118,21 @@ public sealed class SafetyGate(Ledger ledger, MareaSettings settings)
                 && all.Any(o => string.Equals(o.Path, s.Path, StringComparison.OrdinalIgnoreCase) && o.Residency == Residency.Local));
             if (r.SourcesUnchanged() && sourcesHere)
             {
-                return gb / 0.4;
+                return (gb / 0.4, ReturnPath.Recipe);
             }
         }
         if (sources.Any(s => s.Kind == SourceKind.Mirror))
         {
-            return gb / 0.1;
+            return (gb / 0.1, ReturnPath.Mirror);
         }
         if (sources.Any(s => s.Kind == SourceKind.HuggingFace))
         {
-            return gb * 1000 / Math.Max(1, settings.BandwidthMBps);
+            return (gb * 1000 / Math.Max(1, settings.BandwidthMBps), ReturnPath.Download);
         }
         why.Add(f.Class == Recoverability.Unique
             ? new(BlockerCode.Unique, "gate.unique")
             : new(BlockerCode.SourceLeaving, "gate.source_leaving"));
-        return double.PositiveInfinity;
+        return (double.PositiveInfinity, ReturnPath.None);
     }
 
     /// <summary>Local files that an evaporated file needs to be rebuilt (recipe sources, last local copy).</summary>

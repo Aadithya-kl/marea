@@ -91,6 +91,30 @@ public sealed class EngineEndToEndTests : IDisposable
     }
 
     [Fact]
+    public async Task UndoBringsBackExactlyTheFilesOfOneBatch()
+    {
+        var a = RandomNumberGenerator.GetBytes(2 * 1024 * 1024);
+        var b = RandomNumberGenerator.GetBytes(2 * 1024 * 1024 + 5);
+        foreach (var (name, data) in new[] { ("a1.bin", a), ("a2.bin", a), ("b1.bin", b), ("b2.bin", b) })
+        {
+            File.WriteAllBytes(Path.Combine(_root, name), data);
+        }
+        await _engine.ScanAsync();
+        await _engine.RefreshSourcesAsync();
+        var plan = _engine.Plan(0, instantOnly: true);
+        Assert.Equal(2, plan.Count); // one copy of each pair stays
+        await _engine.EvaporateAsync([plan[0].File], batch: "first");
+        await _engine.EvaporateAsync([plan[1].File], batch: "second");
+        Assert.Equal("second", _engine.LastUndoableBatch()!.Value.Id);
+
+        Assert.Null(await _engine.UndoBatchAsync("second"));
+
+        Assert.Equal(PlaceholderState.NormalFile, Placeholder.GetState(plan[1].File.Path));
+        Assert.Equal(PlaceholderState.Dehydrated, Placeholder.GetState(plan[0].File.Path));
+        Assert.Equal("first", _engine.LastUndoableBatch()!.Value.Id);
+    }
+
+    [Fact]
     public async Task FolderIsNeverDetachedWhilePlaceholdersRemain()
     {
         var data = RandomNumberGenerator.GetBytes(2 * 1024 * 1024);

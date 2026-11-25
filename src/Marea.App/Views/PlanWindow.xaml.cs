@@ -67,7 +67,7 @@ public partial class PlanWindow : Window
     }
 
     /// <summary>Evaporated files need Marea running: offer to start it with Windows (once).</summary>
-    private static void EnsureStartup(Window owner)
+    internal static void EnsureStartup(Window owner)
     {
         if (StartupRegistration.IsEnabled())
         {

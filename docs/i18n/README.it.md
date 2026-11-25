@@ -111,8 +111,11 @@ Requisiti: Windows 10 1809+ o Windows 11, x64, NTFS.
 1. **Primo avvio**: una guida spiega cosa fa Marea e cosa non fa mai, poi trova da sola le
    cartelle di modelli. Togli la spunta a quelle che non vuoi far gestire.
 2. **Scansione**: Marea calcola le impronte e cerca le fonti. Questo passo misura e basta.
-3. **Libera spazio**: rivedi il piano (file, classe, fonte, tempo di ritorno), spunta
-   *Ho capito* e premi **Evapora**.
+3. **Libera spazio in 3 clic**: scegli *quanto* (10 GB, 50 GB, fino alla soglia o tutto
+   quello che è sicuro) e *come devono tornare i file*. Con **solo istantaneo** usi duplicati e
+   ricette, che tornano in secondi anche offline; in alternativa puoi includere anche NAS e
+   internet. Poi premi **Libera ora**. Il pulsante **Annulla questa operazione** riporta
+   esattamente quel gruppo di file. Chi vuole il controllo completo può aprire il piano dettagliato.
 4. **Dimenticatene**: quando un programma apre un file evaporato, torna da solo. Lascia Marea
    attiva: ti propone di avviarsi con Windows.
 
@@ -120,6 +123,8 @@ Requisiti: Windows 10 1809+ o Windows 11, x64, NTFS.
 
 ```
 mareactl status | add <cartella> | scan | plan | evaporate --yes | restore <file>
+mareactl free [--gb N|--all] [--instant] --yes     liberazione rapida, annullabile
+mareactl undo                                      annulla l'ultima liberazione
 mareactl replicate | restore-all --yes | journal | agent
 ```
 

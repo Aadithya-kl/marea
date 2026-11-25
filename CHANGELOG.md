@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **"Free up space in 3 clicks"** wizard: choose how much (10 GB, 50 GB, up to the target,
+  everything safe) and how files must come back (*instant only*: duplicates and recipes, offline
+  in seconds; or also NAS / internet). A one-sentence summary replaces the file table.
+- **One-click undo** of a cleanup: every evaporation is a batch; *Undo this cleanup* (wizard),
+  *Undo last cleanup* (overview) and `mareactl undo` bring back exactly that batch.
+- `mareactl free [--gb N|--all] [--instant] --yes`.
+- Tray menu entry for the wizard.
+
+### Changed
+- Gate verdicts and plan items now carry the return path (local copy, recipe, mirror, download).
+- Ledger schema: new `batch` column, migrated automatically on existing ledgers.
+
 ## [0.1.0] - 2026-11-25
 
 First public pre-release.

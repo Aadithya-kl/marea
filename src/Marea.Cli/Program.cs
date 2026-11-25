@@ -53,6 +53,40 @@ switch (cmd)
             }
             break;
         }
+    case "free":
+        {
+            // Quick mode: --all for everything safe, --gb N for an amount; --instant keeps only
+            // files that come back offline in seconds (local copy or recipe).
+            var instant = args.Contains("--instant");
+            var plan = engine.Plan(args.Contains("--all") ? 0 : GbArg() > 0 ? GbArg() : 10L << 30, instant);
+            PrintPlan(plan);
+            if (!args.Contains("--yes"))
+            {
+                Console.WriteLine(Loc.T("cli.need_yes"));
+                break;
+            }
+            engine.StartProvider();
+            var (done, kept) = await engine.EvaporateAsync(plan.Select(p => p.File), progress, default, "quick-" + DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
+            Console.Error.WriteLine();
+            Console.WriteLine(Loc.T("cli.evaporated", done) + " " + Loc.T("cli.undo_hint"));
+            foreach (var (f, why) in kept)
+            {
+                Console.WriteLine($"  {Loc.T("cli.kept")}: {f.Path} -> {why}");
+            }
+            break;
+        }
+    case "undo":
+        {
+            var last = engine.LastUndoableBatch();
+            if (last is null)
+            {
+                Console.WriteLine(Loc.T("cli.nothing_to_undo"));
+                break;
+            }
+            engine.StartProvider();
+            Console.WriteLine(await engine.UndoBatchAsync(last.Value.Id, progress) ?? Loc.T("cli.undone", last.Value.Files, Gb(last.Value.Bytes)));
+            break;
+        }
     case "restore":
         engine.StartProvider();
         var rec = engine.Ledger.Get(Path.GetFullPath(Arg(1)));

@@ -26,6 +26,18 @@ public sealed class Ledger
             CREATE TABLE IF NOT EXISTS journal(id INTEGER PRIMARY KEY AUTOINCREMENT, at INTEGER, action TEXT,
               path TEXT, bytes INTEGER, ok INTEGER, detail TEXT);
             """);
+        Migrate(c);
+    }
+
+    /// <summary>Adds columns introduced after 0.1.0 to existing ledgers.</summary>
+    private static void Migrate(SqliteConnection c)
+    {
+        using var cmd = c.CreateCommand();
+        cmd.CommandText = "SELECT COUNT(*) FROM pragma_table_info('files') WHERE name='batch'";
+        if ((long)cmd.ExecuteScalar()! == 0)
+        {
+            Exec(c, "ALTER TABLE files ADD COLUMN batch TEXT;");
+        }
     }
 
     private SqliteConnection Open()
@@ -52,14 +64,14 @@ public sealed class Ledger
     {
         using var c = Open();
         Exec(c, """
-            INSERT INTO files(path, root, size, mtime, sha, hashed_at, class, residency, last_access, evaporated_at, source_label)
-            VALUES($p,$r,$s,$m,$h,$ha,$c,$res,$la,$ev,$sl)
+            INSERT INTO files(path, root, size, mtime, sha, hashed_at, class, residency, last_access, evaporated_at, source_label, batch)
+            VALUES($p,$r,$s,$m,$h,$ha,$c,$res,$la,$ev,$sl,$b)
             ON CONFLICT(path) DO UPDATE SET root=$r, size=$s, mtime=$m, sha=$h, hashed_at=$ha, class=$c,
-              residency=$res, last_access=$la, evaporated_at=$ev, source_label=$sl;
+              residency=$res, last_access=$la, evaporated_at=$ev, source_label=$sl, batch=$b;
             """,
             ("$p", f.Path), ("$r", f.Root), ("$s", f.Size), ("$m", f.MTimeTicks), ("$h", f.Sha256),
             ("$ha", f.HashedUtc.Ticks), ("$c", (int)f.Class), ("$res", (int)f.Residency),
-            ("$la", f.LastAccessUtc.Ticks), ("$ev", f.EvaporatedUtc?.Ticks), ("$sl", f.SourceLabel));
+            ("$la", f.LastAccessUtc.Ticks), ("$ev", f.EvaporatedUtc?.Ticks), ("$sl", f.SourceLabel), ("$b", f.Batch));
     }
 
     /// <summary>Removes a file record (the file left the managed folders).</summary>
@@ -70,13 +82,15 @@ public sealed class Ledger
     }
 
     /// <summary>All tracked files.</summary>
-    public List<FileRecord> Files() => QueryFiles("SELECT * FROM files ORDER BY size DESC");
+    public List<FileRecord> Files() => QueryFiles($"SELECT {Columns} FROM files ORDER BY size DESC");
+
+    private const string Columns = "path, root, size, mtime, sha, hashed_at, class, residency, last_access, evaporated_at, source_label, batch";
 
     /// <summary>The record at <paramref name="path"/>, if tracked.</summary>
-    public FileRecord? Get(string path) => QueryFiles("SELECT * FROM files WHERE path=$p", ("$p", path)).FirstOrDefault();
+    public FileRecord? Get(string path) => QueryFiles($"SELECT {Columns} FROM files WHERE path=$p", ("$p", path)).FirstOrDefault();
 
     /// <summary>All tracked files with the given content hash.</summary>
-    public List<FileRecord> WithSha(string sha) => QueryFiles("SELECT * FROM files WHERE sha=$h", ("$h", sha));
+    public List<FileRecord> WithSha(string sha) => QueryFiles($"SELECT {Columns} FROM files WHERE sha=$h", ("$h", sha));
 
     private List<FileRecord> QueryFiles(string sql, params (string, object?)[] args)
     {
@@ -104,6 +118,7 @@ public sealed class Ledger
                 LastAccessUtc = new DateTime(r.GetInt64(8), DateTimeKind.Utc),
                 EvaporatedUtc = r.IsDBNull(9) ? null : new DateTime(r.GetInt64(9), DateTimeKind.Utc),
                 SourceLabel = r.IsDBNull(10) ? "" : r.GetString(10),
+                Batch = r.IsDBNull(11) ? null : r.GetString(11),
             });
         }
         return list;

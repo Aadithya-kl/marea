@@ -63,6 +63,14 @@ Marea nutzt die **Windows-Cloud-Files-API**, dieselbe Technik wie die „Nur onl
 OneDrive. Statt der Cloud dient die Herkunft jeder Datei als Quelle. Keine Adminrechte, kein
 eigener Treiber, kein Hintergrunddienst.
 
+## Speicher in 3 Klicks freigeben
+
+Wähle *wie viel* (10 GB, 50 GB, bis zum Ziel oder alles, was sicher ist) und *wie die Dateien
+zurückkommen sollen*: **nur sofortige Rückkehr** (Duplikate und Rezepte, in Sekunden und offline)
+oder auch vom NAS bzw. aus dem Internet. Drücke **Jetzt freigeben**; ein einziger Button **Diesen
+Vorgang rückgängig machen** holt genau diese Gruppe zurück. Auf der Kommandozeile:
+`mareactl free --all --instant --yes` und `mareactl undo`.
+
 ## Sicherheit
 
 1. **Nichts verlässt die Platte ohne einen unabhängigen, geprüften Rückweg**, der danach noch existiert.

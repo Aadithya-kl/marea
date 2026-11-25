@@ -67,6 +67,42 @@ T = {
 "ov.no_scan": ("Nessuna scansione ancora.", "No scan yet.", "Aún no hay escaneo.", "Aucune analyse pour l'instant.", "Noch kein Scan."),
 "ov.last_scan": ("{0} file nel registro. Ultima impronta: {1}.", "{0} files in the ledger. Last fingerprint: {1}.", "{0} archivos en el registro. Última huella: {1}.", "{0} fichiers dans le registre. Dernière empreinte : {1}.", "{0} Dateien im Register. Letzter Fingerabdruck: {1}."),
 "ov.recent": ("Ultime attività", "Recent activity", "Actividad reciente", "Activité récente", "Letzte Aktivität"),
+# --- quick-free wizard
+"ov.quick": ("Libera spazio in 3 clic", "Free up space in 3 clicks", "Liberar espacio en 3 clics", "Libérer de l'espace en 3 clics", "Speicher in 3 Klicks freigeben"),
+"ov.undo_last": ("Annulla l'ultima liberazione ({0}, {1} file)", "Undo last cleanup ({0}, {1} files)", "Deshacer la última liberación ({0}, {1} archivos)", "Annuler la dernière libération ({0}, {1} fichiers)", "Letzte Freigabe rückgängig ({0}, {1} Dateien)"),
+"op.undo": ("Annullamento", "Undoing", "Deshaciendo", "Annulation", "Rückgängig machen"),
+"tray.quick": ("Libera spazio in 3 clic…", "Free up space in 3 clicks…", "Liberar espacio en 3 clics…", "Libérer de l'espace en 3 clics…", "Speicher in 3 Klicks freigeben…"),
+"qf.title": ("Libera spazio in 3 clic", "Free up space in 3 clicks", "Liberar espacio en 3 clics", "Libérer de l'espace en 3 clics", "Speicher in 3 Klicks freigeben"),
+"qf.subtitle": ("Scegli quanto e come. Marea tocca solo file con una fonte verificata e puoi annullare tutto alla fine.", "Choose how much and how. Marea only touches files with a verified source, and you can undo everything at the end.", "Elige cuánto y cómo. Marea solo toca archivos con una fuente verificada y al final puedes deshacerlo todo.", "Choisissez combien et comment. Marea ne touche qu'aux fichiers ayant une source vérifiée, et vous pouvez tout annuler à la fin.", "Wähle wie viel und wie. Marea fasst nur Dateien mit geprüfter Quelle an, und am Ende kannst du alles rückgängig machen."),
+"qf.how_much": ("1. Quanto spazio ti serve?", "1. How much space do you need?", "1. ¿Cuánto espacio necesitas?", "1. De combien d'espace avez-vous besoin ?", "1. Wie viel Speicher brauchst du?"),
+"qf.to_target": ("Fino alla soglia", "Up to the target", "Hasta el umbral", "Jusqu'au seuil", "Bis zum Ziel"),
+"qf.all_safe": ("Tutto quello che è sicuro", "Everything that is safe", "Todo lo que es seguro", "Tout ce qui est sûr", "Alles, was sicher ist"),
+"qf.all_note": ("il massimo possibile, senza rischi", "as much as possible, without risk", "lo máximo posible, sin riesgo", "le maximum possible, sans risque", "so viel wie möglich, ohne Risiko"),
+"qf.above_target": ("sei già sopra la soglia", "you are already above the target", "ya estás por encima del umbral", "vous êtes déjà au-dessus du seuil", "du bist bereits über dem Ziel"),
+"qf.available": ("disponibili", "available", "disponibles", "disponibles", "verfügbar"),
+"qf.only": ("solo {0} disponibili", "only {0} available", "solo {0} disponibles", "seulement {0} disponibles", "nur {0} verfügbar"),
+"qf.how_back": ("2. Come devono tornare i file?", "2. How must files come back?", "2. ¿Cómo deben volver los archivos?", "2. Comment les fichiers doivent-ils revenir ?", "2. Wie sollen die Dateien zurückkommen?"),
+"qf.instant": ("Solo ritorno istantaneo (consigliato) · {0}", "Instant return only (recommended) · {0}", "Solo regreso instantáneo (recomendado) · {0}", "Retour instantané uniquement (recommandé) · {0}", "Nur sofortige Rückkehr (empfohlen) · {0}"),
+"qf.instant_help": ("Duplicati e file ricalcolabili: tornano in pochi secondi, anche senza internet.", "Duplicates and recomputable files: they come back in seconds, even offline.", "Duplicados y archivos recalculables: vuelven en segundos, incluso sin internet.", "Doublons et fichiers recalculables : ils reviennent en quelques secondes, même hors ligne.", "Duplikate und neu berechenbare Dateien: kommen in Sekunden zurück, auch offline."),
+"qf.download": ("Anche dal NAS o da internet · {0}", "Also from NAS or internet · {0}", "También desde el NAS o internet · {0}", "Aussi depuis le NAS ou internet · {0}", "Auch vom NAS oder aus dem Internet · {0}"),
+"qf.download_help": ("Libera di più: i file pubblici o sul NAS tornano con un download, e il tempo dipende dalla rete.", "Frees more: public or NAS files come back by download, so timing depends on your network.", "Libera más: los archivos públicos o del NAS vuelven por descarga y el tiempo depende de la red.", "Libère davantage : les fichiers publics ou du NAS reviennent par téléchargement, le délai dépend du réseau.", "Gibt mehr frei: öffentliche oder NAS-Dateien kommen per Download zurück, die Dauer hängt vom Netz ab."),
+"qf.summary": ("Libererai {0} da {1} file. Nessun file unico viene toccato: tornano da soli quando li apri, finché Marea è attiva. Ritorno più lento: {2}.", "You will free {0} from {1} files. No unique file is touched: they come back on their own when opened, while Marea is running. Slowest return: {2}.", "Liberarás {0} de {1} archivos. No se toca ningún archivo único: vuelven solos al abrirlos, mientras Marea esté activa. Regreso más lento: {2}.", "Vous libérerez {0} depuis {1} fichiers. Aucun fichier unique n'est touché : ils reviennent seuls à l'ouverture, tant que Marea est active. Retour le plus lent : {2}.", "Du gibst {0} aus {1} Dateien frei. Keine einzigartige Datei wird angefasst: Sie kommen beim Öffnen von selbst zurück, solange Marea läuft. Langsamste Rückkehr: {2}."),
+"qf.less_than_asked": ("È meno dei {0} richiesti: di più non si può liberare in sicurezza.", "That is less than the {0} you asked for: more cannot be freed safely.", "Es menos de los {0} pedidos: no se puede liberar más con seguridad.", "C'est moins que les {0} demandés : impossible d'en libérer plus en sécurité.", "Das ist weniger als die gewünschten {0}: mehr lässt sich nicht sicher freigeben."),
+"qf.nothing": ("Niente da liberare in sicurezza adesso. Prova una nuova scansione o aggiungi una cartella di modelli.", "Nothing can be freed safely right now. Try a new scan or add a model folder.", "Ahora no hay nada que liberar con seguridad. Prueba un nuevo escaneo o añade una carpeta de modelos.", "Rien à libérer en sécurité pour l'instant. Relancez une analyse ou ajoutez un dossier de modèles.", "Gerade lässt sich nichts sicher freigeben. Starte einen neuen Scan oder füge einen Modellordner hinzu."),
+"qf.go": ("3. Libera ora", "3. Free up now", "3. Liberar ahora", "3. Libérer maintenant", "3. Jetzt freigeben"),
+"qf.working": ("Libero spazio…", "Freeing space…", "Liberando espacio…", "Libération en cours…", "Speicher wird freigegeben…"),
+"qf.done_title": ("Fatto: liberati {0}", "Done: {0} freed", "Hecho: {0} liberados", "Terminé : {0} libérés", "Fertig: {0} freigegeben"),
+"qf.done_text": ("{0} file sono evaporati e torneranno da soli quando un programma li apre. Se qualcosa non ti convince, annulla con un clic.", "{0} files evaporated and will come back on their own when a program opens them. If anything looks wrong, undo with one click.", "{0} archivos se evaporaron y volverán solos cuando un programa los abra. Si algo no te convence, deshazlo con un clic.", "{0} fichiers se sont évaporés et reviendront seuls quand un programme les ouvrira. Si quelque chose vous inquiète, annulez en un clic.", "{0} Dateien sind verdunstet und kommen von selbst zurück, wenn ein Programm sie öffnet. Wenn dir etwas nicht passt, mach es mit einem Klick rückgängig."),
+"qf.done_kept": ("{0} file sono rimasti sul disco per sicurezza:", "{0} files stayed on disk for safety:", "{0} archivos se quedaron en el disco por seguridad:", "{0} fichiers sont restés sur le disque par sécurité :", "{0} Dateien sind aus Sicherheitsgründen geblieben:"),
+"qf.undo": ("Annulla questa operazione", "Undo this cleanup", "Deshacer esta operación", "Annuler cette opération", "Diesen Vorgang rückgängig machen"),
+"qf.undoing": ("Riporto i file sul disco…", "Bringing the files back…", "Devolviendo los archivos…", "Retour des fichiers…", "Dateien werden zurückgeholt…"),
+"qf.undone": ("Annullato: tutti i file di questa operazione sono di nuovo sul disco.", "Undone: every file of this cleanup is back on disk.", "Deshecho: todos los archivos de esta operación vuelven a estar en el disco.", "Annulé : tous les fichiers de cette opération sont de retour sur le disque.", "Rückgängig gemacht: alle Dateien dieses Vorgangs sind wieder auf der Platte."),
+"qf.close": ("Chiudi", "Close", "Cerrar", "Fermer", "Schließen"),
+"j.batch_undone": ("liberazione annullata", "cleanup undone", "liberación deshecha", "libération annulée", "Freigabe rückgängig gemacht"),
+"eng.batch_detail": ("{0} file riportati sul disco", "{0} files brought back", "{0} archivos devueltos", "{0} fichiers ramenés", "{0} Dateien zurückgeholt"),
+"cli.undo_hint": ("Per annullare: mareactl undo", "To undo: mareactl undo", "Para deshacer: mareactl undo", "Pour annuler : mareactl undo", "Rückgängig: mareactl undo"),
+"cli.nothing_to_undo": ("Niente da annullare.", "Nothing to undo.", "Nada que deshacer.", "Rien à annuler.", "Nichts rückgängig zu machen."),
+"cli.undone": ("Annullato: {0} file ({1}) di nuovo sul disco.", "Undone: {0} files ({1}) back on disk.", "Deshecho: {0} archivos ({1}) de nuevo en el disco.", "Annulé : {0} fichiers ({1}) de retour sur le disque.", "Rückgängig: {0} Dateien ({1}) wieder auf der Platte."),
 # --- files
 "files.title": ("File", "Files", "Archivos", "Fichiers", "Dateien"),
 "files.subtitle": ("Ogni file con la sua prova di provenienza. Seleziona per i dettagli.", "Every file with its proof of provenance. Select one for details.", "Cada archivo con su prueba de procedencia. Selecciona uno para ver detalles.", "Chaque fichier avec sa preuve de provenance. Sélectionnez-en un pour les détails.", "Jede Datei mit ihrem Herkunftsnachweis. Für Details eine auswählen."),
@@ -281,6 +317,8 @@ HELP = {
 mareactl add <cartella>             gestisci una cartella (es. ...\\checkpoints)
 mareactl remove <cartella>          riporta tutto e smetti di gestirla
 mareactl scan                       impronte, fonti (Hugging Face, mirror, ricette), classi
+mareactl free [--gb N|--all] [--instant] --yes   libera spazio in fretta (annullabile)
+mareactl undo                    annulla l'ultima liberazione
 mareactl plan [--gb N]              cosa evaporerebbe la marea (senza toccare nulla)
 mareactl evaporate [--gb N] --yes   evapora secondo il piano
 mareactl restore <file>             riporta subito un file sul disco
@@ -292,6 +330,8 @@ mareactl agent                      servi i file evaporati senza l'app aperta"""
 mareactl add <folder>               manage a folder (e.g. ...\\checkpoints)
 mareactl remove <folder>            bring everything back and stop managing it
 mareactl scan                       fingerprints, sources (Hugging Face, mirror, recipes), classes
+mareactl free [--gb N|--all] [--instant] --yes   free space fast (undoable)
+mareactl undo                    undo the last cleanup
 mareactl plan [--gb N]              what the tide would evaporate (touches nothing)
 mareactl evaporate [--gb N] --yes   evaporate according to the plan
 mareactl restore <file>             bring a file back to disk now
@@ -303,6 +343,8 @@ mareactl agent                      serve evaporated files without the app open"
 mareactl add <carpeta>              gestionar una carpeta (p. ej. ...\\checkpoints)
 mareactl remove <carpeta>           devolverlo todo y dejar de gestionarla
 mareactl scan                       huellas, fuentes (Hugging Face, espejo, recetas), clases
+mareactl free [--gb N|--all] [--instant] --yes   liberar espacio rápido (se puede deshacer)
+mareactl undo                    deshacer la última liberación
 mareactl plan [--gb N]              qué evaporaría la marea (sin tocar nada)
 mareactl evaporate [--gb N] --yes   evaporar según el plan
 mareactl restore <archivo>          devolver un archivo al disco ahora
@@ -314,6 +356,8 @@ mareactl agent                      servir los archivos evaporados sin la app ab
 mareactl add <dossier>              gérer un dossier (p. ex. ...\\checkpoints)
 mareactl remove <dossier>           tout ramener et ne plus le gérer
 mareactl scan                       empreintes, sources (Hugging Face, miroir, recettes), classes
+mareactl free [--gb N|--all] [--instant] --yes   libérer de l'espace vite (annulable)
+mareactl undo                    annuler la dernière libération
 mareactl plan [--gb N]              ce que la marée évaporerait (sans rien toucher)
 mareactl evaporate [--gb N] --yes   évaporer selon le plan
 mareactl restore <fichier>          ramener un fichier sur le disque maintenant
@@ -325,6 +369,8 @@ mareactl agent                      servir les fichiers évaporés sans l'applic
 mareactl add <Ordner>               einen Ordner verwalten (z. B. ...\\checkpoints)
 mareactl remove <Ordner>            alles zurückholen und nicht mehr verwalten
 mareactl scan                       Fingerabdrücke, Quellen (Hugging Face, Spiegel, Rezepte), Klassen
+mareactl free [--gb N|--all] [--instant] --yes   schnell Speicher freigeben (rückgängig machbar)
+mareactl undo                    letzte Freigabe rückgängig machen
 mareactl plan [--gb N]              was die Flut verdunsten würde (ändert nichts)
 mareactl evaporate [--gb N] --yes   nach Plan verdunsten
 mareactl restore <Datei>            eine Datei sofort zurückholen

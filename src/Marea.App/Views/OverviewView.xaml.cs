@@ -36,6 +36,14 @@ public partial class OverviewView : UserControl, IRefreshable
         UniqueText.Text = Fmt.Gb(files.Where(f => f.Class == Recoverability.Unique).Sum(f => f.Size));
         TotalText.Text = Fmt.Gb(files.Sum(f => f.Size));
         FreeButton.IsEnabled = allowed > 0;
+        QuickButton.IsEnabled = allowed > 0;
+        var undo = e.LastUndoableBatch();
+        UndoButton.Visibility = undo is null ? Visibility.Collapsed : Visibility.Visible;
+        if (undo is { } u)
+        {
+            UndoButton.Content = Loc.T("ov.undo_last", Fmt.Gb(u.Bytes), u.Files);
+            UndoButton.Tag = u.Id;
+        }
 
         var classes = new[] { Recoverability.Duplicate, Recoverability.Derivable, Recoverability.Reobtainable, Recoverability.Unique };
         var max = Math.Max(1, classes.Max(c => files.Where(f => f.Class == c).Sum(f => f.Size)));
@@ -76,6 +84,20 @@ public partial class OverviewView : UserControl, IRefreshable
         await App.Engine.ScanAsync(p, ct);
         await App.Engine.RefreshSourcesAsync(p, ct);
     });
+
+    private void OnQuick(object sender, RoutedEventArgs e) => QuickFreeWindow.Open(Window.GetWindow(this));
+
+    private async void OnUndo(object sender, RoutedEventArgs e)
+    {
+        var batch = (string)UndoButton.Tag;
+        string? problem = null;
+        await ((MainWindow)Window.GetWindow(this)).RunAsync(Loc.T("op.undo"), async (p, ct) =>
+            problem = await App.Engine.UndoBatchAsync(batch, p, ct));
+        if (problem is not null)
+        {
+            MessageBox.Show(Window.GetWindow(this), problem, "Marea", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
 
     private void OnFree(object sender, RoutedEventArgs e) => PlanWindow.ShowFor((MainWindow)Window.GetWindow(this), null);
 }

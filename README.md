@@ -149,8 +149,14 @@ with the first signed release.
    model folders automatically (`checkpoints`, `models`, `hub`, …). Untick any you don't want
    managed.
 2. **Scan**: Marea fingerprints the files and looks for sources. This step only measures.
-3. **Free up space**: review the plan (file, class, source, time to come back), tick
-   *I understand*, and press **Evaporate**.
+3. **Free up space in 3 clicks**: choose *how much* (10 GB, 50 GB, up to your target, or
+   everything that is safe) and *how files must come back* (instant only, meaning duplicates and
+   recipes that return offline in seconds, or also from your NAS / the internet), then press
+   **Free up now**. A single **Undo this cleanup** button brings back exactly that batch. Power
+   users can open the detailed plan instead and pick files one by one.
+
+   <p align="center"><img src="docs/images/quick-free.png" width="560" alt="Free up space in 3 clicks"></p>
+
 4. **Forget about it**: when a program opens an evaporated file, it comes back by itself.
    Keep Marea running (it offers to start with Windows).
 
@@ -165,6 +171,8 @@ mareactl remove <folder>            bring everything back and stop managing it
 mareactl scan                       fingerprints, sources, classes
 mareactl plan [--gb N]              what the tide would evaporate (touches nothing)
 mareactl evaporate [--gb N] --yes   evaporate according to the plan
+mareactl free [--gb N|--all] [--instant] --yes   quick cleanup, undoable
+mareactl undo                       undo the last cleanup
 mareactl restore <file>             bring one file back now
 mareactl replicate                  copy unique files to the mirror (NAS)
 mareactl restore-all --yes          emergency exit: bring everything back, detach everything
@@ -216,6 +224,7 @@ the folder (portable). Either way every file comes back first.
 - [x] Provenance ledger, duplicates, Hugging Face sources, NAS mirror, bf16 ← fp32 recipes
 - [x] Transparent evaporation and verified return (Windows Cloud Files)
 - [x] Tide planner, desktop app, `mareactl`, 5 languages, portable build
+- [x] "Free up space in 3 clicks" wizard with instant-only mode and one-click undo
 - [ ] Signed releases, MSI installer, winget
 - [ ] Ollama (by digest) and Civitai (by hash) sources
 - [ ] Predictive high tide: bring models back *before* you need them

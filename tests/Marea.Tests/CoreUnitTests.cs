@@ -177,6 +177,26 @@ public sealed class SafetyGateTests : IDisposable
     }
 
     [Fact]
+    public void InstantOnlyPlanSkipsFilesThatNeedADownload()
+    {
+        var old = DateTime.UtcNow.AddDays(-60);
+        Add("dup-a.bin", new string('1', 64), old);
+        Add("dup-b.bin", new string('1', 64), old);
+        var hubSha = new string('2', 64);
+        Add("public.bin", hubSha, old);
+        _ledger.PutSource(new Source(hubSha, SourceKind.HuggingFace, "o/r@abc:public.bin", 1 << 30, DateTime.UtcNow));
+        var planner = new TidePlanner(new SafetyGate(_ledger, _settings), _ledger);
+
+        var instant = planner.Plan(0, DateTime.UtcNow, instantOnly: true);
+        var all = planner.Plan(0, DateTime.UtcNow);
+
+        Assert.Single(instant);
+        Assert.Equal(ReturnPath.LocalCopy, instant[0].Path);
+        Assert.Equal(2, all.Count);
+        Assert.Contains(all, p => p.Path == ReturnPath.Download);
+    }
+
+    [Fact]
     public void ExpectedCostPrefersStaleCheapFiles()
     {
         Assert.True(TidePlanner.UseProbability(60) < TidePlanner.UseProbability(1));

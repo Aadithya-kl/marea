@@ -68,8 +68,11 @@ public sealed class FileRecord
     public DateTime LastAccessUtc { get; set; }
     /// <summary>When it was evaporated, if it is.</summary>
     public DateTime? EvaporatedUtc { get; set; }
-    /// <summary>Human readable description of the best source.</summary>
+    /// <summary>Coded description of the best source (render with Loc.Render).</summary>
     public string SourceLabel { get; set; } = "";
+
+    /// <summary>Id of the evaporation batch that took it off the disk (for one-click undo).</summary>
+    public string? Batch { get; set; }
 
     /// <summary>Size in GiB.</summary>
     public double SizeGb => Size / (double)(1L << 30);

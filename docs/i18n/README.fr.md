@@ -63,6 +63,14 @@ Marea s'appuie sur l'**API Cloud Files de Windows**, celle des fichiers « en li
 de OneDrive. La provenance de chaque fichier remplace le cloud. Pas de droits administrateur,
 pas de pilote propre, pas de service en arrière-plan.
 
+## Libérer de l'espace en 3 clics
+
+Choisissez *combien* (10 Go, 50 Go, jusqu'au seuil ou tout ce qui est sûr) et *comment les fichiers
+doivent revenir* : **retour instantané uniquement** (doublons et recettes, en quelques secondes et hors
+ligne) ou aussi depuis le NAS ou internet. Appuyez sur **Libérer maintenant** ; un seul bouton
+**Annuler cette opération** ramène exactement ce lot. En ligne de commande :
+`mareactl free --all --instant --yes` et `mareactl undo`.
+
 ## Sécurité
 
 1. **Rien ne sort sans un chemin de retour indépendant et vérifié** qui existera encore après.

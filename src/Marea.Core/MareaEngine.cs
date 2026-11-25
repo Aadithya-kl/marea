@@ -92,12 +92,40 @@ public sealed class MareaEngine : IDisposable
     public List<GateVerdict> Evaluate() => _gate.EvaluateAll(DateTime.UtcNow);
 
     /// <summary>The tide's plan to free <paramref name="bytes"/> (everything allowed when 0).</summary>
-    public List<PlanItem> Plan(long bytes) => new TidePlanner(_gate, Ledger).Plan(bytes, DateTime.UtcNow);
+    public List<PlanItem> Plan(long bytes, bool instantOnly = false) =>
+        new TidePlanner(_gate, Ledger).Plan(bytes, DateTime.UtcNow, instantOnly);
+
+    /// <summary>What the quick wizard can offer right now: bytes that come back instantly
+    /// (local copy or recipe, offline) and bytes including mirror / download sources.</summary>
+    public (long Instant, long All) QuickAvailability() =>
+        (Plan(0, instantOnly: true).Sum(p => p.File.Size), Plan(0).Sum(p => p.File.Size));
+
+    /// <summary>The most recent batch that still has evaporated files, with its file count and bytes.</summary>
+    public (string Id, int Files, long Bytes, DateTime AtUtc)? LastUndoableBatch()
+    {
+        var gone = Ledger.Files().Where(f => f.Residency == Residency.Evaporated && f.Batch is not null).ToList();
+        var last = gone.GroupBy(f => f.Batch!).OrderByDescending(g => g.Max(f => f.EvaporatedUtc ?? default)).FirstOrDefault();
+        return last is null ? null : (last.Key, last.Count(), last.Sum(f => f.Size), last.Max(f => f.EvaporatedUtc ?? default));
+    }
+
+    /// <summary>Undo: brings back exactly the files of one evaporation batch. Returns an error or null.</summary>
+    public async Task<string?> UndoBatchAsync(string batch, IProgress<ScanProgress>? progress = null, CancellationToken ct = default)
+    {
+        var files = Ledger.Files().Where(f => f.Batch == batch && f.Residency == Residency.Evaporated).ToList();
+        var problem = await BringBackAsync(files, progress, ct);
+        if (problem is null)
+        {
+            Ledger.Log("j.batch_undone", "", files.Sum(f => f.Size), true, Loc.Code("eng.batch_detail", files.Count));
+        }
+        return problem;
+    }
 
     /// <summary>Evaporates the given files one by one; returns how many left the disk and why others stayed.</summary>
     public async Task<(int Done, List<(FileRecord File, string Why)> Kept)> EvaporateAsync(
-        IEnumerable<FileRecord> files, IProgress<ScanProgress>? progress = null, CancellationToken ct = default)
+        IEnumerable<FileRecord> files, IProgress<ScanProgress>? progress = null, CancellationToken ct = default,
+        string? batch = null)
     {
+        batch ??= DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
         var ev = new Evaporator(Ledger, Settings, _hub, _gate);
         var done = 0;
         var kept = new List<(FileRecord, string)>();
@@ -105,7 +133,7 @@ public sealed class MareaEngine : IDisposable
         {
             ct.ThrowIfCancellationRequested();
             var fresh = Ledger.Get(f.Path) ?? f;
-            var why = await ev.EvaporateAsync(fresh, progress, ct);
+            var why = await ev.EvaporateAsync(fresh, progress, ct, batch);
             if (why is null)
             {
                 done++;

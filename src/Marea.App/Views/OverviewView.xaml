@@ -88,8 +88,10 @@
                         <TextBlock Text="{l:T ov.breakdown_help}" Style="{StaticResource Caption}" Margin="0,10,0,0" />
                     </StackPanel>
                     <StackPanel Grid.Column="1" Margin="28,0,0,0" Width="230">
-                        <Button x:Name="FreeButton" Style="{StaticResource AccentButtonStyle}" Content="{l:T ov.free}" Click="OnFree" HorizontalAlignment="Stretch" Margin="0,0,0,8" Padding="0,8" />
+                        <Button x:Name="QuickButton" Style="{StaticResource AccentButtonStyle}" Content="{l:T ov.quick}" Click="OnQuick" HorizontalAlignment="Stretch" Margin="0,0,0,8" Padding="0,10" FontWeight="SemiBold" />
+                        <Button x:Name="FreeButton" Content="{l:T ov.free}" Click="OnFree" HorizontalAlignment="Stretch" Margin="0,0,0,8" Padding="0,8" />
                         <Button Content="{l:T ov.scan}" Click="OnScan" HorizontalAlignment="Stretch" Padding="0,8" />
+                        <Button x:Name="UndoButton" Click="OnUndo" HorizontalAlignment="Stretch" Margin="0,8,0,0" Padding="0,8" Visibility="Collapsed" />
                         <TextBlock x:Name="LastScan" Style="{StaticResource Caption}" Margin="0,10,0,0" />
                     </StackPanel>
                 </Grid>

@@ -1,0 +1,110 @@
+<Window x:Class="Marea.App.Views.QuickFreeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:Marea.App"
+        Title="{l:T qf.title}" Width="720" Height="700" MinWidth="620" MinHeight="600"
+        Icon="pack://application:,,,/Assets/marea.ico"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="ChoiceCard" TargetType="Border" BasedOn="{StaticResource Card}">
+            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="Padding" Value="14,10" />
+        </Style>
+    </Window.Resources>
+    <Grid Margin="30,24">
+        <!-- Step 1: choose -->
+        <DockPanel x:Name="ChoosePanel">
+            <StackPanel DockPanel.Dock="Top">
+                <TextBlock Text="{l:T qf.title}" Style="{StaticResource PageTitle}" />
+                <TextBlock Text="{l:T qf.subtitle}" Style="{StaticResource PageSubtitle}" Margin="0,0,0,14" />
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Bottom">
+                <Border Style="{StaticResource Card}" Margin="0,6,0,14" Padding="16,12">
+                    <TextBlock x:Name="Summary" TextWrapping="Wrap" FontSize="15" />
+                </Border>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="{l:T op.cancel}" Width="120" Margin="0,0,10,0" IsCancel="True" />
+                    <Button x:Name="GoButton" Content="{l:T qf.go}" Width="190" Style="{StaticResource AccentButtonStyle}" Click="OnGo" />
+                </StackPanel>
+            </StackPanel>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock Text="{l:T qf.how_much}" Style="{StaticResource SectionTitle}" />
+                    <UniformGrid Columns="2" Margin="-4,0,-4,6">
+                        <Border Style="{StaticResource ChoiceCard}" Margin="4,0,4,8">
+                            <RadioButton x:Name="Amount10" GroupName="amount" Checked="OnChoice">
+                                <StackPanel Margin="4,0,0,0">
+                                    <TextBlock Text="10 GB" FontWeight="SemiBold" />
+                                    <TextBlock x:Name="Amount10Note" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                            </RadioButton>
+                        </Border>
+                        <Border Style="{StaticResource ChoiceCard}" Margin="4,0,4,8">
+                            <RadioButton x:Name="Amount50" GroupName="amount" Checked="OnChoice">
+                                <StackPanel Margin="4,0,0,0">
+                                    <TextBlock Text="50 GB" FontWeight="SemiBold" />
+                                    <TextBlock x:Name="Amount50Note" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                            </RadioButton>
+                        </Border>
+                        <Border Style="{StaticResource ChoiceCard}" Margin="4,0,4,8">
+                            <RadioButton x:Name="AmountTarget" GroupName="amount" Checked="OnChoice">
+                                <StackPanel Margin="4,0,0,0">
+                                    <TextBlock Text="{l:T qf.to_target}" FontWeight="SemiBold" />
+                                    <TextBlock x:Name="AmountTargetNote" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                            </RadioButton>
+                        </Border>
+                        <Border Style="{StaticResource ChoiceCard}" Margin="4,0,4,8">
+                            <RadioButton x:Name="AmountAll" GroupName="amount" Checked="OnChoice">
+                                <StackPanel Margin="4,0,0,0">
+                                    <TextBlock Text="{l:T qf.all_safe}" FontWeight="SemiBold" />
+                                    <TextBlock x:Name="AmountAllNote" Style="{StaticResource Caption}" />
+                                </StackPanel>
+                            </RadioButton>
+                        </Border>
+                    </UniformGrid>
+
+                    <TextBlock Text="{l:T qf.how_back}" Style="{StaticResource SectionTitle}" Margin="0,8,0,10" />
+                    <Border Style="{StaticResource ChoiceCard}">
+                        <RadioButton x:Name="ModeInstant" GroupName="mode" Checked="OnChoice">
+                            <StackPanel Margin="4,0,0,0">
+                                <TextBlock x:Name="ModeInstantTitle" FontWeight="SemiBold" />
+                                <TextBlock Text="{l:T qf.instant_help}" Style="{StaticResource Caption}" />
+                            </StackPanel>
+                        </RadioButton>
+                    </Border>
+                    <Border Style="{StaticResource ChoiceCard}">
+                        <RadioButton x:Name="ModeAll" GroupName="mode" Checked="OnChoice">
+                            <StackPanel Margin="4,0,0,0">
+                                <TextBlock x:Name="ModeAllTitle" FontWeight="SemiBold" />
+                                <TextBlock Text="{l:T qf.download_help}" Style="{StaticResource Caption}" />
+                            </StackPanel>
+                        </RadioButton>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+
+        <!-- Step 2: working -->
+        <StackPanel x:Name="WorkPanel" Visibility="Collapsed" VerticalAlignment="Center">
+            <TextBlock Text="{l:T qf.working}" Style="{StaticResource PageTitle}" />
+            <TextBlock x:Name="WorkDetail" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" Margin="0,8,0,8" />
+            <ProgressBar x:Name="WorkProgress" Height="6" Maximum="1" />
+            <Button x:Name="StopButton" Content="{l:T op.cancel}" HorizontalAlignment="Right" Width="120" Margin="0,18,0,0" Click="OnStop" />
+        </StackPanel>
+
+        <!-- Step 3: done -->
+        <DockPanel x:Name="DonePanel" Visibility="Collapsed">
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="UndoButton" Content="{l:T qf.undo}" Width="220" Margin="0,0,10,0" Click="OnUndo" />
+                <Button Content="{l:T qf.close}" Width="140" Style="{StaticResource AccentButtonStyle}" Click="OnClose" />
+            </StackPanel>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock x:Name="DoneTitle" Style="{StaticResource PageTitle}" Foreground="{StaticResource DuplicateBrush}" TextWrapping="Wrap" />
+                <TextBlock x:Name="DoneText" Style="{StaticResource PageSubtitle}" FontSize="15" />
+                <TextBlock x:Name="DoneKept" Style="{StaticResource Caption}" />
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>

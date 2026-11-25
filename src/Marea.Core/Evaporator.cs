@@ -12,7 +12,8 @@ public sealed class Evaporator(Ledger ledger, MareaSettings settings, HuggingFac
     public const string Version = "0.1";
 
     /// <summary>Evaporates <paramref name="f"/>; returns null on success or the reason it was kept.</summary>
-    public async Task<string?> EvaporateAsync(FileRecord f, IProgress<ScanProgress>? progress = null, CancellationToken ct = default)
+    public async Task<string?> EvaporateAsync(FileRecord f, IProgress<ScanProgress>? progress = null, CancellationToken ct = default,
+        string? batch = null)
     {
         var all = ledger.Files();
         var verdict = gate.Evaluate(f, all, gate.PinnedPaths(all), [], DateTime.UtcNow);
@@ -68,6 +69,7 @@ public sealed class Evaporator(Ledger ledger, MareaSettings settings, HuggingFac
         }
         f.Residency = Residency.Evaporated;
         f.EvaporatedUtc = DateTime.UtcNow;
+        f.Batch = batch;
         ledger.Upsert(f);
         ledger.Log("j.evaporated", f.Path, f.Size, true, f.SourceLabel);
         return null;
