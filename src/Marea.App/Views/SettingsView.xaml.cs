@@ -43,6 +43,7 @@ public partial class SettingsView : UserControl, IRefreshable
         NameSearch.IsChecked = s.HubNameSearch;
         Ollama.IsChecked = s.OllamaSource;
         Watch.IsChecked = s.WatchSources;
+        ShowBlocked();
         Rescue.IsChecked = s.RescueAtRisk;
         Updates.IsChecked = s.CheckForUpdates;
         UpdateCard.Visibility = s.AvailableUpdate is null ? Visibility.Collapsed : Visibility.Visible;
@@ -109,6 +110,23 @@ public partial class SettingsView : UserControl, IRefreshable
     private bool _loading;
 
     /// <summary>Applies the chosen theme immediately (saved with the other settings).</summary>
+    /// <summary>Lists the programs blocked from bringing evaporated files back.</summary>
+    private void ShowBlocked()
+    {
+        var list = App.Engine.Settings.BlockedReaders.Select(p => new { Path = p, Name = ReaderGuard.DisplayName(p) }).ToList();
+        BlockedList.ItemsSource = list;
+        NoBlocked.Visibility = list.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void OnUnblock(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { Tag: string process })
+        {
+            App.Engine.UnblockReader(process);
+            ShowBlocked();
+        }
+    }
+
     private void OnThemePreview(object sender, SelectionChangedEventArgs e)
     {
         if (!_loading && ThemeBox.SelectedItem is LangItem t)

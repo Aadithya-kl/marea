@@ -1,6 +1,6 @@
 # Marea — User manual
 
-Version 0.4 · Windows 10 1809+ / Windows 11 · English
+Version 0.5 · Windows 10 1809+ / Windows 11 · English
 ([Italiano](i18n/README.it.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [Deutsch](i18n/README.de.md))
 
 1. [What Marea does](#1-what-marea-does)
@@ -93,6 +93,15 @@ OneDrive or similar services.
   - **Undo last cleanup**: appears after a cleanup and brings back exactly those files.
 - **Service running** (bottom left): evaporated files can only come back while Marea is
   running. Closing the window keeps Marea in the notification area.
+
+### Share your result
+
+**Share** (next to *Scan*) saves an image of your numbers in *Pictures\Marea*, copies it to the
+clipboard and shows it in Explorer, ready to paste in a post or a chat. After a 3-click cleanup the
+same button appears on the result screen with the space that batch freed. The image contains numbers
+only: no paths, no file or model names.
+
+![Share card](images/share-card.png)
 
 ## 5. Free up space in 3 clicks
 
@@ -192,10 +201,30 @@ disabled, an Ollama tag withdrawn. A failed check (offline, timeout) never count
 | **Maybe the last copy** | The file is on disk and its public source is disappearing or gone | Never frees it; copies it to the mirror if you have one (or press **Copy to mirror**) |
 | **Can't come back** | The file is evaporated and every source is gone | Tells you; put a copy back in its folder if you have one elsewhere |
 
+### Forgotten models
+
+The filter **Not used in 90 days** lists the models none of whose files has been read or written in
+the last 90 days. **Free these…** opens the detailed plan for their files still on disk: you choose,
+and the safety gate still decides file by file what may leave.
+
 **Check sources** on the Models page runs the check now. Both the daily check and the automatic
 rescue can be turned off in *Settings → Sources*.
 
 ## 9. When a program opens an evaporated file
+
+### Programs that read everything
+
+Some programs read every file they find: antivirus scans, backup tools, indexers, other model
+managers. Reading an evaporated file brings it back, so such a program can silently undo a cleanup.
+When one program brings back 10 or more files (or 50 GB) within 10 minutes, Marea shows a
+notification and a bar on the overview naming it:
+
+- **Block it**: its reads of evaporated files fail from now on ("access denied to the cloud file"),
+  and the files stay evaporated. Every other program keeps opening them normally.
+- **It's fine**: Marea stops warning about that program.
+
+Blocked programs are listed in *Settings → Blocked programs*, each with an **Unblock** button.
+Marea itself (the app and `mareactl`) is never counted.
 
 Nothing special happens on your side: ComfyUI, Python, Ollama or any other program opens the
 file as usual. Windows asks Marea for the data, and Marea delivers it from the cheapest live
@@ -256,6 +285,7 @@ Every screenshot in this manual uses the light theme; the dark theme looks like 
 | Rescue models at risk automatically | **On** | Brings back evaporated files while their source still answers; copies possible last copies to the mirror |
 | Start Marea with Windows | asked on first cleanup | Needed for evaporated files to open after a reboot |
 | Tell me when a new version is out | On | Daily check on GitHub; notification only |
+| Blocked programs | none | Programs that may not bring evaporated files back (see §9) |
 
 ## 13. Sources: Hugging Face, Ollama, your NAS, recipes
 
@@ -292,7 +322,7 @@ into the current language. Run `mareactl journal 50` to copy it into a bug repor
 mareactl status [--json]                          disk and ledger status
 mareactl add <folder>                             manage a folder
 mareactl scan                                     fingerprints, sources, classes, model headers
-mareactl models [--json]                          every model: format, precision, safety
+mareactl models [--unused N] [--json]             every model, or those unused for N days
 mareactl check <file|folder>... [--json]          safety check before loading (no setup needed)
 mareactl watch [--no-rescue] [--json]            check public sources, rescue models at risk
 mareactl plan [--gb N] [--instant] [--json]       what would evaporate (touches nothing)

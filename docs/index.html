@@ -31,7 +31,7 @@
       "name": "Marea",
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": "Windows 10, Windows 11",
-      "softwareVersion": "0.4.0",
+      "softwareVersion": "0.5.0",
       "license": "https://opensource.org/licenses/MIT",
       "isAccessibleForFree": true,
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
@@ -51,6 +51,8 @@
         "Models inventory: format, quantization, parameters",
         "Pickle and GGUF load-safety check without loading anything",
         "Daily endangered-model watch with automatic rescue",
+        "Unused-models filter and shareable result card",
+        "Mass-read detection with per-program blocking",
         "Command line with versioned JSON for scripts and AI agents",
         "English, Italian, Spanish, French, German; light and dark theme"
       ]
@@ -178,6 +180,7 @@ footer { padding: 32px 0 48px; color: var(--muted); font-size: .9rem; text-align
     <div class="grid">
       <div class="card"><h3>1. Proof, not guesses</h3><p>Every file is fingerprinted (SHA-256 and tensor headers). A file can leave the disk only if Marea can prove a way to get the exact bytes back: a duplicate, a bit-exact recipe, a pinned Hugging Face commit, an Ollama blob or your NAS.</p></div>
       <div class="card"><h3>2. Evaporate, don't delete</h3><p>The file stays in its folder with its name and size but takes 0 bytes, using the same Windows mechanism as OneDrive “online-only” files. No admin rights, no driver of its own.</p></div>
+      <div class="card"><h3>Your results, protected</h3><p>Share an image of your numbers in one click, find models you have not touched in 90 days, and block programs (backups, scanners) that would undo a cleanup by reading every file.</p></div>
       <div class="card"><h3>3. Back on open, verified</h3><p>When ComfyUI, Python, llama.cpp or any program opens it, Marea brings it back on the fly and re-checks its SHA-256. One click undoes any cleanup.</p></div>
     </div>
   </section>

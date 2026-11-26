@@ -121,6 +121,32 @@
                 </StackPanel>
             </Border>
 
+            <!-- Programs blocked from bringing files back -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <StackPanel Style="{StaticResource Head}">
+                        <Path Data="{StaticResource Icon.Prohibited}" Style="{StaticResource Ico}" Margin="0,0,10,0" />
+                        <TextBlock Text="{l:T reader.section}" Style="{StaticResource SectionTitle}" />
+                    </StackPanel>
+                    <TextBlock Text="{l:T reader.section_help}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,0,0,10" />
+                    <TextBlock x:Name="NoBlocked" Text="{l:T reader.none}" Style="{StaticResource Caption}" FontStyle="Italic" />
+                    <ItemsControl x:Name="BlockedList" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel Margin="0,4">
+                                    <Button DockPanel.Dock="Right" Tag="{Binding Path}" Click="OnUnblock" Padding="10,4" Content="{l:T reader.unblock}" />
+                                    <Path DockPanel.Dock="Left" Data="{StaticResource Icon.Prohibited}" Style="{StaticResource Ico}" Fill="{StaticResource WarningBrush}" Margin="0,0,10,0" />
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding Path}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
             <!-- Startup and updates -->
             <Border Style="{StaticResource Card}">
                 <StackPanel>

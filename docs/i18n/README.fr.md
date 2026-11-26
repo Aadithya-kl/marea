@@ -64,6 +64,10 @@ pickle de Python. Marea lit ses instructions **sans les exécuter** et donne un 
 TorchScript, modèles de chat GGUF qui tentent de sortir de leur sandbox) ou *Dangereux*. Pour
 vérifier un modèle tout juste téléchargé : `mareactl check <fichier ou dossier>`.
 
+## Nouveautés de la 0.5
+
+**Partager** enregistre une image avec vos chiffres (espace libéré, modèles, zéro octet supprimé), sans chemins ni noms de fichiers. Le filtre **Inutilisés depuis 90 jours** trouve les modèles oubliés. Et si un programme (antivirus, sauvegarde, autre gestionnaire de modèles) ramène beaucoup de fichiers évaporés en quelques minutes, Marea vous le signale et vous permet de le **bloquer** : ses lectures échouent et les fichiers restent évaporés, tandis que les autres programmes les ouvrent normalement.
+
 ## Modèles menacés
 
 Les modèles disparaissent : dépôts supprimés, rendus privés ou restreints, fichiers retirés dans une nouvelle version, tags Ollama retirés. Chaque jour, Marea vérifie les sources publiques et repère les signes à l'avance, tant que les octets épinglés sont encore servis : il **ramène** les fichiers évaporés qui ne dépendent que d'une source qui disparaît, **ne libère plus** ceux qui sont peut-être la dernière copie et les **copie sur le miroir** (NAS). Un échec réseau ne compte jamais comme un signe. En ligne de commande : `mareactl watch --json`.

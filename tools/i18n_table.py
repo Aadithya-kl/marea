@@ -451,6 +451,35 @@ T = {
 "set.rescue": ("Salva i modelli a rischio automaticamente", "Rescue models at risk automatically", "Rescatar automáticamente los modelos en riesgo", "Sauver automatiquement les modèles menacés", "Gefährdete Modelle automatisch retten"),
 "set.rescue_help": ("Riporta sul disco i file evaporati finché la loro fonte risponde ancora, e copia sul mirror quelli che potrebbero essere l'ultima copia.", "Brings evaporated files back while their source still answers, and copies possible last copies to the mirror.", "Trae los archivos evaporados mientras su fuente aún responde y copia al espejo los que podrían ser la última copia.", "Ramène les fichiers évaporés tant que leur source répond encore, et copie sur le miroir ceux qui pourraient être la dernière copie.", "Holt verdunstete Dateien zurück, solange ihre Quelle noch antwortet, und kopiert mögliche letzte Kopien auf den Spiegel."),
 "cli.watch_summary": ("Fonti controllate: {0}. Riportati in tempo: {1}. Copiati sul mirror: {2}.", "Sources checked: {0}. Brought back in time: {1}. Copied to the mirror: {2}.", "Fuentes revisadas: {0}. Traídos a tiempo: {1}. Copiados al espejo: {2}.", "Sources vérifiées : {0}. Ramenés à temps : {1}. Copiés sur le miroir : {2}.", "Quellen geprüft: {0}. Rechtzeitig zurückgeholt: {1}. Auf den Spiegel kopiert: {2}."),
+# --- 0.5: share card, mass reads, unused models
+"share.button": ("Condividi", "Share", "Compartir", "Partager", "Teilen"),
+"share.tip": ("Salva un'immagine dei tuoi risultati, la copia negli appunti e la mostra in Esplora risorse", "Saves an image of your results, copies it to the clipboard and shows it in Explorer", "Guarda una imagen de tus resultados, la copia al portapapeles y la muestra en el Explorador", "Enregistre une image de vos résultats, la copie dans le presse-papiers et l'affiche dans l'Explorateur", "Speichert ein Bild deiner Ergebnisse, kopiert es in die Zwischenablage und zeigt es im Explorer"),
+"share.freed": ("{0} liberati", "{0} freed", "{0} liberados", "{0} libérés", "{0} freigegeben"),
+"share.freeable": ("{0} liberabili", "{0} can be freed", "{0} liberables", "{0} libérables", "{0} freigebbar"),
+"share.subline": ("da {0} di modelli AI, senza cancellare un solo byte", "from {0} of AI models, without deleting a single byte", "de {0} de modelos de IA, sin borrar un solo byte", "sur {0} de modèles d'IA, sans supprimer un seul octet", "aus {0} KI-Modellen, ohne ein einziges Byte zu löschen"),
+"share.models": ("modelli", "models", "modelos", "modèles", "Modelle"),
+"share.instant": ("tornano offline in pochi secondi", "come back offline in seconds", "vuelven sin conexión en segundos", "reviennent hors ligne en quelques secondes", "kommen offline in Sekunden zurück"),
+"share.deleted": ("byte cancellati", "bytes deleted", "bytes borrados", "octets supprimés", "Bytes gelöscht"),
+"share.footer": ("I file tornano da soli, verificati con SHA-256 · github.com/indecenti/marea", "Files come back on their own, SHA-256 verified · github.com/indecenti/marea", "Los archivos vuelven solos, verificados con SHA-256 · github.com/indecenti/marea", "Les fichiers reviennent seuls, vérifiés par SHA-256 · github.com/indecenti/marea", "Dateien kommen von selbst zurück, per SHA-256 geprüft · github.com/indecenti/marea"),
+"reader.tray_title": ("Un programma sta leggendo molti file evaporati", "A program is reading many evaporated files", "Un programa está leyendo muchos archivos evaporados", "Un programme lit beaucoup de fichiers évaporés", "Ein Programm liest viele verdunstete Dateien"),
+"reader.tray_text": ("{0} ha riportato sul disco {1} file ({2}) in pochi minuti.", "{0} brought {1} files ({2}) back to disk in a few minutes.", "{0} trajo {1} archivos ({2}) de vuelta al disco en pocos minutos.", "{0} a ramené {1} fichiers ({2}) sur le disque en quelques minutes.", "{0} hat {1} Dateien ({2}) in wenigen Minuten zurückgeholt."),
+"reader.bar_title": ("{0} ha riportato sul disco {1} file ({2}) negli ultimi 10 minuti", "{0} brought {1} files ({2}) back to disk in the last 10 minutes", "{0} trajo {1} archivos ({2}) de vuelta al disco en los últimos 10 minutos", "{0} a ramené {1} fichiers ({2}) sur le disque ces 10 dernières minutes", "{0} hat in den letzten 10 Minuten {1} Dateien ({2}) zurückgeholt"),
+"reader.bar_text": ("Antivirus, backup o altri gestori di modelli possono annullare una pulizia leggendo tutti i file. Se non deve farlo, bloccalo: le sue letture falliranno e i file resteranno evaporati.", "Antivirus scans, backups or other model managers can undo a cleanup by reading every file. If it shouldn't, block it: its reads will fail and the files stay evaporated.", "Antivirus, copias de seguridad u otros gestores de modelos pueden deshacer una limpieza leyendo todos los archivos. Si no debería, bloquéalo: sus lecturas fallarán y los archivos seguirán evaporados.", "Antivirus, sauvegardes ou autres gestionnaires de modèles peuvent annuler un nettoyage en lisant tous les fichiers. S'il ne devrait pas, bloquez-le : ses lectures échoueront et les fichiers resteront évaporés.", "Virenscanner, Backups oder andere Modellverwalter können eine Bereinigung rückgängig machen, indem sie jede Datei lesen. Wenn es das nicht soll, blockiere es: seine Lesezugriffe schlagen fehl und die Dateien bleiben verdunstet."),
+"reader.block": ("Bloccalo", "Block it", "Bloquearlo", "Le bloquer", "Blockieren"),
+"reader.allow": ("Va bene così", "It's fine", "Está bien", "C'est normal", "Ist in Ordnung"),
+"reader.section": ("Programmi bloccati", "Blocked programs", "Programas bloqueados", "Programmes bloqués", "Blockierte Programme"),
+"reader.section_help": ("Questi programmi non possono riportare sul disco i file evaporati: le loro letture falliscono, così non annullano una pulizia. Per tutti gli altri programmi i file si aprono normalmente.", "These programs can't bring evaporated files back: their reads fail, so they can't undo a cleanup. Files open normally for every other program.", "Estos programas no pueden traer de vuelta los archivos evaporados: sus lecturas fallan, así que no deshacen una limpieza. Para los demás programas los archivos se abren con normalidad.", "Ces programmes ne peuvent pas ramener les fichiers évaporés : leurs lectures échouent, ils n'annulent donc pas un nettoyage. Pour tous les autres programmes, les fichiers s'ouvrent normalement.", "Diese Programme können verdunstete Dateien nicht zurückholen: Ihre Lesezugriffe schlagen fehl, sie machen also keine Bereinigung rückgängig. Für alle anderen Programme öffnen sich die Dateien normal."),
+"reader.none": ("Nessun programma bloccato.", "No program is blocked.", "Ningún programa bloqueado.", "Aucun programme bloqué.", "Kein Programm blockiert."),
+"reader.unblock": ("Sblocca", "Unblock", "Desbloquear", "Débloquer", "Freigeben"),
+"hyd.blocked": ("{0} è bloccato: non può riportare file sul disco", "{0} is blocked from bringing files back", "{0} está bloqueado: no puede traer archivos de vuelta", "{0} est bloqué : il ne peut pas ramener de fichiers", "{0} ist blockiert: es kann keine Dateien zurückholen"),
+"hyd.mass_read": ("{0} ha riportato {1} file in pochi minuti", "{0} brought back {1} files in a few minutes", "{0} trajo {1} archivos en pocos minutos", "{0} a ramené {1} fichiers en quelques minutes", "{0} hat {1} Dateien in wenigen Minuten zurückgeholt"),
+"j.reader_blocked": ("lettura bloccata", "read blocked", "lectura bloqueada", "lecture bloquée", "Lesezugriff blockiert"),
+"j.mass_read": ("letture di massa", "mass read", "lectura masiva", "lecture massive", "Massenzugriff"),
+"j.reader_block_set": ("programma bloccato", "program blocked", "programa bloqueado", "programme bloqué", "Programm blockiert"),
+"j.reader_allowed": ("programma consentito", "program allowed", "programa permitido", "programme autorisé", "Programm erlaubt"),
+"j.reader_unblocked": ("programma sbloccato", "program unblocked", "programa desbloqueado", "programme débloqué", "Programm freigegeben"),
+"models.filter_unused": ("Non usati da 90 giorni", "Not used in 90 days", "Sin usar en 90 días", "Inutilisés depuis 90 jours", "Seit 90 Tagen ungenutzt"),
+"models.free_unused": ("Libera questi…", "Free these…", "Liberar estos…", "Libérer ceux-ci…", "Diese freigeben…"),
 }
 
 HELP = {
@@ -458,7 +487,7 @@ HELP = {
 mareactl add <cartella>                             gestisci una cartella (es. ...\\checkpoints)
 mareactl remove <cartella>                          riporta tutto e smetti di gestirla
 mareactl scan [--json]                              impronte, fonti, classi, analisi dei modelli
-mareactl models [--json]                            tutti i modelli: formato, precisione, sicurezza
+mareactl models [--unused N] [--json]               tutti i modelli: formato, precisione, sicurezza
 mareactl check <file|cartella>... [--json]          controlla file o cartelle prima di caricarli (non serve il registro)
 mareactl watch [--no-rescue] [--json]               controlla le fonti pubbliche, salva i modelli a rischio
 mareactl free [--gb N|--all] [--instant] --yes      libera spazio in fretta (annullabile)
@@ -478,7 +507,7 @@ Uscita: 0 ok, 1 errore, 2 serve conferma, 3 da controllare, 4 pericoloso, 5 sola
 mareactl add <folder>                               manage a folder (e.g. ...\\checkpoints)
 mareactl remove <folder>                            bring everything back and stop managing it
 mareactl scan [--json]                              fingerprints, sources, classes, model inspection
-mareactl models [--json]                            every model: format, precision, safety
+mareactl models [--unused N] [--json]               every model: format, precision, safety
 mareactl check <file|folder>... [--json]            check files or folders before loading them (no ledger needed)
 mareactl watch [--no-rescue] [--json]               check public sources, rescue models at risk
 mareactl free [--gb N|--all] [--instant] --yes      free space quickly (undoable)
@@ -498,7 +527,7 @@ Exit codes: 0 ok, 1 error, 2 needs confirmation, 3 check before loading, 4 dange
 mareactl add <carpeta>                              gestionar una carpeta (p. ej. ...\\checkpoints)
 mareactl remove <carpeta>                           traer todo de vuelta y dejar de gestionarla
 mareactl scan [--json]                              huellas, fuentes, clases, análisis de modelos
-mareactl models [--json]                            todos los modelos: formato, precisión, seguridad
+mareactl models [--unused N] [--json]               todos los modelos: formato, precisión, seguridad
 mareactl check <archivo|carpeta>... [--json]        revisar archivos o carpetas antes de cargarlos (sin registro)
 mareactl watch [--no-rescue] [--json]               revisar fuentes públicas, rescatar modelos en riesgo
 mareactl free [--gb N|--all] [--instant] --yes      liberar espacio rápido (se puede deshacer)
@@ -518,7 +547,7 @@ Códigos de salida: 0 ok, 1 error, 2 requiere confirmación, 3 revisar, 4 peligr
 mareactl add <dossier>                              gérer un dossier (p. ex. ...\\checkpoints)
 mareactl remove <dossier>                           tout ramener et ne plus le gérer
 mareactl scan [--json]                              empreintes, sources, classes, analyse des modèles
-mareactl models [--json]                            tous les modèles : format, précision, sécurité
+mareactl models [--unused N] [--json]               tous les modèles : format, précision, sécurité
 mareactl check <fichier|dossier>... [--json]        vérifier des fichiers ou dossiers avant de les charger (sans registre)
 mareactl watch [--no-rescue] [--json]               vérifier les sources publiques, sauver les modèles menacés
 mareactl free [--gb N|--all] [--instant] --yes      libérer de l'espace vite (annulable)
@@ -538,7 +567,7 @@ Codes de sortie : 0 ok, 1 erreur, 2 confirmation requise, 3 à vérifier, 4 dang
 mareactl add <Ordner>                               einen Ordner verwalten (z. B. ...\\checkpoints)
 mareactl remove <Ordner>                            alles zurückholen und nicht mehr verwalten
 mareactl scan [--json]                              Fingerabdrücke, Quellen, Klassen, Modellprüfung
-mareactl models [--json]                            alle Modelle: Format, Genauigkeit, Sicherheit
+mareactl models [--unused N] [--json]               alle Modelle: Format, Genauigkeit, Sicherheit
 mareactl check <Datei|Ordner>... [--json]           Dateien oder Ordner vor dem Laden prüfen (ohne Register)
 mareactl watch [--no-rescue] [--json]               öffentliche Quellen prüfen, gefährdete Modelle retten
 mareactl free [--gb N|--all] [--instant] --yes      schnell Speicher freigeben (rückgängig machbar)

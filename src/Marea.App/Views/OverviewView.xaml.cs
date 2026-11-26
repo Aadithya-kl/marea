@@ -43,6 +43,31 @@ public partial class OverviewView : UserControl, IRefreshable
         RiskBar.BorderBrush = RiskIcon.Fill;
     }
 
+    private void OnBlockReader(object sender, RoutedEventArgs e) => DecideReader(block: true);
+
+    private void OnAllowReader(object sender, RoutedEventArgs e) => DecideReader(block: false);
+
+    /// <summary>Blocks or allows the program shown in the reader bar, then hides the bar.</summary>
+    private void DecideReader(bool block)
+    {
+        if (App.Current.LastMassRead is not { } r)
+        {
+            return;
+        }
+        if (block)
+        {
+            App.Engine.BlockReader(r.Process);
+        }
+        else
+        {
+            App.Engine.AllowReader(r.Process);
+        }
+        App.Current.LastMassRead = null;
+        Refresh();
+    }
+
+    private void OnShare(object sender, RoutedEventArgs e) => ShareCard.SaveAndCopy(ShareCard.Current());
+
     private void OnReviewModels(object sender, RoutedEventArgs e) =>
         ((MainWindow)Window.GetWindow(this)).Navigate("models");
 
@@ -60,6 +85,9 @@ public partial class OverviewView : UserControl, IRefreshable
         UpdateText.Text = Loc.T("upd.title", e.Settings.AvailableUpdate);
         ShowSafety(e.Models());
         ShowRisks(e.SourceRisks());
+        var reader = App.Current.LastMassRead;
+        ReaderBar.Visibility = reader is null ? Visibility.Collapsed : Visibility.Visible;
+        ReaderTitle.Text = reader is null ? "" : Loc.T("reader.bar_title", reader.Name, reader.Files, Fmt.Gb(reader.Bytes));
 
         VolumesList.ItemsSource = e.Volumes().Select(v => new
         {

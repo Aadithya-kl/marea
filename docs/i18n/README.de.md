@@ -64,6 +64,10 @@ gefunden*, *Vor dem Laden prüfen* (ungewöhnliche Importe, TorchScript-Code, GG
 aus ihrer Sandbox ausbrechen wollen) oder *Gefährlich*. Ein gerade geladenes Modell prüfen:
 `mareactl check <Datei oder Ordner>`.
 
+## Neu in 0.5
+
+**Teilen** speichert ein Bild mit deinen Zahlen (freigegebener Speicher, Modelle, null gelöschte Bytes), ohne Pfade oder Dateinamen. Der Filter **Seit 90 Tagen ungenutzt** findet vergessene Modelle. Und wenn ein Programm (Virenscanner, Backup, andere Modellverwalter) in wenigen Minuten viele verdunstete Dateien zurückholt, sagt Marea dir welches und lässt dich es **blockieren**: Seine Lesezugriffe schlagen fehl und die Dateien bleiben verdunstet, während alle anderen Programme sie normal öffnen.
+
 ## Gefährdete Modelle
 
 Modelle verschwinden: Repositories werden gelöscht, privat oder beschränkt, Dateien in einer neuen Version entfernt, Ollama-Tags zurückgezogen. Jeden Tag prüft Marea die öffentlichen Quellen und erkennt die Anzeichen früh, solange die fixierten Bytes noch geliefert werden: Verdunstete Dateien, die nur von einer verschwindenden Quelle abhängen, werden **zurückgeholt**, mögliche letzte Kopien werden **nicht mehr freigegeben** und auf den **Spiegel** (NAS) kopiert. Ein Netzwerkfehler zählt nie als Anzeichen. Auf der Kommandozeile: `mareactl watch --json`.

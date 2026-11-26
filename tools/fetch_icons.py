@@ -60,6 +60,9 @@ ICONS = {
     "ShieldOk": ("Shield Checkmark", "shield_checkmark", "filled"),
     "Bot": ("Bot", "bot", "regular"),
     "Code": ("Code", "code", "regular"),
+    "Share": ("Share", "share", "regular"),
+    "Prohibited": ("Prohibited", "prohibited", "regular"),
+    "Clock": ("Clock", "clock", "regular"),
 }
 
 here = os.path.dirname(os.path.abspath(__file__))

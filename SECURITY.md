@@ -62,6 +62,9 @@ must never do is lose data. This document lists what can go wrong and what stops
   not running" error (0x8007016A) until Marea starts.
 - Opening a placeholder for reading (including an antivirus scan on open) brings
   the whole file back. That is by design: progressive hydration, verified at the end.
+- A program that reads every file (antivirus, backup, indexer) brings evaporated files back. Marea
+  detects it (10 files or 50 GB from one program within 10 minutes), names the program and lets the
+  user block it: blocked programs get "access denied" on evaporated files, which stay evaporated.
 - The load-safety check is static, like picklescan: an obfuscated pickle may evade it.
   "No code found" means only standard tensor rebuilding was found, not a guarantee.
 - Unsigned builds trigger SmartScreen. See `docs/DISTRIBUTION.md` for signing options.

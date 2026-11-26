@@ -44,6 +44,10 @@ public sealed class ModelEntry
 
     /// <summary>False when every file was inspected and none is a model (datasets, archives...).</summary>
     public bool IsModel => Meta.Any(m => m is null || m.Format != "data");
+    /// <summary>Last time any of its files was used (read or written).</summary>
+    public DateTime LastUsedUtc => Files.Max(f => f.LastAccessUtc > new DateTime(f.MTimeTicks, DateTimeKind.Utc) ? f.LastAccessUtc : new DateTime(f.MTimeTicks, DateTimeKind.Utc));
+    /// <summary>True when no file of the model was used for <paramref name="days"/> days.</summary>
+    public bool UnusedFor(int days, DateTime nowUtc) => nowUtc - LastUsedUtc >= TimeSpan.FromDays(days);
     /// <summary>Total logical size.</summary>
     public long Size => Files.Sum(f => f.Size);
     /// <summary>Bytes currently evaporated.</summary>

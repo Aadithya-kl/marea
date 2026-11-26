@@ -8,6 +8,31 @@
             <TextBlock Text="{l:T ov.subtitle}" Style="{StaticResource PageSubtitle}" />
 
             <!-- Update available -->
+            <!-- A program is bringing many evaporated files back -->
+            <Border x:Name="ReaderBar" Style="{StaticResource InfoBar}" BorderBrush="{StaticResource WarningBrush}" Visibility="Collapsed">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Click="OnBlockReader" Padding="12,4" Margin="0,0,8,0" AutomationProperties.Name="{l:T reader.block}">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="{StaticResource Icon.Prohibited}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                                <TextBlock Text="{l:T reader.block}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Click="OnAllowReader" Padding="12,4" AutomationProperties.Name="{l:T reader.allow}">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="{StaticResource Icon.Check}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                                <TextBlock Text="{l:T reader.allow}" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                    <Path DockPanel.Dock="Left" Data="{StaticResource Icon.Warning}" Style="{StaticResource IcoLarge}" Fill="{StaticResource WarningBrush}" Margin="0,0,12,0" />
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock x:Name="ReaderTitle" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <TextBlock Text="{l:T reader.bar_text}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,2,12,0" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
             <Border x:Name="UpdateBar" Style="{StaticResource InfoBar}" Visibility="Collapsed">
                 <DockPanel>
                     <Button DockPanel.Dock="Right" Click="OnOpenReleases" Padding="12,4" AutomationProperties.Name="{l:T upd.open}">
@@ -104,20 +129,28 @@
                                 <TextBlock Text="{l:T ov.quick}" FontWeight="SemiBold" FontSize="14" />
                             </StackPanel>
                         </Button>
-                        <UniformGrid Columns="2">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
                             <Button x:Name="FreeButton" Click="OnFree" Padding="0,7" Margin="0,0,4,0" ToolTip="{l:T ov.free}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T ov.plan_short}">
                                 <StackPanel Orientation="Horizontal">
                                     <Path Data="{StaticResource Icon.Broom}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
                                     <TextBlock Text="{l:T ov.plan_short}" />
                                 </StackPanel>
                             </Button>
-                            <Button Click="OnScan" Padding="0,7" Margin="4,0,0,0" ToolTip="{l:T ov.scan}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T ov.scan_short}">
+                            <Button Grid.Column="1" Click="OnScan" Padding="0,7" Margin="4,0,0,0" ToolTip="{l:T ov.scan}" HorizontalAlignment="Stretch" AutomationProperties.Name="{l:T ov.scan_short}">
                                 <StackPanel Orientation="Horizontal">
                                     <Path Data="{StaticResource Icon.Sync}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
                                     <TextBlock Text="{l:T ov.scan_short}" />
                                 </StackPanel>
                             </Button>
-                        </UniformGrid>
+                            <Button Grid.Column="2" Click="OnShare" Padding="10,7" Margin="8,0,0,0" ToolTip="{l:T share.tip}" AutomationProperties.Name="{l:T share.button}">
+                                <Path Data="{StaticResource Icon.Share}" Style="{StaticResource Ico}" />
+                            </Button>
+                        </Grid>
                         <TextBlock x:Name="LastScan" Style="{StaticResource Caption}" Margin="0,8,0,0" TextAlignment="Center" />
                     </StackPanel>
                 </Grid>

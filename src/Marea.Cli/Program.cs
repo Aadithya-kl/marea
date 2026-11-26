@@ -58,7 +58,11 @@ async Task<int> Dispatch()
             Status();
             return Exit.Ok;
         case "models":
-            return ModelCommands.Models(engine, json);
+            {
+                var i = Array.IndexOf(args, "--unused");
+                int? days = i >= 0 && i + 1 < args.Length && int.TryParse(args[i + 1], out var d) && d >= 0 ? d : null;
+                return ModelCommands.Models(engine, json, days);
+            }
         case "add":
             {
                 var why = engine.AddRoot(Arg(1));
@@ -234,6 +238,8 @@ async Task<int> Serve()
         return Exit.Error;
     }
     Console.WriteLine(Loc.T("cli.agent_listening"));
+    engine.Hydration.MassRead += a =>
+        Console.WriteLine(Loc.T("reader.tray_text", CliOutput.Clean(a.Name), a.Files, CliOutput.Gb(a.Bytes)));
     engine.Hydration.Progress += e =>
     {
         if (e.Finished)

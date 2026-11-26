@@ -93,6 +93,12 @@
         <!-- Step 3: done -->
         <DockPanel x:Name="DonePanel" Visibility="Collapsed">
             <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="ShareButton" Margin="0,0,10,0" Click="OnShare" Padding="16,8" AutomationProperties.Name="{l:T share.button}">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource Icon.Share}" Style="{StaticResource Ico}" Margin="0,0,8,0" />
+                        <TextBlock Text="{l:T share.button}" />
+                    </StackPanel>
+                </Button>
                 <Button x:Name="UndoButton" Width="230" Margin="0,0,10,0" Click="OnUndo" Padding="0,8" AutomationProperties.Name="{l:T qf.undo}">
                     <StackPanel Orientation="Horizontal">
                         <Path Data="{StaticResource Icon.Undo}" Style="{StaticResource Ico}" Margin="0,0,8,0" />

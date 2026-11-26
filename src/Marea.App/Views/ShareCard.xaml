@@ -1,0 +1,44 @@
+<UserControl x:Class="Marea.App.Views.ShareCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="1200" Height="630" FontFamily="Segoe UI" Foreground="White">
+    <!-- Rendered off screen into a PNG to share. Numbers only: no paths, no file names. -->
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#0E4C5C" Offset="0" />
+                <GradientStop Color="#08222C" Offset="1" />
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Path VerticalAlignment="Bottom" Height="120" Stretch="Fill" Fill="#1F8C8A" Opacity="0.85"
+              Data="M0,40 C150,0 300,80 450,40 C600,0 750,80 900,40 C1050,0 1150,60 1200,40 L1200,120 L0,120 Z" />
+        <Path VerticalAlignment="Bottom" Height="80" Stretch="Fill" Fill="#4FB8D8" Opacity="0.9"
+              Data="M0,30 C200,0 350,60 600,30 C850,0 1000,60 1200,25 L1200,80 L0,80 Z" />
+        <Path VerticalAlignment="Bottom" Height="44" Stretch="Fill" Fill="#96E1D6"
+              Data="M0,20 C250,0 450,40 700,18 C900,0 1050,36 1200,15 L1200,44 L0,44 Z" />
+
+        <StackPanel Margin="72,56,72,0">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="pack://application:,,,/Assets/marea.png" Width="56" Height="56" />
+                <TextBlock Text="Marea" FontSize="34" FontWeight="SemiBold" VerticalAlignment="Center" Margin="16,0,0,0" />
+            </StackPanel>
+            <TextBlock x:Name="Headline" FontSize="76" FontWeight="Bold" Margin="0,34,0,0" />
+            <TextBlock x:Name="Subline" FontSize="30" Foreground="#D6EEEE" Margin="0,4,0,0" TextWrapping="Wrap" />
+            <UniformGrid Columns="3" Margin="0,40,0,0">
+                <StackPanel>
+                    <TextBlock x:Name="Stat1" FontSize="40" FontWeight="SemiBold" />
+                    <TextBlock x:Name="Stat1Label" FontSize="20" Foreground="#BFE3E3" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock x:Name="Stat2" FontSize="40" FontWeight="SemiBold" />
+                    <TextBlock x:Name="Stat2Label" FontSize="20" Foreground="#BFE3E3" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock x:Name="Stat3" FontSize="40" FontWeight="SemiBold" />
+                    <TextBlock x:Name="Stat3Label" FontSize="20" Foreground="#BFE3E3" />
+                </StackPanel>
+            </UniformGrid>
+        </StackPanel>
+        <TextBlock x:Name="Footer" FontSize="20" Foreground="#E6F6F4" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="72,0,0,128" />
+    </Grid>
+</UserControl>

@@ -66,6 +66,10 @@ trovato*, *Da controllare* (import insoliti, codice TorchScript, template di cha
 uscire dalla sandbox) o *Pericoloso*. Per controllare un modello appena scaricato:
 `mareactl check <file o cartella>`.
 
+## Novità della 0.5
+
+**Condividi** salva un'immagine con i tuoi numeri (spazio liberato, modelli, zero byte cancellati), senza percorsi né nomi di file. Il filtro **Non usati da 90 giorni** trova i modelli dimenticati. E se un programma (antivirus, backup, altri gestori di modelli) riporta sul disco molti file evaporati in pochi minuti, Marea te lo dice e ti permette di **bloccarlo**: le sue letture falliscono e i file restano evaporati, mentre tutti gli altri programmi continuano ad aprirli.
+
 ## Modelli a rischio
 
 I modelli spariscono: repository cancellati, resi privati o ad accesso limitato, file tolti in una nuova versione, tag Ollama ritirati. Ogni giorno Marea controlla le fonti pubbliche e coglie i segnali in anticipo, finché i byte fissati sono ancora serviti: **riporta sul disco** i file evaporati che dipendono solo da una fonte che sta sparendo, **non libera più** quelli che potrebbero essere l'ultima copia e li **copia sul mirror** (NAS). Un controllo fallito per rete non conta mai come segnale. Da riga di comando: `mareactl watch --json`.

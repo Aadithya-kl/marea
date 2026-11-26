@@ -11,9 +11,13 @@ internal static class ModelCommands
     };
 
     /// <summary>Lists every model in the ledger with format, precision, size, residency and safety.</summary>
-    public static int Models(MareaEngine engine, bool json)
+    public static int Models(MareaEngine engine, bool json, int? unusedDays = null)
     {
         var models = engine.Models();
+        if (unusedDays is int days)
+        {
+            models = models.Where(m => m.UnusedFor(days, DateTime.UtcNow)).ToList();
+        }
         if (json)
         {
             CliOutput.Json("marea.models/1", new
@@ -30,6 +34,7 @@ internal static class ModelCommands
                     sizeBytes = m.Size,
                     evaporatedBytes = m.EvaporatedBytes,
                     state = m.State,
+                    lastUsed = m.LastUsedUtc,
                     safety = m.Safety,
                     findings = m.Findings,
                     files = m.Files.Zip(m.Meta).Select(p => new

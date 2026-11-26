@@ -124,6 +124,8 @@ public partial class QuickFreeWindow : Window
         WorkPanel.Visibility = Visibility.Collapsed;
         DonePanel.Visibility = Visibility.Visible;
         DoneTitle.Text = Loc.T("qf.done_title", Fmt.Gb(freed.Sum(f => f.Size)));
+        _freedBytes = freed.Sum(f => f.Size);
+        ShareButton.IsEnabled = _freedBytes > 0;
         DoneText.Text = Loc.T("qf.done_text", freed.Count);
         DoneKept.Text = kept.Count == 0 ? "" : Loc.T("qf.done_kept", kept.Count)
             + "\n" + string.Join("\n", kept.Take(5).Select(k => $"• {System.IO.Path.GetFileName(k.File.Path)}: {k.Why}"));
@@ -140,6 +142,7 @@ public partial class QuickFreeWindow : Window
     private async void OnUndo(object sender, RoutedEventArgs e)
     {
         UndoButton.IsEnabled = false;
+        ShareButton.IsEnabled = false;
         DoneTitle.Text = Loc.T("qf.undoing");
         var problem = await Task.Run(() => App.Engine.UndoBatchAsync(_batch!));
         DoneTitle.Text = problem is null ? Loc.T("qf.undone") : problem;
@@ -153,6 +156,11 @@ public partial class QuickFreeWindow : Window
             w.RefreshPage();
         }
     }
+
+    private long _freedBytes;
+
+    private void OnShare(object sender, RoutedEventArgs e) =>
+        ShareCard.SaveAndCopy(ShareCard.Current() with { FreedBytes = _freedBytes });
 
     private void OnClose(object sender, RoutedEventArgs e) => Close();
 }

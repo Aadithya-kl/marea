@@ -64,6 +64,10 @@ lee sus instrucciones **sin ejecutarlas** y da un veredicto sereno: *Formato seg
 intentan salir de su sandbox) o *Peligroso*. Para revisar un modelo recién descargado:
 `mareactl check <archivo o carpeta>`.
 
+## Novedades de la 0.5
+
+**Compartir** guarda una imagen con tus números (espacio liberado, modelos, cero bytes borrados), sin rutas ni nombres de archivo. El filtro **Sin usar en 90 días** encuentra los modelos olvidados. Y si un programa (antivirus, copias de seguridad, otros gestores de modelos) trae de vuelta muchos archivos evaporados en pocos minutos, Marea te lo dice y te deja **bloquearlo**: sus lecturas fallan y los archivos siguen evaporados, mientras los demás programas los abren con normalidad.
+
 ## Modelos en riesgo
 
 Los modelos desaparecen: repositorios borrados, privados o restringidos, archivos retirados en una nueva versión, etiquetas de Ollama retiradas. Cada día Marea revisa las fuentes públicas y detecta las señales a tiempo, mientras los bytes fijados aún se sirven: **trae de vuelta** los archivos evaporados que solo dependen de una fuente que desaparece, **no vuelve a liberar** los que pueden ser la última copia y los **copia al espejo** (NAS). Un fallo de red nunca cuenta como señal. Desde la línea de comandos: `mareactl watch --json`.

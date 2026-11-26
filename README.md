@@ -71,6 +71,7 @@ Free and open source (MIT) for Windows 10 and 11. Website: <https://indecenti.gi
 - [Is this for you?](#is-this-for-you)
 - [What's new about it](#whats-new-about-it)
 - [Models and safety](#models-and-safety)
+- [Your results, protected](#your-results-protected)
 - [Endangered models](#endangered-models)
 - [Built for AI agents](#built-for-ai-agents)
 - [How it works](#how-it-works)
@@ -132,6 +133,20 @@ them** and rates them calmly:
 Nothing is ever loaded or executed, and a risky file on disk is harmless: the verdict is there so
 you (or your agent) decide *before* a program loads it. To check a model you just downloaded,
 before it even lands in a managed folder: `mareactl check <file or folder>`.
+
+## Your results, protected
+
+- **Share your result.** One click on *Share* saves a 1200×630 image with your numbers (space freed,
+  models, bytes deleted: zero), copies it to the clipboard and shows it in Explorer. It contains no
+  paths and no file names.
+- **Forgotten models.** The *Not used in 90 days* filter on the Models page lists what you have not
+  touched in months; *Free these…* opens the plan for them, and the safety gate still decides file by file.
+- **Mass-read protection.** Antivirus scans, backup tools or other model managers can read every
+  evaporated file at once and silently undo a cleanup. Marea notices when one program brings back
+  many files in a few minutes, tells you which one, and lets you block it: its reads fail and the
+  files stay evaporated, while every other program keeps opening them normally.
+
+<p align="center"><img src="docs/images/share-card.png" width="600" alt="Share card: space that can be freed, models, bytes deleted: zero"></p>
 
 ## Endangered models
 
@@ -341,7 +356,7 @@ mareactl status                     disk and ledger status
 mareactl add <folder>               manage a folder (e.g. ...\checkpoints)
 mareactl remove <folder>            bring everything back and stop managing it
 mareactl scan                       fingerprints, sources, classes, model headers
-mareactl models [--json]            every model: format, precision, parameters, safety
+mareactl models [--unused N] [--json]   every model (or those unused for N days)
 mareactl check <file|folder> [--json]   safety check before loading (no setup needed)
 mareactl watch [--no-rescue] [--json]   check public sources, rescue models at risk
 mareactl plan [--gb N]              what the tide would evaporate (touches nothing)
@@ -409,6 +424,7 @@ the folder (portable). Either way every file comes back first.
 - [x] Agent-ready CLI: versioned JSON, exit codes, read-only mode
 - [ ] Ollama update backups: give the space back without losing the rollback
 - [x] Endangered-model watch: early warnings, automatic rescue, last copies protected
+- [x] Share card, unused-models filter, mass-read protection with per-program blocking
 - [ ] Cross-app sharing: one copy for ComfyUI, Forge, LM Studio and Ollama, without symlinks
 - [ ] Show the Hugging Face scan result for files that match a public file
 - [ ] Signed releases, MSI installer, winget

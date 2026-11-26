@@ -23,6 +23,9 @@ public partial class App : Application
     /// <summary>The running application.</summary>
     public static new App Current => (App)Application.Current;
 
+    /// <summary>Last program that brought many evaporated files back (shown on the overview until handled).</summary>
+    public MassRead? LastMassRead { get; set; }
+
     /// <summary>True when the provider role could not be taken (another Marea serves the files).</summary>
     public bool ProviderElsewhere { get; private set; }
 
@@ -42,6 +45,7 @@ public partial class App : Application
         ApplyTheme(Engine.Settings.Theme);
         ProviderElsewhere = !Engine.StartProvider();
         Engine.Hydration.Progress += OnHydration;
+        Engine.Hydration.MassRead += OnMassRead;
         CreateTray();
         new Thread(WaitForShowRequests) { IsBackground = true }.Start();
         // The uninstaller (marea restore-all) asks the app to step aside so it can bring files back.
@@ -141,6 +145,19 @@ public partial class App : Application
     public void Notify(string title, string text, bool warning = false)
     {
         _tray?.ShowBalloonTip(5000, title, text, warning ? Forms.ToolTipIcon.Warning : Forms.ToolTipIcon.Info);
+    }
+
+    private void OnMassRead(MassRead alert)
+    {
+        Dispatcher.BeginInvoke(() =>
+        {
+            LastMassRead = alert;
+            Notify(Loc.T("reader.tray_title"), Loc.T("reader.tray_text", alert.Name, alert.Files, Fmt.Gb(alert.Bytes)), warning: true);
+            foreach (var w in Windows.OfType<MainWindow>())
+            {
+                w.RefreshPage();
+            }
+        });
     }
 
     private void OnHydration(HydrationEvent e)

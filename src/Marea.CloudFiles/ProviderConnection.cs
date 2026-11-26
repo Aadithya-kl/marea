@@ -15,8 +15,11 @@ public sealed class FetchRequest
     private readonly long _requestKey;
 
     internal FetchRequest(CF_CONNECTION_KEY connection, long transferKey, long requestKey, byte[] identity,
-        string path, long fileSize, long offset, long length, long optionalOffset, long optionalLength)
+        string path, long fileSize, long offset, long length, long optionalOffset, long optionalLength,
+        uint processId = 0, string? processImage = null)
     {
+        ProcessId = processId;
+        ProcessImage = processImage;
         _connection = connection;
         _transferKey = transferKey;
         _requestKey = requestKey;
@@ -33,6 +36,11 @@ public sealed class FetchRequest
     public long OptionalFileOffset { get; }
     /// <summary>Length of the optional range.</summary>
     public long OptionalLength { get; }
+
+    /// <summary>Process that is reading the file (0 when Windows did not say).</summary>
+    public uint ProcessId { get; }
+    /// <summary>Executable of the reading process, as an NT path (null when unknown).</summary>
+    public string? ProcessImage { get; }
 
     /// <summary>Identity bytes stored when the file was evaporated.</summary>
     public byte[] Identity { get; }
@@ -126,7 +134,7 @@ public sealed class ProviderConnection : IDisposable
         fixed (char* p = root)
         {
             var hr = PInvoke.CfConnectSyncRoot(p, c._table, null,
-                CF_CONNECT_FLAGS.CF_CONNECT_FLAG_REQUIRE_FULL_FILE_PATH, &key);
+                CF_CONNECT_FLAGS.CF_CONNECT_FLAG_REQUIRE_FULL_FILE_PATH | CF_CONNECT_FLAGS.CF_CONNECT_FLAG_REQUIRE_PROCESS_INFO, &key);
             if (hr.Failed)
             {
                 NativeMemory.Free(c._table);
@@ -147,9 +155,16 @@ public sealed class ProviderConnection : IDisposable
         }
         var identity = new ReadOnlySpan<byte>(info->FileIdentity, (int)info->FileIdentityLength).ToArray();
         var path = info->NormalizedPath.ToString();
+        uint pid = 0;
+        string? image = null;
+        if (info->ProcessInfo is not null)
+        {
+            pid = info->ProcessInfo->ProcessId;
+            image = info->ProcessInfo->ImagePath.ToString();
+        }
         var req = new FetchRequest(info->ConnectionKey, info->TransferKey, info->RequestKey, identity, path,
             info->FileSize, p->FetchData.RequiredFileOffset, p->FetchData.RequiredLength,
-            p->FetchData.OptionalFileOffset, p->FetchData.OptionalLength);
+            p->FetchData.OptionalFileOffset, p->FetchData.OptionalLength, pid, image);
         c._inflight[req.TransferKey] = req;
         _ = Task.Run(() => c.ServeAsync(req));
     }

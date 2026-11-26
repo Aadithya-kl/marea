@@ -14,8 +14,11 @@ public sealed record HydrationEvent(string Path, long Done, long Total, string S
 
 /// <summary>Serves Windows' requests for the data of evaporated files, from the cheapest live
 /// source, and re-verifies the sha256 of every file once it is complete.</summary>
-public sealed class HydrationService(Ledger ledger, HuggingFaceClient hub, OllamaRegistry ollama)
+public sealed class HydrationService(Ledger ledger, HuggingFaceClient hub, OllamaRegistry ollama, ReaderGuard? guard = null)
 {
+    /// <summary>Raised the first time a program brings many evaporated files back in a short time.</summary>
+    public event Action<MassRead>? MassRead;
+
     private const int Chunk = 4 << 20;
     private readonly ConcurrentDictionary<string, byte> _verifying = new(StringComparer.OrdinalIgnoreCase);
 
@@ -27,6 +30,22 @@ public sealed class HydrationService(Ledger ledger, HuggingFaceClient hub, Ollam
     {
         var sha = ContentHash.FromIdentity(req.Identity);
         var path = Path.GetPathRoot(root)!.TrimEnd('\\') + req.Path;
+        if (guard is not null && guard.IsBlocked(req.ProcessImage))
+        {
+            req.Fail(req.RequiredOffset, req.RequiredLength);
+            var name = ReaderGuard.DisplayName(req.ProcessImage!);
+            if (req.RequiredOffset == 0)
+            {
+                ledger.Log("j.reader_blocked", path, req.FileSize, false, name);
+            }
+            Progress?.Invoke(new HydrationEvent(path, 0, req.FileSize, "", true, Loc.T("hyd.blocked", name)));
+            return;
+        }
+        if (guard?.Record(req.ProcessImage, path, req.FileSize) is { } alert)
+        {
+            ledger.Log("j.mass_read", alert.Process, alert.Bytes, false, Loc.Code("hyd.mass_read", alert.Name, alert.Files));
+            MassRead?.Invoke(alert);
+        }
         var start = req.RequiredOffset & ~4095L;
         var end = Math.Max(req.RequiredOffset + req.RequiredLength, req.OptionalFileOffset + req.OptionalLength);
         end = Math.Min(req.FileSize, (end + 4095) & ~4095L);

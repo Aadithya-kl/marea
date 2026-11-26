@@ -50,6 +50,13 @@ public sealed class MareaSettings
     /// <summary>Last source watch.</summary>
     public DateTime LastWatchUtc { get; set; }
 
+    /// <summary>Programs (executable paths as Windows reports them) not allowed to bring evaporated
+    /// files back: their reads fail, files stay evaporated.</summary>
+    public List<string> BlockedReaders { get; set; } = [];
+
+    /// <summary>Programs the user said may read many evaporated files without an alert.</summary>
+    public List<string> AllowedReaders { get; set; } = [];
+
     /// <summary>Newest version announced by the last check, if newer than the running one.</summary>
     public string? AvailableUpdate { get; set; }
 

@@ -25,6 +25,9 @@ public sealed partial class MareaEngine : IDisposable
     public MareaSettings Settings { get; }
     /// <summary>The provenance ledger.</summary>
     public Ledger Ledger { get; }
+    /// <summary>Watches which programs bring evaporated files back; blocks the ones the user chose.</summary>
+    public ReaderGuard Guard { get; }
+
     /// <summary>Hydration service (subscribe to its Progress for the UI).</summary>
     public HydrationService Hydration { get; }
 
@@ -38,7 +41,8 @@ public sealed partial class MareaEngine : IDisposable
         DataDir = dataDir ?? MareaSettings.DefaultDirectory;
         Settings = MareaSettings.Load(DataDir);
         Ledger = new Ledger(Path.Combine(DataDir, "marea.db"));
-        Hydration = new HydrationService(Ledger, _hub, _ollama);
+        Guard = new ReaderGuard(Settings);
+        Hydration = new HydrationService(Ledger, _hub, _ollama, Guard);
         _gate = new SafetyGate(Ledger, Settings);
     }
 

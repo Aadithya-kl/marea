@@ -23,7 +23,7 @@ public partial class ModelsView : UserControl, IRefreshable
     public ModelsView()
     {
         InitializeComponent();
-        Filter.ItemsSource = new[] { "all", "attention", "at_risk", "gguf", "safetensors", "pickle", "evaporated" }
+        Filter.ItemsSource = new[] { "all", "unused", "attention", "at_risk", "gguf", "safetensors", "pickle", "evaporated" }
             .Select(k => Loc.T("models.filter_" + k)).ToList();
         _ready = true;
         Filter.SelectedIndex = 0;
@@ -44,12 +44,13 @@ public partial class ModelsView : UserControl, IRefreshable
         TotalText.Text = Loc.T("models.total", all.Count, Fmt.Gb(all.Sum(m => m.Size)));
         IEnumerable<ModelEntry> models = Filter.SelectedIndex switch
         {
-            1 => all.Where(m => m.Safety >= SafetyVerdict.Suspicious),
-            2 => all.Where(m => RiskOf(m) is not null),
-            3 => all.Where(m => m.Formats.Contains("GGUF")),
-            4 => all.Where(m => m.Formats.Contains("safetensors")),
-            5 => all.Where(m => m.Formats.Any(f => f is "PyTorch" or "TorchScript" or "pickle")),
-            6 => all.Where(m => m.State != ModelResidency.OnDisk),
+            1 => all.Where(m => m.UnusedFor(UnusedDays, DateTime.UtcNow)),
+            2 => all.Where(m => m.Safety >= SafetyVerdict.Suspicious),
+            3 => all.Where(m => RiskOf(m) is not null),
+            4 => all.Where(m => m.Formats.Contains("GGUF")),
+            5 => all.Where(m => m.Formats.Contains("safetensors")),
+            6 => all.Where(m => m.Formats.Any(f => f is "PyTorch" or "TorchScript" or "pickle")),
+            7 => all.Where(m => m.State != ModelResidency.OnDisk),
             _ => all,
         };
         var q = Search.Text.Trim();
@@ -60,6 +61,8 @@ public partial class ModelsView : UserControl, IRefreshable
                                        || m.Precisions.Any(p => p.Contains(q, StringComparison.OrdinalIgnoreCase)));
         }
         var rows = models.Select(ToRow).ToList();
+        FreeUnusedButton.Visibility = Filter.SelectedIndex == 1 && rows.Any(r => r.Model.State != ModelResidency.Evaporated)
+            ? Visibility.Visible : Visibility.Collapsed;
         Grid.ItemsSource = rows;
         EmptyText.Visibility = rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         OnSelection(this, null!);
@@ -151,6 +154,17 @@ public partial class ModelsView : UserControl, IRefreshable
             $"{Fmt.Gb(p.First.Size),9}  {p.Second?.Format ?? "?",-12} {Fmt.Residency(p.First.Residency),-12} {Fmt.ShortPath(p.First.Path)}"))
             + (m.Files.Count > 8 ? "\n" + Loc.T("models.more_files", m.Files.Count - 8) : "");
         OpenButton.IsEnabled = System.IO.Directory.Exists(m.Folder);
+    }
+
+    /// <summary>Models with no file used for this many days count as unused.</summary>
+    private const int UnusedDays = 90;
+
+    /// <summary>Opens the detailed plan for the files of the unused models still on disk (the gate
+    /// still decides, file by file, what may leave).</summary>
+    private void OnFreeUnused(object sender, RoutedEventArgs e)
+    {
+        var files = Grid.Items.Cast<Row>().SelectMany(r => r.Model.Files).Where(f => f.Residency == Residency.Local).ToList();
+        PlanWindow.ShowFor((MainWindow)Window.GetWindow(this), files);
     }
 
     private async void OnCheckSources(object sender, RoutedEventArgs e)

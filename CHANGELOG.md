@@ -6,7 +6,21 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-27
+
 ### Added
+- **Share your result**: *Share* on the overview and on the 3-click result screen saves a 1200×630
+  image with the numbers (space freed or freeable, models, instant returns, zero bytes deleted),
+  copies it to the clipboard and shows it in Explorer. Numbers only: no paths or names.
+- **Not used in 90 days** filter on the Models page, with *Free these…* opening the plan for their
+  files; `mareactl models --unused N`, and `lastUsed` in `marea.models/1`.
+- **Mass-read protection**: Windows now tells Marea which program reads an evaporated file. When one
+  program brings back 10 files or 50 GB within 10 minutes, Marea notifies, logs `j.mass_read` and shows
+  a bar with *Block it* / *It's fine*. Blocked programs get "access denied" on evaporated files (the
+  files stay evaporated); they are listed in *Settings → Blocked programs* with *Unblock*.
+  `mareactl agent` prints the alert too.
+
+### Added (also in 0.5.0)
 - Code signing prepared for the SignPath Foundation program: `CODE_SIGNING_POLICY.md` (roles,
   what is signed, privacy policy), artifact configuration, and release steps that sign Marea's own
   binaries after manual approval and verify every signature. Skipped until configured.
