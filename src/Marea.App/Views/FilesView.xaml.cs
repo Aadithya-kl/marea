@@ -60,6 +60,7 @@ public partial class FilesView : UserControl, IRefreshable
         Grid.ItemsSource = rows;
         EmptyText.Visibility = rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         ReplicateButton.IsEnabled = !string.IsNullOrEmpty(App.Engine.Settings.MirrorRoot);
+        ReplicateButton.ToolTip = ReplicateButton.IsEnabled ? null : Loc.T("models.protect_no_mirror");
         OnSelection(this, null!);
     }
 

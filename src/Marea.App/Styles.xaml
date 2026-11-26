@@ -103,6 +103,13 @@
         <Setter Property="BorderThickness" Value="1" />
     </Style>
 
+    <!-- One line inside the overview's "Needs your attention" card. -->
+    <Style x:Key="AttentionRow" TargetType="Border">
+        <Setter Property="Padding" Value="0,8" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DividerStrokeColorDefaultBrush}" />
+    </Style>
+
     <!-- Small coloured pill (class badges). -->
     <Style x:Key="Dot" TargetType="Ellipse">
         <Setter Property="Width" Value="9" />

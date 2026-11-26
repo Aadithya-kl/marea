@@ -8,31 +8,6 @@
             <TextBlock Text="{l:T ov.subtitle}" Style="{StaticResource PageSubtitle}" />
 
             <!-- Update available -->
-            <!-- A program is bringing many evaporated files back -->
-            <Border x:Name="ReaderBar" Style="{StaticResource InfoBar}" BorderBrush="{StaticResource WarningBrush}" Visibility="Collapsed">
-                <DockPanel>
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Click="OnBlockReader" Padding="12,4" Margin="0,0,8,0" AutomationProperties.Name="{l:T reader.block}">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource Icon.Prohibited}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
-                                <TextBlock Text="{l:T reader.block}" />
-                            </StackPanel>
-                        </Button>
-                        <Button Click="OnAllowReader" Padding="12,4" AutomationProperties.Name="{l:T reader.allow}">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource Icon.Check}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
-                                <TextBlock Text="{l:T reader.allow}" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                    <Path DockPanel.Dock="Left" Data="{StaticResource Icon.Warning}" Style="{StaticResource IcoLarge}" Fill="{StaticResource WarningBrush}" Margin="0,0,12,0" />
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock x:Name="ReaderTitle" FontWeight="SemiBold" TextWrapping="Wrap" />
-                        <TextBlock Text="{l:T reader.bar_text}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,2,12,0" />
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-
             <Border x:Name="UpdateBar" Style="{StaticResource InfoBar}" Visibility="Collapsed">
                 <DockPanel>
                     <Button DockPanel.Dock="Right" Click="OnOpenReleases" Padding="12,4" AutomationProperties.Name="{l:T upd.open}">
@@ -46,40 +21,74 @@
                 </DockPanel>
             </Border>
 
-            <!-- Models whose public source is disappearing -->
-            <Border x:Name="RiskBar" Style="{StaticResource InfoBar}" BorderBrush="{StaticResource WarningBrush}" Visibility="Collapsed">
-                <DockPanel>
-                    <Button DockPanel.Dock="Right" Click="OnReviewModels" Padding="12,4" VerticalAlignment="Center" AutomationProperties.Name="{l:T ov.safety_open}">
-                        <StackPanel Orientation="Horizontal">
-                            <Path Data="{StaticResource Icon.Cube}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
-                            <TextBlock Text="{l:T ov.safety_open}" />
-                        </StackPanel>
-                    </Button>
-                    <Path x:Name="RiskIcon" DockPanel.Dock="Left" Data="{StaticResource Icon.Warning}" Style="{StaticResource IcoLarge}"
-                          Fill="{StaticResource WarningBrush}" Margin="0,0,12,0" />
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock x:Name="RiskTitle" FontWeight="SemiBold" />
-                        <TextBlock Text="{l:T ov.risk_text}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,2,12,0" />
+            <!-- Everything that needs a decision, in one place -->
+            <Border x:Name="AttentionCard" Style="{StaticResource Card}" Visibility="Collapsed" BorderBrush="{StaticResource WarningBrush}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <Path Data="{StaticResource Icon.Warning}" Style="{StaticResource Ico}" Fill="{StaticResource WarningBrush}" Margin="0,0,10,0" />
+                        <TextBlock Text="{l:T ov.attention}" Style="{StaticResource SectionTitle}" />
                     </StackPanel>
-                </DockPanel>
-            </Border>
+                    <!-- A program is bringing many evaporated files back -->
+                    <Border x:Name="ReaderBar" Style="{StaticResource AttentionRow}" Visibility="Collapsed">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Click="OnBlockReader" Padding="12,4" Margin="0,0,8,0" AutomationProperties.Name="{l:T reader.block}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Data="{StaticResource Icon.Prohibited}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                                        <TextBlock Text="{l:T reader.block}" />
+                                    </StackPanel>
+                                </Button>
+                                <Button Click="OnAllowReader" Padding="12,4" AutomationProperties.Name="{l:T reader.allow}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Data="{StaticResource Icon.Check}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                                        <TextBlock Text="{l:T reader.allow}" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <Path DockPanel.Dock="Left" Data="{StaticResource Icon.Warning}" Style="{StaticResource IcoLarge}" Fill="{StaticResource WarningBrush}" Margin="0,0,12,0" />
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock x:Name="ReaderTitle" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                <TextBlock Text="{l:T reader.bar_text}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,2,12,0" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
 
-            <!-- Models whose loading could run code -->
-            <Border x:Name="SafetyBar" Style="{StaticResource InfoBar}" BorderBrush="{StaticResource WarningBrush}" Visibility="Collapsed">
-                <DockPanel>
-                    <Button DockPanel.Dock="Right" Click="OnReviewModels" Padding="12,4" VerticalAlignment="Center" AutomationProperties.Name="{l:T ov.safety_open}">
-                        <StackPanel Orientation="Horizontal">
-                            <Path Data="{StaticResource Icon.Cube}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
-                            <TextBlock Text="{l:T ov.safety_open}" />
-                        </StackPanel>
-                    </Button>
-                    <Path x:Name="SafetyIcon" DockPanel.Dock="Left" Data="{StaticResource Icon.ShieldError}" Style="{StaticResource IcoLarge}"
-                          Fill="{StaticResource WarningBrush}" Margin="0,0,12,0" />
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock x:Name="SafetyTitle" FontWeight="SemiBold" />
-                        <TextBlock Text="{l:T ov.safety_text}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,2,12,0" />
-                    </StackPanel>
-                </DockPanel>
+                    <!-- Models whose public source is disappearing -->
+                    <Border x:Name="RiskBar" Style="{StaticResource AttentionRow}" Visibility="Collapsed">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Click="OnReviewModels" Padding="12,4" VerticalAlignment="Center" AutomationProperties.Name="{l:T ov.safety_open}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="{StaticResource Icon.Cube}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                                    <TextBlock Text="{l:T ov.safety_open}" />
+                                </StackPanel>
+                            </Button>
+                            <Path x:Name="RiskIcon" DockPanel.Dock="Left" Data="{StaticResource Icon.Warning}" Style="{StaticResource IcoLarge}"
+                                  Fill="{StaticResource WarningBrush}" Margin="0,0,12,0" />
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock x:Name="RiskTitle" FontWeight="SemiBold" />
+                                <TextBlock Text="{l:T ov.risk_text}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,2,12,0" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Models whose loading could run code -->
+                    <Border x:Name="SafetyBar" Style="{StaticResource AttentionRow}" Visibility="Collapsed">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Click="OnReviewModels" Padding="12,4" VerticalAlignment="Center" AutomationProperties.Name="{l:T ov.safety_open}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="{StaticResource Icon.Cube}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
+                                    <TextBlock Text="{l:T ov.safety_open}" />
+                                </StackPanel>
+                            </Button>
+                            <Path x:Name="SafetyIcon" DockPanel.Dock="Left" Data="{StaticResource Icon.ShieldError}" Style="{StaticResource IcoLarge}"
+                                  Fill="{StaticResource WarningBrush}" Margin="0,0,12,0" />
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock x:Name="SafetyTitle" FontWeight="SemiBold" />
+                                <TextBlock Text="{l:T ov.safety_text}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,2,12,0" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
             </Border>
 
             <!-- Empty state -->

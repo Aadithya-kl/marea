@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-11-27
+
+### Changed
+- **Simpler overview**: source risks, models to check and programs reading everything are grouped
+  in one *Needs your attention* card instead of separate bars.
+- **Plain words** in every language: "ledger" became *watched files*, "tide" became *automatic
+  cleanup* (the settings section is now *Free space*), "mirror" became *backup folder (a NAS or another
+  drive)*.
+- **Automatic language** now takes the first of the user's Windows preferred languages that Marea
+  speaks (not only the display language), falling back to English; Settings shows which one it picked.
+- The disabled *Copy to backup folder* button explains why when no backup folder is set.
+
 ## [0.6.0] - 2026-11-27
 
 ### Added

@@ -146,7 +146,7 @@ You get a short report of those cases.
 The **Files** page lists every tracked file with its class and state. Select a file to see,
 in plain words, why it stays or how it would come back:
 
-- *unique: no verified source*: replicate it to your mirror (NAS) to make it re-obtainable;
+- *unique: no verified source*: copy it to your backup folder (a NAS or another drive) to make it re-obtainable;
 - *used N days ago*: recently used files are never evaporated (7 days by default);
 - *needed to rebuild a file that is already evaporated*: the source of a recipe or the last
   local copy stays pinned;
@@ -154,7 +154,7 @@ in plain words, why it stays or how it would come back:
   unless a public or NAS copy exists.
 
 From here you can also **Evaporate…** selected files, **Bring back to disk**, or
-**Replicate to mirror**.
+**Copy to backup folder**.
 
 ## 8. Models: what is on your disk, and is it safe to load?
 
@@ -280,14 +280,14 @@ Every screenshot in this manual uses the light theme; the dark theme looks like 
 
 | Setting | Default | Meaning |
 |---|---|---|
-| Language | Automatic | English, Italiano, Español, Français, Deutsch |
+| Language | Automatic, as Windows | English, Italiano, Español, Français, Deutsch. *Automatic* takes the first of your Windows preferred languages that Marea speaks, otherwise English, and shows which one it picked |
 | Theme | Follow Windows | Light, dark, or the Windows setting. Changes as soon as you pick it |
-| Automatic tide | **Off** | Every 10 minutes, if free space is below the target, evaporate the cheapest files |
-| Free space to keep | 100 GB | The tide target |
+| Automatic cleanup | **Off** | Every 10 minutes, if free space is below the target, Marea frees on its own the files that are easiest to get back |
+| Free space to keep | 100 GB | The target of automatic cleanup |
 | Never evaporate files used in the last | 7 days | Protects files you're working with |
 | Ignore files smaller than | 50 MB | Small files are not worth it |
 | Download speed for estimates | 50 MB/s | Only used to estimate return times |
-| Mirror folder | — | A NAS or second drive for verified copies of unique files |
+| Backup folder | — | A NAS or another drive for verified copies of unique files (shown as *mirror* in older versions) |
 | Hugging Face repositories to compare with | — | Extra repositories that discovery can't guess (one per line) |
 | Find out by itself where models come from | **On** | Discovery from evidence on disk (see §13) |
 | Also search Hugging Face by folder name | **Off** | Finds more, but sends folder names to Hugging Face |
@@ -313,7 +313,7 @@ Every screenshot in this manual uses the light theme; the dark theme looks like 
 - **Ollama**: if you manage `%USERPROFILE%\.ollama\models\blobs`, each blob listed in your
   Ollama manifests comes back from `registry.ollama.ai` (or `hf.co`) by digest. If you don't
   use Ollama, nothing changes.
-- **Mirror / NAS**: *Replicate to mirror* copies unique files into a content-addressed store
+- **Backup folder (NAS)**: *Copy to backup folder* copies unique files into a content-addressed store
   on your NAS (`marea-store\sha256\…`), verified while copying. Those files become
   re-obtainable from your own network.
 

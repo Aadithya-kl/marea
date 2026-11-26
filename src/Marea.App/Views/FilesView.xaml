@@ -29,7 +29,7 @@
                         <TextBlock Text="{l:T files.bring_back}" />
                     </StackPanel>
                 </Button>
-                <Button x:Name="ReplicateButton" Click="OnReplicate" Padding="12,6" AutomationProperties.Name="{l:T files.replicate}">
+                <Button x:Name="ReplicateButton" Click="OnReplicate" Padding="12,6" ToolTipService.ShowOnDisabled="True" AutomationProperties.Name="{l:T files.replicate}">
                     <StackPanel Orientation="Horizontal">
                         <Path Data="{StaticResource Icon.Server}" Style="{StaticResource Ico}" Margin="0,0,6,0" />
                         <TextBlock Text="{l:T files.replicate}" />

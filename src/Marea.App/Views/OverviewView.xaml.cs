@@ -27,7 +27,6 @@ public partial class OverviewView : UserControl, IRefreshable
         var key = dangerous ? "ov.safety_dangerous" : "ov.safety_title";
         SafetyTitle.Text = Loc.T(risky.Count == 1 ? key + "_one" : key, risky.Count);
         SafetyIcon.Fill = (Brush)FindResource(dangerous ? "DangerBrush" : "WarningBrush");
-        SafetyBar.BorderBrush = SafetyIcon.Fill;
     }
 
     /// <summary>Shows how many files depend only on public sources that are disappearing or gone.</summary>
@@ -40,7 +39,6 @@ public partial class OverviewView : UserControl, IRefreshable
         RiskTitle.Text = Loc.T(n == 1 ? key + "_one" : key, n);
         RiskIcon.Fill = (Brush)FindResource(lost > 0 ? "DangerBrush" : "WarningBrush");
         RiskIcon.Data = (Geometry)FindResource(lost > 0 ? "Icon.ShieldError" : "Icon.Warning");
-        RiskBar.BorderBrush = RiskIcon.Fill;
     }
 
     private void OnBlockReader(object sender, RoutedEventArgs e) => DecideReader(block: true);
@@ -88,6 +86,8 @@ public partial class OverviewView : UserControl, IRefreshable
         var reader = App.Current.LastMassRead;
         ReaderBar.Visibility = reader is null ? Visibility.Collapsed : Visibility.Visible;
         ReaderTitle.Text = reader is null ? "" : Loc.T("reader.bar_title", reader.Name, reader.Files, Fmt.Gb(reader.Bytes));
+        AttentionCard.Visibility = new[] { ReaderBar, RiskBar, SafetyBar }.Any(b => b.Visibility == Visibility.Visible)
+            ? Visibility.Visible : Visibility.Collapsed;
 
         VolumesList.ItemsSource = e.Volumes().Select(v => new
         {

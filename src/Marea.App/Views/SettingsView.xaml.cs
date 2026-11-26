@@ -22,7 +22,7 @@ public partial class SettingsView : UserControl, IRefreshable
     public void Refresh()
     {
         var s = App.Engine.Settings;
-        var langs = new[] { new LangItem("auto", Loc.T("set.lang_auto")) }
+        var langs = new[] { new LangItem("auto", Loc.T("set.lang_auto_named", Loc.NativeName(Loc.AutomaticLanguage()))) }
             .Concat(Loc.Languages.Select(l => new LangItem(l.Code, l.Name))).ToList();
         LanguageBox.ItemsSource = langs;
         LanguageBox.SelectedItem = langs.FirstOrDefault(l => l.Code == s.Language) ?? langs[0];

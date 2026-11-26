@@ -53,4 +53,13 @@ public sealed partial class LocalizationTests
         Assert.Contains(Loc.Language, Loc.Languages.Select(l => l.Code));
         Loc.SetLanguage("en");
     }
+
+    [Theory]
+    [InlineData(new[] { "it-IT", "en-US" }, "it")]
+    [InlineData(new[] { "ja-JP", "de-CH", "en-US" }, "de")]
+    [InlineData(new[] { "pt-BR", "zh-Hans-CN" }, "en")]
+    [InlineData(new string[0], "en")]
+    [InlineData(new[] { "fr" }, "fr")]
+    public void AutomaticLanguageTakesTheFirstSupportedPreferredOrEnglish(string[] preferred, string expected) =>
+        Assert.Equal(expected, Loc.Automatic(preferred));
 }

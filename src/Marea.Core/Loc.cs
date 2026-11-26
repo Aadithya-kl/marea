@@ -21,17 +21,53 @@ public static class Loc
     /// <summary>Active language code.</summary>
     public static string Language { get; private set; } = "en";
 
-    /// <summary>Activates a language; "auto" (or unknown) follows Windows' display language, else English.</summary>
+    /// <summary>Activates a language; "auto" (or unknown) picks the first supported language among the
+    /// user's preferred Windows languages, else English.</summary>
     public static void SetLanguage(string? code)
     {
         if (string.IsNullOrEmpty(code) || code == "auto" || Languages.All(l => l.Code != code))
         {
-            var sys = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-            code = Languages.Any(l => l.Code == sys) ? sys : "en";
+            code = Automatic(PreferredLanguages());
         }
         Language = code;
         _current = Load(code);
     }
+
+    /// <summary>The first supported language in <paramref name="preferred"/> (BCP-47 tags or two-letter
+    /// codes, in the user's order), or English.</summary>
+    public static string Automatic(IEnumerable<string> preferred)
+    {
+        foreach (var tag in preferred)
+        {
+            var two = tag.Split('-', '_')[0].ToLowerInvariant();
+            if (Languages.Any(l => l.Code == two))
+            {
+                return two;
+            }
+        }
+        return "en";
+    }
+
+    /// <summary>Windows' ordered list of preferred languages, then the display language.</summary>
+    private static IEnumerable<string> PreferredLanguages()
+    {
+        IReadOnlyList<string> list = [];
+        try
+        {
+            list = Windows.System.UserProfile.GlobalizationPreferences.Languages;
+        }
+        catch (Exception e) when (e is TypeLoadException or System.Runtime.InteropServices.COMException or PlatformNotSupportedException or UnauthorizedAccessException)
+        {
+            // Not available (e.g. very old Windows): the display language below is enough.
+        }
+        return list.Append(CultureInfo.CurrentUICulture.Name);
+    }
+
+    /// <summary>The language "automatic" resolves to on this machine.</summary>
+    public static string AutomaticLanguage() => Automatic(PreferredLanguages());
+
+    /// <summary>Native name of a supported language code.</summary>
+    public static string NativeName(string code) => Languages.FirstOrDefault(l => l.Code == code).Name ?? code;
 
     /// <summary>Translates <paramref name="key"/> and formats it with <paramref name="args"/>.</summary>
     public static string T(string key, params object?[] args)

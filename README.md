@@ -100,7 +100,7 @@ only what it can bring back. As far as we know, no other tool combines these:
 | Brings files back automatically on open | ✗ | n/a | **✓ transparent, verified** |
 | Recognises fp32 ↔ bf16 copies of the same model | ✗ | ✗ | **✓ bit-exact recipe** |
 | Matches files against public hubs | ✗ | ✗ | **✓ Hugging Face, pinned to a commit** |
-| Decides *what* to free by cost of return × recency | ✗ | ✗ | **✓ "the tide"** |
+| Decides *what* to free by cost of return × recency | ✗ | ✗ | **✓ automatic cleanup ("the tide")** |
 | Inventory of every model: format, quantization, parameters | partly | ✗ | **✓ read from the file's own header** |
 | Tells you if loading a model could run code | ✗ | ✗ | **✓ pickle opcodes + GGUF chat templates, never loaded** |
 | Safe to hand to an AI agent | ✗ | ✗ | **✓ JSON schemas, exit codes, read-only mode** |
@@ -242,7 +242,7 @@ Every file gets a **recoverability class**:
 | **Re-obtainable** | same SHA-256 as a public Hugging Face file pinned to a commit, an Ollama registry blob (by digest), or a verified copy on your mirror/NAS | download / LAN | depends on your connection |
 | **Unique** | no known source | **never evaporated**. Replicate it to your mirror first and it becomes re-obtainable | — |
 
-**The tide** keeps a target of free space (100 GB by default). It ranks candidates by
+**Automatic cleanup** ("the tide") keeps a target of free space (100 GB by default). It ranks candidates by
 *expected cost* = probability you'll need the file soon × seconds to bring it back ÷ GB
 freed. A duplicate you haven't touched in a month goes first; a model you used yesterday
 stays. Automatic mode is **off by default**: you can also free space by hand from a plan
@@ -356,7 +356,7 @@ verified. Keep Marea running; it offers to start with Windows.
     <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/activity.png"><img src="docs/images/activity.png" width="420" alt="Activity"></picture><br><b>Activity.</b> A journal of everything Marea did. Never erased.</td>
   </tr>
   <tr>
-    <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/settings.png"><img src="docs/images/settings.png" width="420" alt="Settings"></picture><br><b>Settings.</b> Language, light/dark theme, the tide, sources and the emergency exit.</td>
+    <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/settings.png"><img src="docs/images/settings.png" width="420" alt="Settings"></picture><br><b>Settings.</b> Language (automatic, as Windows), light/dark theme, automatic cleanup, sources and the emergency exit.</td>
     <td><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/dark/folders.png"><img src="docs/images/folders.png" width="420" alt="Managed folders"></picture><br><b>Managed folders.</b> Found automatically, added by hand, removed safely.</td>
   </tr>
   <tr>
@@ -380,7 +380,7 @@ mareactl scan                       fingerprints, sources, classes, model header
 mareactl models [--unused N] [--json]   every model (or those unused for N days)
 mareactl check <file|folder> [--json]   safety check before loading (no setup needed)
 mareactl watch [--no-rescue] [--json]   check public sources, rescue models at risk
-mareactl plan [--gb N]              what the tide would evaporate (touches nothing)
+mareactl plan [--gb N]              what would be freed (touches nothing)
 mareactl evaporate [--gb N] --yes   evaporate according to the plan
 mareactl free [--gb N|--all] [--instant] --yes   quick cleanup, undoable
 mareactl undo                       undo the last cleanup
