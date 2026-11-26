@@ -6,6 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-27
+
+### Added
+- **`marea-check` for macOS and Linux** (and Windows): the load-safety check as a standalone,
+  self-contained binary for linux-x64, linux-arm64, osx-arm64, osx-x64 and win-x64, attached to every
+  release with checksums and build attestations. Same verdicts, `marea.check/1` JSON and exit codes
+  as `mareactl check`. CI builds and self-tests it on Ubuntu and macOS with real pickles made by Python.
+- **Hugging Face scan results**: the daily source check reads the Hub's own security scan for the
+  repositories your files come from; flagged files show *Hugging Face scan: unsafe/caution* and are
+  rated *Check before loading* (never *dangerous* on that alone). `hubScan` in `marea.models/1`.
+- **More model folders on first run**: LM Studio (`.lmstudio\models`, `.cache\lm-studio\models`),
+  Jan, GPT4All and the Hugging Face cache (honouring `HF_HUB_CACHE` / `HF_HOME`), including inside
+  AppData; extensionless blobs in `blobs` folders are counted as model weights.
+
 ## [0.5.0] - 2026-11-27
 
 ### Added

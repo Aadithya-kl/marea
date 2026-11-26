@@ -38,7 +38,7 @@ public sealed partial class HuggingFaceClient
         }
         try
         {
-            using var info = await SendAsync(HttpMethod.Get, new Uri($"https://huggingface.co/api/models/{repo}"), null, ct);
+            using var info = await SendAsync(HttpMethod.Get, new Uri($"https://huggingface.co/api/models/{repo}?securityStatus=true"), null, ct);
             if (!info.IsSuccessStatusCode)
             {
                 return new RepoView(Classify(info.StatusCode), false, false, none);
@@ -47,8 +47,25 @@ public sealed partial class HuggingFaceClient
             var root = doc.RootElement;
             var gated = root.TryGetProperty("gated", out var g) && g.ValueKind is JsonValueKind.True or JsonValueKind.String;
             var disabled = root.TryGetProperty("disabled", out var d) && d.ValueKind == JsonValueKind.True;
+            var scansDone = false;
+            var flagged = new Dictionary<string, string>(StringComparer.Ordinal);
+            if (root.TryGetProperty("securityRepoStatus", out var sec) && sec.ValueKind == JsonValueKind.Object)
+            {
+                scansDone = sec.TryGetProperty("scansDone", out var sd) && sd.ValueKind == JsonValueKind.True;
+                if (sec.TryGetProperty("filesWithIssues", out var issues) && issues.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var f in issues.EnumerateArray())
+                    {
+                        if (f.TryGetProperty("path", out var p) && p.GetString() is { } path
+                            && f.TryGetProperty("level", out var l) && l.GetString() is { Length: > 0 and <= 32 } level)
+                        {
+                            flagged[path] = level.ToLowerInvariant();
+                        }
+                    }
+                }
+            }
             var latest = (await ListLfsFilesAsync(repo, ct)).Select(x => x.Sha256).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            return new RepoView(ProbeResult.Ok, gated, disabled, latest);
+            return new RepoView(ProbeResult.Ok, gated, disabled, latest, scansDone, flagged);
         }
         catch (Exception e) when (e is HttpRequestException or TaskCanceledException or JsonException or KeyNotFoundException)
         {

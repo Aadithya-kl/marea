@@ -22,6 +22,16 @@ public sealed class WatchNetworkTests
     }
 
     [Fact]
+    public async Task HubSecurityScanResultsAreRead()
+    {
+        // Hugging Face's own public test repository with deliberately flagged files.
+        using var hub = new HuggingFaceClient();
+        var view = await hub.RepoViewAsync("mcpotato/42-eicar-street");
+        Assert.True(view.ScansDone);
+        Assert.Contains(view.Flagged!, kv => kv.Value == "unsafe");
+    }
+
+    [Fact]
     public async Task MissingRepositoryIsNotServed()
     {
         using var hub = new HuggingFaceClient();

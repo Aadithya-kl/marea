@@ -54,6 +54,7 @@ Marea is for you if you have searched for any of these:
 |---|---|
 | **"C: drive full" because of AI models**, Stable Diffusion checkpoints, LLMs | Frees the space of every model it can prove is re-obtainable, without deleting anything |
 | **Hugging Face cache too big** (`.cache/huggingface/hub`, `hf cache` shows hundreds of GB) | Matches cached files to their pinned Hub commit; they come back on demand, verified |
+| **LM Studio, Jan, GPT4All models filling the disk** | Finds their model folders on first run, next to ComfyUI, Hugging Face and Ollama ones |
 | **Ollama models take too much space** (`.ollama/models/blobs`) | Names every blob by its tag, frees the ones the registry still serves by digest |
 | **ComfyUI models folder is huge**, same checkpoint in A1111, Forge and ComfyUI | Finds byte-identical duplicates across apps and drives; files stay where each app expects them |
 | **fp32 and fp16/bf16 copies of the same model** | Recomputes bf16 from fp32 bit for bit when needed, so only one copy uses space |
@@ -134,6 +135,10 @@ Nothing is ever loaded or executed, and a risky file on disk is harmless: the ve
 you (or your agent) decide *before* a program loads it. To check a model you just downloaded,
 before it even lands in a managed folder: `mareactl check <file or folder>`.
 
+For files that came from Hugging Face, the Models page also shows what **Hugging Face's own
+scanners** say about them. A file they flag is shown as *Check before loading* with the reason,
+never as dangerous on that alone, because hub scanners report many false positives on pickles.
+
 ## Your results, protected
 
 - **Share your result.** One click on *Share* saves a 1200×630 image with your numbers (space freed,
@@ -173,6 +178,22 @@ notification, a bar on the overview, and the details on the Models page.
 ```powershell
 mareactl watch --json      # exit 3 = models at risk, 4 = a file can no longer come back
 ```
+
+### On macOS and Linux too: `marea-check`
+
+The safety check is also a small standalone program for **macOS, Linux and Windows**, with no
+setup and nothing else installed. Download `marea-check-<version>-<platform>` from
+[Releases](https://github.com/indecenti/marea/releases), then:
+
+```bash
+tar -xzf marea-check-0.6.0-linux-x64.tar.gz
+./marea-check ~/models --json        # exit 0 ok, 3 check before loading, 4 dangerous
+```
+
+Same verdicts, JSON schema (`marea.check/1`) and exit codes as `mareactl check`, so it fits CI
+pipelines, download scripts and AI agents. Builds are attested like the app
+(`gh attestation verify <file> --repo indecenti/marea`). On macOS, if the file was downloaded with a
+browser, clear the quarantine flag once: `xattr -d com.apple.quarantine marea-check`.
 
 ## Built for AI agents
 
@@ -405,8 +426,10 @@ come back from the Ollama registry, verified by digest. If you don't use Ollama,
 Package caches are better cleaned by their own tools.
 
 **macOS / Linux?**
-The engine is portable .NET. Only the placeholder layer is Windows-specific: macOS has File
-Provider, Linux has fanotify pre-content events or FUSE. Contributions welcome.
+The safety check runs there today: download `marea-check` for macOS or Linux from Releases.
+Freeing space needs a placeholder layer per OS: macOS has File Provider, Linux has fanotify
+pre-content events or FUSE ([#10](https://github.com/indecenti/marea/issues/10),
+[#11](https://github.com/indecenti/marea/issues/11)). Contributions welcome.
 
 **How do I uninstall?**
 Use the uninstaller (MSI), or *Settings → Bring everything back and detach* and then delete
@@ -425,8 +448,8 @@ the folder (portable). Either way every file comes back first.
 - [ ] Ollama update backups: give the space back without losing the rollback
 - [x] Endangered-model watch: early warnings, automatic rescue, last copies protected
 - [x] Share card, unused-models filter, mass-read protection with per-program blocking
+- [x] `marea-check` for macOS and Linux; LM Studio, Jan and GPT4All folders; Hugging Face scan results
 - [ ] Cross-app sharing: one copy for ComfyUI, Forge, LM Studio and Ollama, without symlinks
-- [ ] Show the Hugging Face scan result for files that match a public file
 - [ ] Signed releases, MSI installer, winget
 - [ ] Civitai source (by hash)
 - [ ] Predictive high tide: bring models back *before* you need them

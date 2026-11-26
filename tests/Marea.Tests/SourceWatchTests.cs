@@ -171,6 +171,32 @@ public sealed class SourceWatchTests : IDisposable
     }
 
     [Fact]
+    public async Task HubScanFlagIsStoredAndRaisesTheModelVerdictToCheckBeforeLoading()
+    {
+        var f = Add("model.safetensors", ShaA);
+        Hub(ShaA);
+        var view = Latest(ShaA) with { ScansDone = true, Flagged = new Dictionary<string, string> { ["model.safetensors"] = "unsafe" } };
+        await new SourceWatch(_ledger, new FakeProbe(ProbeResult.Ok, view)).CheckAsync();
+        Assert.Equal("unsafe", _ledger.HubScans()[ShaA]);
+        var meta = new Dictionary<string, ModelMeta> { [ShaA] = new("safetensors", null, null, "F16", 1, SafetyVerdict.SafeFormat, []) };
+        var model = Assert.Single(ModelCatalog.Build([f], meta, (_, _) => false, _ledger.HubScans()));
+        Assert.Equal(SafetyVerdict.Suspicious, model.Safety);
+        Assert.Contains("Hugging Face scan: unsafe", model.Findings);
+    }
+
+    [Fact]
+    public async Task CleanHubScanDoesNotChangeTheVerdict()
+    {
+        var f = Add("model.safetensors", ShaA);
+        Hub(ShaA);
+        await new SourceWatch(_ledger, new FakeProbe(ProbeResult.Ok, Latest(ShaA) with { ScansDone = true })).CheckAsync();
+        var meta = new Dictionary<string, ModelMeta> { [ShaA] = new("safetensors", null, null, "F16", 1, SafetyVerdict.SafeFormat, []) };
+        var model = Assert.Single(ModelCatalog.Build([f], meta, (_, _) => false, _ledger.HubScans()));
+        Assert.Equal("clean", model.HubScan);
+        Assert.Equal(SafetyVerdict.SafeFormat, model.Safety);
+    }
+
+    [Fact]
     public async Task UnreachableHubConcludesNothing()
     {
         Add("a.safetensors", ShaA, Residency.Evaporated);

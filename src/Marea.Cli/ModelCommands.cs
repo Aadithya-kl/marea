@@ -36,6 +36,7 @@ internal static class ModelCommands
                     state = m.State,
                     lastUsed = m.LastUsedUtc,
                     safety = m.Safety,
+                    hubScan = m.HubScan,
                     findings = m.Findings,
                     files = m.Files.Zip(m.Meta).Select(p => new
                     {

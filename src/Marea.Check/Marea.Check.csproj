@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- marea-check: the model load-safety check on its own, for Windows, macOS and Linux.
+       It compiles the same inspector sources as the desktop app; nothing Windows-specific. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <SupportedOSPlatformVersion></SupportedOSPlatformVersion>
+    <AssemblyName>marea-check</AssemblyName>
+    <RootNamespace>Marea.Check</RootNamespace>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>marea-check</ToolCommandName>
+    <PackageId>Marea.Check</PackageId>
+    <Description>Checks AI model files (pickle, PyTorch, GGUF, safetensors, ONNX) for code that would run when loaded, without loading them.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/indecenti/marea</PackageProjectUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Marea.Core\Inspect\ModelMeta.cs" Link="Inspect\ModelMeta.cs" />
+    <Compile Include="..\Marea.Core\Inspect\GgufReader.cs" Link="Inspect\GgufReader.cs" />
+    <Compile Include="..\Marea.Core\Inspect\PickleScanner.cs" Link="Inspect\PickleScanner.cs" />
+    <Compile Include="..\Marea.Core\Inspect\ImportRating.cs" Link="Inspect\ImportRating.cs" />
+    <Compile Include="..\Marea.Core\Inspect\ModelInspector.cs" Link="Inspect\ModelInspector.cs" />
+    <Compile Include="..\Marea.Core\Safetensors.cs" Link="Inspect\Safetensors.cs" />
+  </ItemGroup>
+</Project>

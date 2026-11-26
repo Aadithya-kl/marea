@@ -30,8 +30,8 @@
       "@type": "SoftwareApplication",
       "name": "Marea",
       "applicationCategory": "UtilitiesApplication",
-      "operatingSystem": "Windows 10, Windows 11",
-      "softwareVersion": "0.5.0",
+      "operatingSystem": "Windows 10, Windows 11 (model safety check also on macOS and Linux)",
+      "softwareVersion": "0.6.0",
       "license": "https://opensource.org/licenses/MIT",
       "isAccessibleForFree": true,
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
@@ -200,6 +200,7 @@ footer { padding: 32px 0 48px; color: var(--muted); font-size: .9rem; text-align
 mareactl watch --json                              # exit 3 = models at risk
 $env:MAREA_READONLY = "1"; mareactl models --json  # inventory, no changes possible</code></pre>
     <p>Versioned JSON schemas, documented exit codes, read-only mode, untrusted names sanitised. See <a href="https://github.com/indecenti/marea/blob/main/docs/AGENTS.md">AGENTS.md</a>.</p>
+    <p><strong>On macOS and Linux:</strong> the safety check is also a standalone binary, <code>marea-check</code>, for Linux (x64, ARM) and macOS (Apple Silicon, Intel). Download it from <a href="https://github.com/indecenti/marea/releases">Releases</a>; same verdicts, JSON and exit codes.</p>
   </section>
 
   <section id="faq" aria-labelledby="faq-h">
@@ -209,7 +210,7 @@ $env:MAREA_READONLY = "1"; mareactl models --json  # inventory, no changes possi
     <details><summary>What if a model is removed from Hugging Face or Ollama?</summary><p>Marea checks its sources every day and catches early signs. Files at risk are brought back while the source still answers; possible last copies are kept and copied to your NAS.</p></details>
     <details><summary>Can I lose a file?</summary><p>No by design: only files with a verified source that survives the operation are evaporated, every byte that comes back is re-hashed, and unique files are never touched. Read the <a href="https://github.com/indecenti/marea/blob/main/SECURITY.md">security model</a>.</p></details>
     <details><summary>What does Marea send over the network?</summary><p>No telemetry and never your paths or file contents. Only public repository names, public digests and an update check, each of which can be turned off. Details in the <a href="https://github.com/indecenti/marea/blob/main/CODE_SIGNING_POLICY.md#privacy-policy">privacy policy</a>.</p></details>
-    <details><summary>Does it work on macOS or Linux?</summary><p>Not yet: Marea uses the Windows Cloud Files API. The engine is portable .NET, and macOS (File Provider) and Linux (FUSE) backends are on the roadmap. Contributions welcome.</p></details>
+    <details><summary>Does it work on macOS or Linux?</summary><p>The model safety check does: download <code>marea-check</code> for macOS or Linux. Freeing space does not yet: it uses the Windows Cloud Files API. The engine is portable .NET, and macOS (File Provider) and Linux (FUSE) backends are on the roadmap. Contributions welcome.</p></details>
   </section>
 </main>
 

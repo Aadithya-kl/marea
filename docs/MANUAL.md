@@ -1,6 +1,6 @@
 # Marea — User manual
 
-Version 0.5 · Windows 10 1809+ / Windows 11 · English
+Version 0.6 · Windows 10 1809+ / Windows 11 · English
 ([Italiano](i18n/README.it.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [Deutsch](i18n/README.de.md))
 
 1. [What Marea does](#1-what-marea-does)
@@ -75,6 +75,11 @@ holding at least 1 GB of model weights, plus Ollama's `blobs` folder if you use 
 Marea refuses folders where it could do harm: system folders, whole drives, your whole
 user profile, network or removable drives, non-NTFS drives, and folders already synced by
 OneDrive or similar services.
+
+
+Besides folders named like model stores (`checkpoints`, `models`, `hub`...), the guide checks the
+default folders of **Ollama**, **LM Studio** (`.lmstudio\models`), **Jan**, **GPT4All** and the
+**Hugging Face cache** (`HF_HUB_CACHE` / `HF_HOME` are honoured), wherever they are.
 
 ## 4. The overview
 
@@ -183,7 +188,13 @@ a strong signal, not a proof: like every static scanner it can be fooled by an o
 payload, so "No code found" means "nothing but standard tensor rebuilding was found".
 
 To check a file **before** you even put it in a managed folder, for example a model you just
-downloaded, use the command line: `mareactl check <file or folder>`.
+downloaded, use the command line: `mareactl check <file or folder>`. On macOS and Linux, use the
+standalone `marea-check` from the Releases page: same verdicts and exit codes.
+
+**Hugging Face's scanners.** For files whose source is a Hugging Face repository, the daily source
+check also reads what the Hub's own security scanners report. A flagged file shows
+*Hugging Face scan: unsafe* (or *caution*) among the findings and is rated *Check before loading*;
+Marea never calls a file dangerous only because a hub scanner flagged it.
 
 ### Endangered models
 

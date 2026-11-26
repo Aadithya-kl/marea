@@ -41,6 +41,10 @@ public sealed class ModelEntry
     public required List<FileRecord> Files { get; init; }
     /// <summary>Metadata of each file (same order as <see cref="Files"/>); null when not inspected yet.</summary>
     public required List<ModelMeta?> Meta { get; init; }
+    /// <summary>What Hugging Face's scanners say about its files: the worst level, or null when unknown.</summary>
+    public string? HubScan { get; init; }
+
+    private bool HubFlagged => HubScan is not (null or "clean");
 
     /// <summary>False when every file was inspected and none is a model (datasets, archives...).</summary>
     public bool IsModel => Meta.Any(m => m is null || m.Format != "data");
@@ -65,9 +69,19 @@ public sealed class ModelEntry
     public long Parameters => Pairs().GroupBy(p => p.M.Format).Select(g => g.DistinctBy(p => p.F.Sha256).Sum(p => p.M.Parameters))
         .DefaultIfEmpty(0).Max();
     /// <summary>Worst safety verdict of its files.</summary>
-    public SafetyVerdict Safety => Pairs().Select(p => p.M.Safety).DefaultIfEmpty(SafetyVerdict.NotAModel).Max();
-    /// <summary>Safety findings of its files.</summary>
-    public List<string> Findings => Pairs().SelectMany(p => p.M.Findings).Distinct().ToList();
+    /// <remarks>A Hugging Face flag alone raises it to <see cref="SafetyVerdict.Suspicious"/>, never to
+    /// dangerous: hub scanners report many false positives on pickles.</remarks>
+    public SafetyVerdict Safety
+    {
+        get
+        {
+            var own = Pairs().Select(p => p.M.Safety).DefaultIfEmpty(SafetyVerdict.NotAModel).Max();
+            return HubFlagged && own < SafetyVerdict.Suspicious ? SafetyVerdict.Suspicious : own;
+        }
+    }
+    /// <summary>Safety findings of its files, plus the Hugging Face flag if any.</summary>
+    public List<string> Findings => Pairs().SelectMany(p => p.M.Findings)
+        .Concat(HubFlagged ? ["Hugging Face scan: " + HubScan] : []).Distinct().ToList();
 
     private IEnumerable<(FileRecord F, ModelMeta M)> Pairs() =>
         Files.Zip(Meta).Where(p => p.Second is not null).Select(p => (p.First, p.Second!));
@@ -89,7 +103,7 @@ public static partial class ModelCatalog
 
     /// <summary>Builds the model list. <paramref name="folderHasFile"/> is injectable for tests.</summary>
     public static List<ModelEntry> Build(IEnumerable<FileRecord> files, IReadOnlyDictionary<string, ModelMeta> meta,
-        Func<string, string, bool>? folderHasFile = null)
+        Func<string, string, bool>? folderHasFile = null, IReadOnlyDictionary<string, string>? hubScans = null)
     {
         folderHasFile ??= (dir, name) => File.Exists(Path.Combine(dir, name));
         var ollama = new Dictionary<string, Dictionary<string, List<string>>>(StringComparer.OrdinalIgnoreCase);
@@ -114,8 +128,18 @@ public static partial class ModelCatalog
                 Folder = kv.Value.Folder,
                 Files = list,
                 Meta = list.Select(f => meta.GetValueOrDefault(f.Sha256)).ToList(),
+                HubScan = WorstScan(list.Select(f => hubScans?.GetValueOrDefault(f.Sha256))),
             };
         }).OrderByDescending(m => m.Size).ToList();
+    }
+
+    /// <summary>unsafe beats caution beats any other flag beats clean; null when nothing is known.</summary>
+    private static string? WorstScan(IEnumerable<string?> levels)
+    {
+        var known = levels.OfType<string>().ToList();
+        return known.Count == 0 ? null
+            : known.FirstOrDefault(l => l == "unsafe") ?? known.FirstOrDefault(l => l == "caution")
+              ?? known.FirstOrDefault(l => l != "clean") ?? "clean";
     }
 
     private static (string Key, string Name, ModelKind Kind, string Folder) Classify(FileRecord f,

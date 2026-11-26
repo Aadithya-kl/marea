@@ -34,7 +34,10 @@ public enum ProbeResult
 /// <param name="Gated">Downloads need an account and an agreement.</param>
 /// <param name="Disabled">Disabled by the Hub (for instance after a report).</param>
 /// <param name="LatestShas">sha256 of every LFS file in the latest revision.</param>
-public sealed record RepoView(ProbeResult Result, bool Gated, bool Disabled, IReadOnlySet<string> LatestShas);
+/// <param name="ScansDone">True when the Hub's security scanners have scanned the repository.</param>
+/// <param name="Flagged">Files the Hub's scanners flagged, by path, with their level (unsafe, caution...).</param>
+public sealed record RepoView(ProbeResult Result, bool Gated, bool Disabled, IReadOnlySet<string> LatestShas,
+    bool ScansDone = false, IReadOnlyDictionary<string, string>? Flagged = null);
 
 /// <summary>What the registry says about one local Ollama tag.</summary>
 /// <param name="Name">Tag as shown to the user (llama3.2:3b).</param>

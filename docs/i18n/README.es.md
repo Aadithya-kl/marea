@@ -64,6 +64,10 @@ lee sus instrucciones **sin ejecutarlas** y da un veredicto sereno: *Formato seg
 intentan salir de su sandbox) o *Peligroso*. Para revisar un modelo recién descargado:
 `mareactl check <archivo o carpeta>`.
 
+## Novedades de la 0.6
+
+La revisión de seguridad de modelos ahora funciona también en **macOS y Linux**: descarga `marea-check` desde Releases (mismos veredictos, JSON y códigos de salida que `mareactl check`). En el primer inicio Marea encuentra también las carpetas de **LM Studio, Jan y GPT4All**, y para los archivos de Hugging Face muestra lo que dicen **los escáneres de seguridad de Hugging Face**.
+
 ## Novedades de la 0.5
 
 **Compartir** guarda una imagen con tus números (espacio liberado, modelos, cero bytes borrados), sin rutas ni nombres de archivo. El filtro **Sin usar en 90 días** encuentra los modelos olvidados. Y si un programa (antivirus, copias de seguridad, otros gestores de modelos) trae de vuelta muchos archivos evaporados en pocos minutos, Marea te lo dice y te deja **bloquearlo**: sus lecturas fallan y los archivos siguen evaporados, mientras los demás programas los abren con normalidad.

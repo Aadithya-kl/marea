@@ -66,6 +66,10 @@ trovato*, *Da controllare* (import insoliti, codice TorchScript, template di cha
 uscire dalla sandbox) o *Pericoloso*. Per controllare un modello appena scaricato:
 `mareactl check <file o cartella>`.
 
+## Novità della 0.6
+
+Il controllo di sicurezza dei modelli ora funziona anche su **macOS e Linux**: scarica `marea-check` dalle Release (stessi verdetti, JSON e codici di uscita di `mareactl check`). Al primo avvio Marea trova anche le cartelle di **LM Studio, Jan e GPT4All**, e per i file presi da Hugging Face mostra cosa dicono **gli scanner di sicurezza di Hugging Face**.
+
 ## Novità della 0.5
 
 **Condividi** salva un'immagine con i tuoi numeri (spazio liberato, modelli, zero byte cancellati), senza percorsi né nomi di file. Il filtro **Non usati da 90 giorni** trova i modelli dimenticati. E se un programma (antivirus, backup, altri gestori di modelli) riporta sul disco molti file evaporati in pochi minuti, Marea te lo dice e ti permette di **bloccarlo**: le sue letture falliscono e i file restano evaporati, mentre tutti gli altri programmi continuano ad aprirli.

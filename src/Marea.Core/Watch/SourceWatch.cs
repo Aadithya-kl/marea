@@ -71,7 +71,16 @@ public sealed class SourceWatch(Ledger ledger, ISourceProbe probe)
             var view = await probe.RepoAsync(repo.Key, ct);
             foreach (var s in repo)
             {
-                var file = await probe.FileAsync(HubFile.Parse(s.Locator, s.Sha256, s.Size), ct);
+                var hubFile = HubFile.Parse(s.Locator, s.Sha256, s.Size);
+                if (view.Flagged?.GetValueOrDefault(hubFile.Path) is { } level)
+                {
+                    ledger.PutHubScan(s.Sha256, level, repo.Key);
+                }
+                else if (view.ScansDone)
+                {
+                    ledger.PutHubScan(s.Sha256, "clean", repo.Key);
+                }
+                var file = await probe.FileAsync(hubFile, ct);
                 var (state, detail) = HealthRules.ForHub(file, view, s.Sha256);
                 Record(s, state, detail);
             }

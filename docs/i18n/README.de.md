@@ -64,6 +64,10 @@ gefunden*, *Vor dem Laden prüfen* (ungewöhnliche Importe, TorchScript-Code, GG
 aus ihrer Sandbox ausbrechen wollen) oder *Gefährlich*. Ein gerade geladenes Modell prüfen:
 `mareactl check <Datei oder Ordner>`.
 
+## Neu in 0.6
+
+Die Sicherheitsprüfung für Modelle läuft jetzt auch auf **macOS und Linux**: `marea-check` unter Releases herunterladen (gleiche Urteile, JSON und Exit-Codes wie `mareactl check`). Beim ersten Start findet Marea auch die Ordner von **LM Studio, Jan und GPT4All**, und bei Dateien von Hugging Face zeigt es, was **die Sicherheitsscanner von Hugging Face** melden.
+
 ## Neu in 0.5
 
 **Teilen** speichert ein Bild mit deinen Zahlen (freigegebener Speicher, Modelle, null gelöschte Bytes), ohne Pfade oder Dateinamen. Der Filter **Seit 90 Tagen ungenutzt** findet vergessene Modelle. Und wenn ein Programm (Virenscanner, Backup, andere Modellverwalter) in wenigen Minuten viele verdunstete Dateien zurückholt, sagt Marea dir welches und lässt dich es **blockieren**: Seine Lesezugriffe schlagen fehl und die Dateien bleiben verdunstet, während alle anderen Programme sie normal öffnen.

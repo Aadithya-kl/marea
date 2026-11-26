@@ -38,6 +38,29 @@ public sealed partial class Ledger
             : null;
     }
 
+    /// <summary>Stores what Hugging Face's own security scanners say about a file (clean, caution, unsafe...).</summary>
+    public void PutHubScan(string sha, string level, string repo)
+    {
+        using var c = Open();
+        Exec(c, "INSERT INTO hub_scan(sha, level, repo, at) VALUES($h,$l,$r,$a) ON CONFLICT(sha) DO UPDATE SET level=$l, repo=$r, at=$a",
+            ("$h", sha), ("$l", level), ("$r", repo), ("$a", DateTime.UtcNow.Ticks));
+    }
+
+    /// <summary>Hugging Face scan level by content hash.</summary>
+    public Dictionary<string, string> HubScans()
+    {
+        using var c = Open();
+        using var cmd = c.CreateCommand();
+        cmd.CommandText = "SELECT sha, level FROM hub_scan";
+        using var r = cmd.ExecuteReader();
+        var all = new Dictionary<string, string>(StringComparer.Ordinal);
+        while (r.Read())
+        {
+            all[r.GetString(0)] = r.GetString(1);
+        }
+        return all;
+    }
+
     /// <summary>Health state of a source, <see cref="SourceHealth.Unknown"/> when never checked.</summary>
     public SourceHealth HealthState(string locator) => Health(locator)?.State ?? SourceHealth.Unknown;
 }

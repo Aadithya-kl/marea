@@ -14,6 +14,7 @@ doing anything a person did not approve.
 | Goal | Command | Changes anything? |
 |---|---|---|
 | Is this downloaded model safe to load? | `mareactl check <file-or-folder> --json` | No (works without setup) |
+| Same, on macOS or Linux | `marea-check <file-or-folder> --json` (standalone binary from Releases) | No |
 | What models are on this machine? | `mareactl models --json` | No |
 | Which models have not been used for N days? | `mareactl models --unused 90 --json` | No |
 | Disk and ledger status | `mareactl status --json` | No |
@@ -108,6 +109,7 @@ GGUF files also report `architecture`, `name`, `precision` (quantization, e.g. `
 One entry per model (Hugging Face cache repository, Ollama model, model folder, sharded
 checkpoint or single file): `name`, `kind`, `folder`, `formats`, `precisions`, `architecture`,
 `parameters`, `sizeBytes`, `evaporatedBytes`, `state` (`on_disk`, `partly`, `evaporated`), `lastUsed`,
+`hubScan` (`clean`, `caution`, `unsafe`, or absent),
 `safety`, `findings`, and `files` with `path`, `sizeBytes`, `sha256`, `class`, `residency`,
 `format`, `safety`.
 

@@ -26,6 +26,7 @@ public sealed partial class Ledger
             CREATE TABLE IF NOT EXISTS journal(id INTEGER PRIMARY KEY AUTOINCREMENT, at INTEGER, action TEXT,
               path TEXT, bytes INTEGER, ok INTEGER, detail TEXT);
             CREATE TABLE IF NOT EXISTS meta(sha TEXT PRIMARY KEY, json TEXT NOT NULL, version INTEGER, at INTEGER);
+            CREATE TABLE IF NOT EXISTS hub_scan(sha TEXT PRIMARY KEY, level TEXT NOT NULL, repo TEXT, at INTEGER);
             CREATE TABLE IF NOT EXISTS source_health(locator TEXT PRIMARY KEY, state INTEGER, detail TEXT, checked INTEGER, since INTEGER);
             """);
         Migrate(c);
