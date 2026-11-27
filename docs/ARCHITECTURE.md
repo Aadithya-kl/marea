@@ -12,7 +12,7 @@ src/
   Marea.App/          WPF desktop app: views, first-run guide, tray icon, tide timer.
   Marea.Cli/          mareactl: same engine for scripts, SSH and the uninstaller.
 tests/Marea.Tests/    Unit tests + end-to-end tests on the real cloud filter driver.
-tools/                i18n table (single source for 5 languages), icon generator.
+tools/                i18n table (single source for 6 languages), icon generator.
 installer/            WiX v7 per-user MSI, winget manifest templates.
 build/                publish.ps1 (portable), installer.ps1 (MSI).
 ```

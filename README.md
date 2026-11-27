@@ -364,9 +364,9 @@ verified. Keep Marea running; it offers to start with Windows.
   </tr>
 </table>
 
-The app speaks English, Italiano, Español, Français and Deutsch, follows the Windows light or
-dark theme (or the one you pick in *Settings*), and every control has an accessible name for
-screen readers.
+The app speaks English, Italiano, Español, Français, Deutsch and Português, follows the Windows
+light or dark theme (or the one you pick in *Settings*), and every control has an accessible name
+for screen readers.
 
 ## Command line
 
@@ -392,7 +392,7 @@ mareactl agent                      serve evaporated files without the app open
 ```
 
 Read commands accept `--json`. Environment: `MAREA_DATA` (data folder), `MAREA_LANG` (`en`, `it`,
-`es`, `fr`, `de`), `MAREA_READONLY=1` (refuse every change). Exit codes and JSON schemas:
+`es`, `fr`, `de`, `pt`), `MAREA_READONLY=1` (refuse every change). Exit codes and JSON schemas:
 [docs/AGENTS.md](docs/AGENTS.md).
 
 ## FAQ
